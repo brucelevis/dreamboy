@@ -1,0 +1,12 @@
+
+Debug/
+
+Release/
+
+bios\.bin
+
+roms/
+
+\.codelite/
+
+DreamBoy\.txt
