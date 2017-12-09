@@ -8,6 +8,8 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
+    <File Name="src/main.cpp"/>
+    <File Name="src/debugger.cpp"/>
     <File Name="src/bit.cpp"/>
     <File Name="src/flags.cpp"/>
     <File Name="src/rom.cpp"/>
@@ -28,7 +30,6 @@
       <File Name="src/includes/typedefs.h"/>
       <File Name="src/includes/debugger.h"/>
     </VirtualDirectory>
-    <File Name="debugger.cpp"/>
     <VirtualDirectory Name="imgui">
       <File Name="src/imgui/stb_truetype.h"/>
       <File Name="src/imgui/stb_textedit.h"/>
@@ -44,7 +45,6 @@
       <File Name="src/imgui/imgui.cpp"/>
       <File Name="src/imgui/imconfig.h"/>
     </VirtualDirectory>
-    <File Name="main.cpp"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
