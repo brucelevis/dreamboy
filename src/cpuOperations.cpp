@@ -255,6 +255,49 @@ void CpuOps::Ccf(int cycles)
 	Cpu::cycles += cycles;
 }
 
+void CpuOps::BitTest(u8 in, u8 bit, int cycles)
+{
+	Flags::Clear(Flags::z | Flags::n);
+	Flags::Set(Flags::h);
+
+	if (!Bit::Get(in, bit)) Flags::Set(Flags::z);
+
+	Cpu::cycles += cycles;
+}
+
+void CpuOps::BitTestMem(u16 address, u8 bit, int cycles)
+{
+	u8 data = Memory::ReadByte(address);
+	BitTest(data, bit, cycles);
+	Memory::WriteByte(address, data);
+}
+
+void CpuOps::BitSet(u8 &in, u8 bit, int cycles)
+{
+	Bit::Set(in, bit);
+	Cpu::cycles += cycles;
+}
+
+void CpuOps::BitSetMem(u16 address, u8 bit, int cycles)
+{
+	u8 data = Memory::ReadByte(address);
+	BitSet(data, bit, cycles);
+	Memory::WriteByte(address, data);
+}
+
+void CpuOps::BitClear(u8 &in, u8 bit, int cycles)
+{
+	Bit::Clear(in, bit);
+	Cpu::cycles += cycles;
+}
+
+void CpuOps::BitClearMem(u16 address, u8 bit, int cycles)
+{
+	u8 data = Memory::ReadByte(address);
+	BitClear(data, bit, cycles);
+	Memory::WriteByte(address, data);
+}
+
 void CpuOps::Load8(u8 &in, u8 val, int cycles)
 {
 	in = val;
@@ -294,12 +337,6 @@ void CpuOps::Dec16(u16 &in, int cycles)
 	Cpu::cycles += cycles;
 }
 
-void CpuOps::Load16(u16 &in, u16 val, int cycles)
-{
-	in = val;
-	Cpu::cycles += cycles;
-}
-
 void CpuOps::AddSpR8(s8 r8, int cycles)
 {
 	u16 result = (Cpu::sp.reg + r8);
@@ -310,6 +347,12 @@ void CpuOps::AddSpR8(s8 r8, int cycles)
 	if (Bit::DidCarry(Cpu::sp.reg + r8, 0xFF)) Flags::Set(Flags::c);
 
 	Cpu::sp.reg = result;
+	Cpu::cycles += cycles;
+}
+
+void CpuOps::Load16(u16 &in, u16 val, int cycles)
+{
+	in = val;
 	Cpu::cycles += cycles;
 }
 

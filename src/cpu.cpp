@@ -337,266 +337,150 @@ void Cpu::ExecuteExtendedOpcode()
 	instructionsRan += 1;
 	PC += 1;
 
-	printf("unimplemented CB opcode: %02X\n", opcode);
-
 	switch(opcode)
 	{
-		case 0x00: break; //
-		case 0x01: break; //
-		case 0x02: break; //
-		case 0x03: break; //
-		case 0x04: break; //
-		case 0x05: break; //
-		case 0x06: break; //
-		case 0x07: break; //
-		case 0x08: break; //
-		case 0x09: break; //
-		case 0x0A: break; //
-		case 0x0B: break; //
-		case 0x0C: break; //
-		case 0x0D: break; //
-		case 0x0E: break; //
-		case 0x0F: break; //
-		case 0x10: break; //
-		case 0x11: break; //
-		case 0x12: break; //
-		case 0x13: break; //
-		case 0x14: break; //
-		case 0x15: break; //
-		case 0x16: break; //
-		case 0x17: break; //
-		case 0x18: break; //
-		case 0x19: break; //
-		case 0x1A: break; //
-		case 0x1B: break; //
-		case 0x1C: break; //
-		case 0x1D: break; //
-		case 0x1E: break; //
-		case 0x1F: break; //
-		case 0x20: break; //
-		case 0x21: break; //
-		case 0x22: break; //
-		case 0x23: break; //
-		case 0x24: break; //
-		case 0x25: break; //
-		case 0x26: break; //
-		case 0x27: break; //
-		case 0x28: break; //
-		case 0x29: break; //
-		case 0x2A: break; //
-		case 0x2B: break; //
-		case 0x2C: break; //
-		case 0x2D: break; //
-		case 0x2E: break; //
-		case 0x2F: break; //
-		case 0x30: break; //
-		case 0x31: break; //
-		case 0x32: break; //
-		case 0x33: break; //
-		case 0x34: break; //
-		case 0x35: break; //
-		case 0x36: break; //
-		case 0x37: break; //
-		case 0x38: break; //
-		case 0x39: break; //
-		case 0x3A: break; //
-		case 0x3B: break; //
-		case 0x3C: break; //
-		case 0x3D: break; //
-		case 0x3E: break; //
-		case 0x3F: break; //
-		case 0x40: break; //
-		case 0x41: break; //
-		case 0x42: break; //
-		case 0x43: break; //
-		case 0x44: break; //
-		case 0x45: break; //
-		case 0x46: break; //
-		case 0x47: break; //
-		case 0x48: break; //
-		case 0x49: break; //
-		case 0x4A: break; //
-		case 0x4B: break; //
-		case 0x4C: break; //
-		case 0x4D: break; //
-		case 0x4E: break; //
-		case 0x4F: break; //
-		case 0x50: break; //
-		case 0x51: break; //
-		case 0x52: break; //
-		case 0x53: break; //
-		case 0x54: break; //
-		case 0x55: break; //
-		case 0x56: break; //
-		case 0x57: break; //
-		case 0x58: break; //
-		case 0x59: break; //
-		case 0x5A: break; //
-		case 0x5B: break; //
-		case 0x5C: break; //
-		case 0x5D: break; //
-		case 0x5E: break; //
-		case 0x5F: break; //
-		case 0x60: break; //
-		case 0x61: break; //
-		case 0x62: break; //
-		case 0x63: break; //
-		case 0x64: break; //
-		case 0x65: break; //
-		case 0x66: break; //
-		case 0x67: break; //
-		case 0x68: break; //
-		case 0x69: break; //
-		case 0x6A: break; //
-		case 0x6B: break; //
-		case 0x6C: break; //
-		case 0x6D: break; //
-		case 0x6E: break; //
-		case 0x6F: break; //
-		case 0x70: break; //
-		case 0x71: break; //
-		case 0x72: break; //
-		case 0x73: break; //
-		case 0x74: break; //
-		case 0x75: break; //
-		case 0x76: break; //
-		case 0x77: break; //
-		case 0x78: break; //
-		case 0x79: break; //
-		case 0x7A: break; //
-		case 0x7B: break; //
-		case 0x7C: break; //
-		case 0x7D: break; //
-		case 0x7E: break; //
-		case 0x7F: break; //
-		case 0x80: break; //
-		case 0x81: break; //
-		case 0x82: break; //
-		case 0x83: break; //
-		case 0x84: break; //
-		case 0x85: break; //
-		case 0x86: break; //
-		case 0x87: break; //
-		case 0x88: break; //
-		case 0x89: break; //
-		case 0x8A: break; //
-		case 0x8B: break; //
-		case 0x8C: break; //
-		case 0x8D: break; //
-		case 0x8E: break; //
-		case 0x8F: break; //
-		case 0x90: break; //
-		case 0x91: break; //
-		case 0x92: break; //
-		case 0x93: break; //
-		case 0x94: break; //
-		case 0x95: break; //
-		case 0x96: break; //
-		case 0x97: break; //
-		case 0x98: break; //
-		case 0x99: break; //
-		case 0x9A: break; //
-		case 0x9B: break; //
-		case 0x9C: break; //
-		case 0x9D: break; //
-		case 0x9E: break; //
-		case 0x9F: break; //
-		case 0xA0: break; //
-		case 0xA1: break; //
-		case 0xA2: break; //
-		case 0xA3: break; //
-		case 0xA4: break; //
-		case 0xA5: break; //
-		case 0xA6: break; //
-		case 0xA7: break; //
-		case 0xA8: break; //
-		case 0xA9: break; //
-		case 0xAA: break; //
-		case 0xAB: break; //
-		case 0xAC: break; //
-		case 0xAD: break; //
-		case 0xAE: break; //
-		case 0xAF: break; //
-		case 0xB0: break; //
-		case 0xB1: break; //
-		case 0xB2: break; //
-		case 0xB3: break; //
-		case 0xB4: break; //
-		case 0xB5: break; //
-		case 0xB6: break; //
-		case 0xB7: break; //
-		case 0xB8: break; //
-		case 0xB9: break; //
-		case 0xBA: break; //
-		case 0xBB: break; //
-		case 0xBC: break; //
-		case 0xBD: break; //
-		case 0xBE: break; //
-		case 0xBF: break; //
-		case 0xC0: break; //
-		case 0xC1: break; //
-		case 0xC2: break; //
-		case 0xC3: break; //
-		case 0xC4: break; //
-		case 0xC5: break; //
-		case 0xC6: break; //
-		case 0xC7: break; //
-		case 0xC8: break; //
-		case 0xC9: break; //
-		case 0xCA: break; //
-		case 0xCB: break; //
-		case 0xCC: break; //
-		case 0xCD: break; //
-		case 0xCE: break; //
-		case 0xCF: break; //
-		case 0xD0: break; //
-		case 0xD1: break; //
-		case 0xD2: break; //
-		case 0xD3: break; //
-		case 0xD4: break; //
-		case 0xD5: break; //
-		case 0xD6: break; //
-		case 0xD7: break; //
-		case 0xD8: break; //
-		case 0xD9: break; //
-		case 0xDA: break; //
-		case 0xDB: break; //
-		case 0xDC: break; //
-		case 0xDD: break; //
-		case 0xDE: break; //
-		case 0xDF: break; //
-		case 0xE0: break; //
-		case 0xE1: break; //
-		case 0xE2: break; //
-		case 0xE3: break; //
-		case 0xE4: break; //
-		case 0xE5: break; //
-		case 0xE6: break; //
-		case 0xE7: break; //
-		case 0xE8: break; //
-		case 0xE9: break; //
-		case 0xEA: break; //
-		case 0xEB: break; //
-		case 0xEC: break; //
-		case 0xED: break; //
-		case 0xEE: break; //
-		case 0xEF: break; //
-		case 0xF0: break; //
-		case 0xF1: break; //
-		case 0xF2: break; //
-		case 0xF3: break; //
-		case 0xF4: break; //
-		case 0xF5: break; //
-		case 0xF6: break; //
-		case 0xF7: break; //
-		case 0xF8: break; //
-		case 0xF9: break; //
-		case 0xFA: break; //
-		case 0xFB: break; //
-		case 0xFC: break; //
-		case 0xFD: break; //
-		case 0xFE: break; //
-		case 0xFF: break; //
+		case 0x00: break; // RLC B
+		case 0x01: break; // RLC C
+		case 0x02: break; // RLC D
+		case 0x03: break; // RLC E
+		case 0x04: break; // RLC H
+		case 0x05: break; // RLC L
+		case 0x06: break; // RLC (HL)
+		case 0x07: break; // RLC A
+		case 0x08: break; // RRC B
+		case 0x09: break; // RRC C
+		case 0x0A: break; // RRC D
+		case 0x0B: break; // RRC E
+		case 0x0C: break; // RRC H
+		case 0x0D: break; // RRC L
+		case 0x0E: break; // RRC (HL)
+		case 0x0F: break; // RRC A
+		case 0x10: break; // RL B
+		case 0x11: break; // RL C
+		case 0x12: break; // RL D
+		case 0x13: break; // RL E
+		case 0x14: break; // RL H
+		case 0x15: break; // RL L
+		case 0x16: break; // RL (HL)
+		case 0x17: break; // RL A
+		case 0x18: break; // RR B
+		case 0x19: break; // RR C
+		case 0x1A: break; // RR D
+		case 0x1B: break; // RR E
+		case 0x1C: break; // RR H
+		case 0x1D: break; // RR L
+		case 0x1E: break; // RR (HL)
+		case 0x1F: break; // RR A
+		case 0x20: break; // SLA B
+		case 0x21: break; // SLA C
+		case 0x22: break; // SLA D
+		case 0x23: break; // SLA E
+		case 0x24: break; // SLA H
+		case 0x25: break; // SLA L
+		case 0x26: break; // SLA (HL)
+		case 0x27: break; // SLA A
+		case 0x28: break; // SRA B
+		case 0x29: break; // SRA C
+		case 0x2A: break; // SRA D
+		case 0x2B: break; // SRA E
+		case 0x2C: break; // SRA H
+		case 0x2D: break; // SRA L
+		case 0x2E: break; // SRA (HL)
+		case 0x2F: break; // SRA A
+		case 0x30: break; // SWAP B
+		case 0x31: break; // SWAP C
+		case 0x32: break; // SWAP D
+		case 0x33: break; // SWAP E
+		case 0x34: break; // SWAP H
+		case 0x35: break; // SWAP L
+		case 0x36: break; // SWAP (HL)
+		case 0x37: break; // SWAP A
+		case 0x38: break; // SRL B
+		case 0x39: break; // SRL C
+		case 0x3A: break; // SRL D
+		case 0x3B: break; // SRL E
+		case 0x3C: break; // SRL H
+		case 0x3D: break; // SRL L
+		case 0x3E: break; // SRL (HL)
+		case 0x3F: break; // SRL A
+
+		case 0x40 ... 0x7F:
+		{
+			u8 bit = ((opcode >> 4) - 4);
+
+			switch(opcode & 0xF)
+			{
+				case 0x0: CpuOps::BitTest(B, bit, 8); break; // BIT B,x
+				case 0x1: CpuOps::BitTest(C, bit, 8); break; // BIT C,x
+				case 0x2: CpuOps::BitTest(D, bit, 8); break; // BIT D,x
+				case 0x3: CpuOps::BitTest(E, bit, 8); break; // BIT E,x
+				case 0x4: CpuOps::BitTest(H, bit, 8); break; // BIT H,x
+				case 0x5: CpuOps::BitTest(L, bit, 8); break;  // BIT L,x
+				case 0x6: CpuOps::BitTestMem(HL, bit, 16); break; // BIT HL,x
+				case 0x7: CpuOps::BitTest(A, bit, 8); break; // BIT A,x
+				case 0x8: CpuOps::BitTest(B, bit + 1, 8); break; // BIT B,x
+				case 0x9: CpuOps::BitTest(C, bit + 1, 8); break; // BIT C,x
+				case 0xA: CpuOps::BitTest(D, bit + 1, 8); break; // BIT D,x
+				case 0xB: CpuOps::BitTest(E, bit + 1, 8); break; // BIT E,x
+				case 0xC: CpuOps::BitTest(H, bit + 1, 8); break; // BIT H,x
+				case 0xD: CpuOps::BitTest(L, bit + 1, 8); break; // BIT L,x
+				case 0xE: CpuOps::BitTestMem(HL, bit + 1, 16); break; // BIT HL,x
+				case 0xF: CpuOps::BitTest(A, bit + 1, 8); break; // BIT A,x
+			}
+		}
+		break;
+
+		case 0x80 ... 0xBF:
+		{
+			u8 bit = ((opcode >> 4) - 8);
+
+			switch(opcode & 0xF)
+			{
+				case 0x0: CpuOps::BitClear(B, bit, 8); break; // RES B,x
+				case 0x1: CpuOps::BitClear(C, bit, 8); break; // RES C,x
+				case 0x2: CpuOps::BitClear(D, bit, 8); break; // RES D,x
+				case 0x3: CpuOps::BitClear(E, bit, 8); break; // RES E,x
+				case 0x4: CpuOps::BitClear(H, bit, 8); break; // RES H,x
+				case 0x5: CpuOps::BitClear(L, bit, 8); break;  // RES L,x
+				case 0x6: CpuOps::BitClearMem(HL, bit, 16); break; // RES HL,x
+				case 0x7: CpuOps::BitClear(A, bit, 8); break; // RES A,x
+				case 0x8: CpuOps::BitClear(B, bit + 1, 8); break; // RES B,x
+				case 0x9: CpuOps::BitClear(C, bit + 1, 8); break; // RES C,x
+				case 0xA: CpuOps::BitClear(D, bit + 1, 8); break; // RES D,x
+				case 0xB: CpuOps::BitClear(E, bit + 1, 8); break; // RES E,x
+				case 0xC: CpuOps::BitClear(H, bit + 1, 8); break; // RES H,x
+				case 0xD: CpuOps::BitClear(L, bit + 1, 8); break; // RES L,x
+				case 0xE: CpuOps::BitClearMem(HL, bit + 1, 16); break; // RES HL,x
+				case 0xF: CpuOps::BitClear(A, bit + 1, 8); break; // RES A,x
+			}
+		}
+		break;
+
+		case 0xC0 ... 0xFF:
+		{
+			u8 bit = ((opcode >> 4) - 12);
+
+			switch(opcode & 0xF)
+			{
+				case 0x0: CpuOps::BitSet(B, bit, 8); break; // SET B,x
+				case 0x1: CpuOps::BitSet(C, bit, 8); break; // SET C,x
+				case 0x2: CpuOps::BitSet(D, bit, 8); break; // SET D,x
+				case 0x3: CpuOps::BitSet(E, bit, 8); break; // SET E,x
+				case 0x4: CpuOps::BitSet(H, bit, 8); break; // SET H,x
+				case 0x5: CpuOps::BitSet(L, bit, 8); break;  // SET L,x
+				case 0x6: CpuOps::BitSetMem(HL, bit, 16); break; // SET HL,x
+				case 0x7: CpuOps::BitSet(A, bit, 8); break; // SET A,x
+				case 0x8: CpuOps::BitSet(B, bit + 1, 8); break; // SET B,x
+				case 0x9: CpuOps::BitSet(C, bit + 1, 8); break; // SET C,x
+				case 0xA: CpuOps::BitSet(D, bit + 1, 8); break; // SET D,x
+				case 0xB: CpuOps::BitSet(E, bit + 1, 8); break; // SET E,x
+				case 0xC: CpuOps::BitSet(H, bit + 1, 8); break; // SET H,x
+				case 0xD: CpuOps::BitSet(L, bit + 1, 8); break; // SET L,x
+				case 0xE: CpuOps::BitSetMem(HL, bit + 1, 16); break; // SET HL,x
+				case 0xF: CpuOps::BitSet(A, bit + 1, 8); break; // SET A,x
+			}
+		}
+		break;
 	}
 }
 
