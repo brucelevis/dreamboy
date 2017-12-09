@@ -89,7 +89,7 @@ void Cpu::ExecuteOpcode()
 		case 0x04: CpuOps::Inc8(B, 4); break; // INC B
 		case 0x05: CpuOps::Dec8(B, 4); break; // DEC B
 		case 0x06: CpuOps::Load8(B, Memory::ReadByte(PC), 8); PC += 1; break; // LD B,d8
-		case 0x07: CpuOps::Rlc8(A, 4); break; // RLCA
+		case 0x07: CpuOps::Rlc8(A, false, 4); break; // RLCA
 		case 0x08: Memory::WriteWord(Memory::ReadWord(PC), sp); PC += 2; cycles += 20; break; // LD (a16),SP
 		case 0x09: CpuOps::Add16(HL, BC, 8); break; // ADD HL,BC
 		case 0x0A: CpuOps::Load8(A, Memory::ReadByte(BC), 8); break; // LD A,(BC)
@@ -97,7 +97,7 @@ void Cpu::ExecuteOpcode()
 		case 0x0C: CpuOps::Inc8(C, 4); break; // INC C
 		case 0x0D: CpuOps::Dec8(C, 4); break; // DEC C
 		case 0x0E: CpuOps::Load8(C, Memory::ReadByte(PC), 8); PC += 1; break; // LD C,d8
-		case 0x0F: CpuOps::Rrc8(A, 4); break; // RRCA
+		case 0x0F: CpuOps::Rrc8(A, false, 4); break; // RRCA
 		case 0x10: CpuOps::Stop(4); break; // STOP
 		case 0x11: CpuOps::Load16(DE, Memory::ReadWord(PC), 12); PC += 2; break; // LD DE,d16
 		case 0x12: CpuOps::Write8(DE, A, 8); break; // LD (DE),A
@@ -105,7 +105,7 @@ void Cpu::ExecuteOpcode()
 		case 0x14: CpuOps::Inc8(D, 4); break; // INC D
 		case 0x15: CpuOps::Dec8(D, 4); break; // DEC D
 		case 0x16: CpuOps::Load8(D, Memory::ReadByte(PC), 8); PC += 1; break; // LD D,d8
-		case 0x17: CpuOps::Rl8(A, 4); break; // RLA
+		case 0x17: CpuOps::Rl8(A, false, 4); break; // RLA
 		case 0x18: CpuOps::JmpRel(true, 8); break; // JR r8
 		case 0x19: CpuOps::Add16(HL, DE, 8); break; // ADD HL,DE
 		case 0x1A: CpuOps::Load8(A, Memory::ReadByte(DE), 8); break; // LD A,(DE)
@@ -113,7 +113,7 @@ void Cpu::ExecuteOpcode()
 		case 0x1C: CpuOps::Inc8(E, 4); break; // INC E
 		case 0x1D: CpuOps::Dec8(E, 4); break; // DEC E
 		case 0x1E: CpuOps::Load8(E, Memory::ReadByte(PC), 8); PC += 1; break; // LD E,d8
-		case 0x1F: CpuOps::Rr8(A, 4); break; // RRA
+		case 0x1F: CpuOps::Rr8(A, false, 4); break; // RRA
 		case 0x20: CpuOps::JmpRel(!Flags::Get(Flags::z), 8); break; // JR NZ,r8
 		case 0x21: CpuOps::Load16(HL, Memory::ReadWord(PC), 12); PC += 2; break; // LD HL,d16
 		case 0x22: CpuOps::Write8(HL, A, 8); HL += 1; break; // LD (HL+),A
@@ -340,70 +340,70 @@ void Cpu::ExecuteExtendedOpcode()
 
 	switch(opcode)
 	{
-		case 0x00: break; // RLC B
-		case 0x01: break; // RLC C
-		case 0x02: break; // RLC D
-		case 0x03: break; // RLC E
-		case 0x04: break; // RLC H
-		case 0x05: break; // RLC L
-		case 0x06: break; // RLC (HL)
-		case 0x07: break; // RLC A
-		case 0x08: break; // RRC B
-		case 0x09: break; // RRC C
-		case 0x0A: break; // RRC D
-		case 0x0B: break; // RRC E
-		case 0x0C: break; // RRC H
-		case 0x0D: break; // RRC L
-		case 0x0E: break; // RRC (HL)
-		case 0x0F: break; // RRC A
-		case 0x10: break; // RL B
-		case 0x11: break; // RL C
-		case 0x12: break; // RL D
-		case 0x13: break; // RL E
-		case 0x14: break; // RL H
-		case 0x15: break; // RL L
-		case 0x16: break; // RL (HL)
-		case 0x17: break; // RL A
-		case 0x18: break; // RR B
-		case 0x19: break; // RR C
-		case 0x1A: break; // RR D
-		case 0x1B: break; // RR E
-		case 0x1C: break; // RR H
-		case 0x1D: break; // RR L
-		case 0x1E: break; // RR (HL)
-		case 0x1F: break; // RR A
-		case 0x20: break; // SLA B
-		case 0x21: break; // SLA C
-		case 0x22: break; // SLA D
-		case 0x23: break; // SLA E
-		case 0x24: break; // SLA H
-		case 0x25: break; // SLA L
-		case 0x26: break; // SLA (HL)
-		case 0x27: break; // SLA A
-		case 0x28: break; // SRA B
-		case 0x29: break; // SRA C
-		case 0x2A: break; // SRA D
-		case 0x2B: break; // SRA E
-		case 0x2C: break; // SRA H
-		case 0x2D: break; // SRA L
-		case 0x2E: break; // SRA (HL)
-		case 0x2F: break; // SRA A
-		case 0x30: break; // SWAP B
-		case 0x31: break; // SWAP C
-		case 0x32: break; // SWAP D
-		case 0x33: break; // SWAP E
-		case 0x34: break; // SWAP H
-		case 0x35: break; // SWAP L
-		case 0x36: break; // SWAP (HL)
-		case 0x37: break; // SWAP A
-		case 0x38: break; // SRL B
-		case 0x39: break; // SRL C
-		case 0x3A: break; // SRL D
-		case 0x3B: break; // SRL E
-		case 0x3C: break; // SRL H
-		case 0x3D: break; // SRL L
-		case 0x3E: break; // SRL (HL)
-		case 0x3F: break; // SRL A
+		case 0x00: CpuOps::Rlc8(B, true, 8); break; // RLC B
+		case 0x01: CpuOps::Rlc8(C, true, 8); break; // RLC C
+		case 0x02: CpuOps::Rlc8(D, true, 8); break; // RLC D
+		case 0x03: CpuOps::Rlc8(E, true, 8); break; // RLC E
+		case 0x04: CpuOps::Rlc8(H, true, 8); break; // RLC H
+		case 0x05: CpuOps::Rlc8(L, true, 8); break; // RLC L
+		case 0x06: CpuOps::Rlc8Mem(HL, true, 16); break; // RLC (HL)
+		case 0x07: CpuOps::Rlc8(A, true, 8); break; // RLC A
+		case 0x08: CpuOps::Rrc8(B, true, 8); break; // RRC B
+		case 0x09: CpuOps::Rrc8(C, true, 8); break; // RRC C
+		case 0x0A: CpuOps::Rrc8(D, true, 8); break; // RRC D
+		case 0x0B: CpuOps::Rrc8(E, true, 8); break; // RRC E
+		case 0x0C: CpuOps::Rrc8(H, true, 8); break; // RRC H
+		case 0x0D: CpuOps::Rrc8(L, true, 8); break; // RRC L
+		case 0x0E: CpuOps::Rrc8Mem(HL, true, 16); break; // RRC (HL)
+		case 0x0F: CpuOps::Rrc8(A, true, 8); break; // RRC A
+		case 0x10: CpuOps::Rl8(B, true, 8); break; // RL B
+		case 0x11: CpuOps::Rl8(C, true, 8); break; // RL C
+		case 0x12: CpuOps::Rl8(D, true, 8); break; // RL D
+		case 0x13: CpuOps::Rl8(E, true, 8); break; // RL E
+		case 0x14: CpuOps::Rl8(H, true, 8); break; // RL H
+		case 0x15: CpuOps::Rl8(L, true, 8); break; // RL L
+		case 0x16: CpuOps::Rl8Mem(HL, true, 16); break; // RL (HL)
+		case 0x17: CpuOps::Rl8(A, true, 8); break; // RL A
+		case 0x18: CpuOps::Rr8(B, true, 8); break; // RR B
+		case 0x19: CpuOps::Rr8(C, true, 8); break; // RR C
+		case 0x1A: CpuOps::Rr8(D, true, 8); break; // RR D
+		case 0x1B: CpuOps::Rr8(E, true, 8); break; // RR E
+		case 0x1C: CpuOps::Rr8(H, true, 8); break; // RR H
+		case 0x1D: CpuOps::Rr8(L, true, 8); break; // RR L
+		case 0x1E: CpuOps::Rr8Mem(HL, true, 16); break; // RR (HL)
+		case 0x1F: CpuOps::Rr8(A, true, 8); break; // RR A
+		case 0x20: CpuOps::Slc8(B, 8); break; // SLA B
+		case 0x21: CpuOps::Slc8(C, 8); break; // SLA C
+		case 0x22: CpuOps::Slc8(D, 8); break; // SLA D
+		case 0x23: CpuOps::Slc8(E, 8); break; // SLA E
+		case 0x24: CpuOps::Slc8(H, 8); break; // SLA H
+		case 0x25: CpuOps::Slc8(L, 8); break; // SLA L
+		case 0x26: CpuOps::Slc8Mem(HL, 16); break; // SLA (HL)
+		case 0x27: CpuOps::Slc8(A, 8); break; // SLA A
+		case 0x28: CpuOps::Src8(B, 8); break; // SRA B
+		case 0x29: CpuOps::Src8(C, 8); break; // SRA C
+		case 0x2A: CpuOps::Src8(D, 8); break; // SRA D
+		case 0x2B: CpuOps::Src8(E, 8); break; // SRA E
+		case 0x2C: CpuOps::Src8(H, 8); break; // SRA H
+		case 0x2D: CpuOps::Src8(L, 8); break; // SRA L
+		case 0x2E: CpuOps::Src8Mem(HL, 16); break; // SRA (HL)
+		case 0x2F: CpuOps::Src8(A, 8); break; // SRA A
+		case 0x30: CpuOps::BitSwap(B, 8); break; // SWAP B
+		case 0x31: CpuOps::BitSwap(C, 8); break; // SWAP C
+		case 0x32: CpuOps::BitSwap(D, 8); break; // SWAP D
+		case 0x33: CpuOps::BitSwap(E, 8); break; // SWAP E
+		case 0x34: CpuOps::BitSwap(H, 8); break; // SWAP H
+		case 0x35: CpuOps::BitSwap(L, 8); break; // SWAP L
+		case 0x36: CpuOps::BitSwapMem(HL, 16); break; // SWAP (HL)
+		case 0x37: CpuOps::BitSwap(A, 8); break; // SWAP A
+		case 0x38: CpuOps::Rrc8(B, true, 8); break; // SRL B
+		case 0x39: CpuOps::Rrc8(C, true, 8); break; // SRL C
+		case 0x3A: CpuOps::Rrc8(D, true, 8); break; // SRL D
+		case 0x3B: CpuOps::Rrc8(E, true, 8); break; // SRL E
+		case 0x3C: CpuOps::Rrc8(H, true, 8); break; // SRL H
+		case 0x3D: CpuOps::Rrc8(L, true, 8); break; // SRL L
+		case 0x3E: CpuOps::Rrc8Mem(HL, true, 16); break; // SRL (HL)
+		case 0x3F: CpuOps::Rrc8(A, true, 8); break; // SRL A
 
 		case 0x40 ... 0x7F:
 		{

@@ -175,54 +175,136 @@ void CpuOps::Xor8(u8 &in, u8 val, int cycles)
 	Cpu::cycles += cycles;
 }
 
-void CpuOps::Rlc8(u8 &in, int cycles)
+void CpuOps::Rlc8(u8 &in, bool checkZero,  int cycles)
 {
 	u8 result = ((in << 1) | (in >> 7));
 
 	Flags::Clear(Flags::all);
 
+	if (checkZero && (result == 0)) Flags::Set(Flags::z);
 	if (Bit::Get(in, 7)) Flags::Set(Flags::c);
 
 	in = result;
 	Cpu::cycles += cycles;
 }
 
-void CpuOps::Rrc8(u8 &in, int cycles)
+void CpuOps::Rlc8Mem(u16 address, bool checkZero,  int cycles)
+{
+	u8 data = Memory::ReadByte(address);
+
+	Rlc8(data, checkZero, cycles);
+	Memory::WriteByte(address, data);
+}
+
+void CpuOps::Rrc8(u8 &in, bool checkZero, int cycles)
 {
 	u8 result = ((in << 1) | (in << 7));
 
 	Flags::Clear(Flags::all);
 
+	if (checkZero && (result == 0)) Flags::Set(Flags::z);
 	if (Bit::Get(in, 0)) Flags::Set(Flags::c);
 
 	in = result;
 	Cpu::cycles += cycles;
 }
 
-void CpuOps::Rl8(u8 &in, int cycles)
+void CpuOps::Rrc8Mem(u16 address, bool checkZero, int cycles)
+{
+	u8 data = Memory::ReadByte(address);
+
+	Rrc8(data, checkZero, cycles);
+	Memory::WriteByte(address, data);
+}
+
+void CpuOps::Rl8(u8 &in, bool checkZero, int cycles)
 {
 	u8 carry = Flags::Get(Flags::c);
 	u8 result = ((in << 1) | carry);
 
 	Flags::Clear(Flags::all);
 
+	if (checkZero && (result == 0)) Flags::Set(Flags::z);
 	if (Bit::Get(in, 7)) Flags::Set(Flags::c);
 
 	in = result;
 	Cpu::cycles += cycles;
 }
 
-void CpuOps::Rr8(u8 &in, int cycles)
+void CpuOps::Rl8Mem(u16 address, bool checkZero, int cycles)
+{
+	u8 data = Memory::ReadByte(address);
+
+	Rl8(data, checkZero, cycles);
+	Memory::WriteByte(address, data);
+}
+
+void CpuOps::Rr8(u8 &in, bool checkZero, int cycles)
 {
 	u8 carry = Flags::Get(Flags::c);
 	u8 result = ((in >> 1) | carry);
 
 	Flags::Clear(Flags::all);
 
+	if (checkZero && (result == 0)) Flags::Set(Flags::z);
 	if (Bit::Get(in, 0)) Flags::Set(Flags::c);
 
 	in = result;
 	Cpu::cycles += cycles;
+}
+
+void CpuOps::Rr8Mem(u16 address, bool checkZero, int cycles)
+{
+	u8 data = Memory::ReadByte(address);
+
+	Rr8(data, checkZero, cycles);
+	Memory::WriteByte(address, data);
+}
+
+void CpuOps::Slc8(u8 &in, int cycles)
+{
+	u8 result = (in << 1);
+
+	Flags::Clear(Flags::all);
+
+	if (result == 0) Flags::Set(Flags::z);
+	if (Bit::Get(in, 7)) Flags::Set(Flags::c);
+
+	in = result;
+	Cpu::cycles += cycles;
+}
+
+void CpuOps::Slc8Mem(u16 address, int cycles)
+{
+	u8 data = Memory::ReadByte(address);
+
+	Slc8(data, cycles);
+	Memory::WriteByte(address, data);
+}
+
+void CpuOps::Src8(u8 &in, int cycles)
+{
+	u8 result = (in >> 1);
+	u8 oldMsb = Bit::Get(in, 7);
+
+	Flags::Clear(Flags::all);
+
+	if (result == 0) Flags::Set(Flags::z);
+	if (Bit::Get(in, 0)) Flags::Set(Flags::c);
+
+	in = result;
+
+	if (oldMsb) Bit::Set(in, 7); else Bit::Clear(in, 7);
+
+	Cpu::cycles += cycles;
+}
+
+void CpuOps::Src8Mem(u16 address, int cycles)
+{
+	u8 data = Memory::ReadByte(address);
+
+	Src8(data, cycles);
+	Memory::WriteByte(address, data);
 }
 
 void CpuOps::Daa(int cycles)
@@ -295,6 +377,26 @@ void CpuOps::BitClearMem(u16 address, u8 bit, int cycles)
 {
 	u8 data = Memory::ReadByte(address);
 	BitClear(data, bit, cycles);
+	Memory::WriteByte(address, data);
+}
+
+void CpuOps::BitSwap(u8 &in, int cycles)
+{
+	u8 result = (((in & 0xF0) >> 4) | ((in << 0x0F) << 4));
+
+	Flags::Clear(Flags::all);
+
+	if (result == 0) Flags::Set(Flags::z);
+
+	in = result;
+	Cpu::cycles += cycles;
+}
+
+void CpuOps::BitSwapMem(u16 address, int cycles)
+{
+	u8 data = Memory::ReadByte(address);
+
+	BitSwap(data, cycles);
 	Memory::WriteByte(address, data);
 }
 

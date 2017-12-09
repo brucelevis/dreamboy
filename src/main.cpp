@@ -27,6 +27,16 @@
 static SDL_Window *window;
 static SDL_GLContext glContext;
 static bool quit = false;
+const char *cpuTests[12] =
+{
+	NULL,
+	"roms/tests/cpu_instrs/01-special.gb", "roms/tests/cpu_instrs/02-interrupts.gb",
+	"roms/tests/cpu_instrs/03-op sp,hl.gb", "roms/tests/cpu_instrs/04-op r,imm.gb",
+	"roms/tests/cpu_instrs/05-op rp.gb", "roms/tests/cpu_instrs/06-ld r,r.gb",
+	"roms/tests/cpu_instrs/07-jr,jp,call,ret,rst.gb", "roms/tests/cpu_instrs/08-misc instrs.gb",
+	"roms/tests/cpu_instrs/09-op r,r.gb", "roms/tests/cpu_instrs/10-bit ops.gb",
+	"roms/tests/cpu_instrs/11-op a,(hl).gb",
+};
 
 // responsible for initializing OpenGL
 static bool InitGL()
@@ -175,12 +185,14 @@ static void StartMainLoop()
 
 int main(int argc, char *argv[])
 {
+	setbuf(stdout, NULL);
+
 	if (InitSDL())
 	{
 		Memory::Init();
 
 		Cpu::didLoadBios = false;
-		Rom::Load("roms/tests/cpu_instrs/07-jr,jp,call,ret,rst.gb");
+		Rom::Load(cpuTests[5]);
 
 		Cpu::Init();
 		StartMainLoop();
