@@ -406,12 +406,13 @@ void Cpu::ExecuteExtendedOpcode()
 
 		case 0x40 ... 0x7F:
 		{
-			u8 bit = ((opcode >> 4) - 4);
+			u8 bit = (((opcode >> 4) - 4) + 1);
+			if (bit == 1) bit = 0;
 
 			switch(opcode & 0xF)
 			{
 				case 0x0: CpuOps::BitTest(B, bit, 8); break; // BIT B,x
-				case 0x1: CpuOps::BitTest(C, bit, 8); break; // BIT C,x
+				case 0x1: CpuOps::BitTest(C, bit , 8); break; // BIT C,x
 				case 0x2: CpuOps::BitTest(D, bit, 8); break; // BIT D,x
 				case 0x3: CpuOps::BitTest(E, bit, 8); break; // BIT E,x
 				case 0x4: CpuOps::BitTest(H, bit, 8); break; // BIT H,x
@@ -432,7 +433,8 @@ void Cpu::ExecuteExtendedOpcode()
 
 		case 0x80 ... 0xBF:
 		{
-			u8 bit = ((opcode >> 4) - 8);
+			u8 bit = (((opcode >> 4) - 8) + 1);
+			if (bit == 1) bit = 0;
 
 			switch(opcode & 0xF)
 			{
@@ -458,7 +460,8 @@ void Cpu::ExecuteExtendedOpcode()
 
 		case 0xC0 ... 0xFF:
 		{
-			u8 bit = ((opcode >> 4) - 12);
+			u8 bit = (((opcode >> 4) - 12) + 1);
+			if (bit == 1) bit = 0;
 
 			switch(opcode & 0xF)
 			{
