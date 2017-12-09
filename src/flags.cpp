@@ -11,6 +11,9 @@
 #include "src/includes/cpu.h"
 #include "src/includes/flags.h"
 
+// definitions
+#define F Cpu::af.lo
+
 // init vars
 const u8 Flags::z = 0x80;
 const u8 Flags::n = 0x40;
@@ -21,17 +24,17 @@ const u8 Flags::all = (Flags::z  | Flags::n | Flags::h | Flags::c);
 // responsible for getting a flags value
 u8 Flags::Get(u8 flag)
 {
-	return (Cpu::af.lo & flag) ? 1 : 0;
+	return (F & flag) ? 1 : 0;
 }
 
 // responsible for setting a flag
 void Flags::Set(u8 flags)
 {
-	Cpu::af.lo |= flags;
+	F |= flags;
 }
 
 // responsible for clearing a flag
 void Flags::Clear(u8 flags)
 {
-	Cpu::af.lo &= ~flags;
+	F &= ~flags;
 }

@@ -43,7 +43,6 @@ class Cpu
 		static Register hl;
 		static Register sp;
 		static Register pc;
-		static u8 opcode;
 		static int cycles;
 		static int instructionsRan;
 		static bool halted;

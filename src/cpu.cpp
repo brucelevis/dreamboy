@@ -35,7 +35,6 @@ Cpu::Register Cpu::de = {};
 Cpu::Register Cpu::hl = {};
 Cpu::Register Cpu::sp = {};
 Cpu::Register Cpu::pc = {};
-u8 Cpu::opcode = 0x00;
 int Cpu::cycles = 0;
 int Cpu::instructionsRan = 0;
 bool Cpu::halted = false;
@@ -65,7 +64,6 @@ void Cpu::Init()
 		pc.reg = 0x100;
 	}
 
-	opcode = 0x00;
 	cycles = 0;
 	instructionsRan = 0;
 	halted = false;
@@ -76,7 +74,7 @@ void Cpu::Init()
 // responsible for executing the current opcode
 void Cpu::ExecuteOpcode()
 {
-	opcode = Memory::ReadByte(PC);
+	u8 opcode = Memory::ReadByte(PC);
 	instructionsRan += 1;
 
 	// TODO: Handle stop/halt
@@ -126,7 +124,7 @@ void Cpu::ExecuteOpcode()
 		case 0x27: CpuOps::Daa(4); break; // DAA
 		case 0x28: CpuOps::JmpRel(Flags::Get(Flags::z), 8); break; // JR Z,r8
 		case 0x29: CpuOps::Add16(HL, HL, 8); break; // ADD HL,HL
-		case 0x2A: CpuOps::Load8(A, Memory::ReadByte(HL), 12); HL++; break; // LD A,(HL+)
+		case 0x2A: CpuOps::Load8(A, Memory::ReadByte(HL), 12); HL += 1; break; // LD A,(HL+)
 		case 0x2B: CpuOps::Dec16(HL, 8); break; // DEC HL
 		case 0x2C: CpuOps::Inc8(L, 4); break; // INC L
 		case 0x2D: CpuOps::Dec8(L, 4); break; // DEC L
@@ -286,7 +284,7 @@ void Cpu::ExecuteOpcode()
 		case 0xC7: CpuOps::Rst(0x00, 16); break; // RST 00H
 		case 0xC8: CpuOps::Ret(Flags::Get(Flags::z), 8); break; // RET Z
 		case 0xC9: CpuOps::Ret(true, 8); break; // RET
-		case 0xCA: CpuOps::JmpImm(Flags::Get(Flags::z), 12);break; // JP Z,a16
+		case 0xCA: CpuOps::JmpImm(Flags::Get(Flags::z), 12); break; // JP Z,a16
 		case 0xCB: ExecuteExtendedOpcode(); cycles += 4; break; // PREFIX CB
 		case 0xCC: CpuOps::Call(Flags::Get(Flags::z), 12); break; // CALL Z,a16
 		case 0xCD: CpuOps::Call(true, 12); break; // CALL a16
@@ -294,14 +292,14 @@ void Cpu::ExecuteOpcode()
 		case 0xCF: CpuOps::Rst(0x08, 16); break; // RST 08H
 		case 0xD0: CpuOps::Ret(!Flags::Get(Flags::c), 8); break; // RET NC
 		case 0xD1: DE = Memory::Pop(); cycles += 12; break; // POP DE
-		case 0xD2: CpuOps::JmpImm(!Flags::Get(Flags::c), 12);break; // JP NC,a16
+		case 0xD2: CpuOps::JmpImm(!Flags::Get(Flags::c), 12); break; // JP NC,a16
 		case 0xD4: CpuOps::Call(!Flags::Get(Flags::c), 12); break; // CALL NC,a16
 		case 0xD5: Memory::Push(de); cycles += 16; break; // PUSH DE
 		case 0xD6: CpuOps::Sub8(A, Memory::ReadByte(PC), 8); PC += 1; break; // SUB A, d8
 		case 0xD7: CpuOps::Rst(0x10, 16); break; // RST 10H
 		case 0xD8: CpuOps::Ret(Flags::Get(Flags::c), 8); break; // RET C
 		case 0xD9: CpuOps::Ret(true, 8); break; // RETI
-		case 0xDA: CpuOps::JmpImm(Flags::Get(Flags::c), 12);break; // JP C,a16
+		case 0xDA: CpuOps::JmpImm(Flags::Get(Flags::c), 12); break; // JP C,a16
 		case 0xDC: CpuOps::Call(Flags::Get(Flags::c), 12); break; // CALL C,a16
 		case 0xDE: CpuOps::Sbc8(A, Memory::ReadByte(PC), 8); PC += 1; break; // SBC A,d8
 		case 0xDF: CpuOps::Rst(0x18, 16); break; // RST 18H
@@ -335,9 +333,11 @@ void Cpu::ExecuteOpcode()
 // responsible for executing extended opcodes (prefix CB)
 void Cpu::ExecuteExtendedOpcode()
 {
-	opcode = Memory::ReadByte(PC);
+	u8 opcode = Memory::ReadByte(PC);
 	instructionsRan += 1;
 	PC += 1;
+
+	printf("unimplemented CB opcode: %02X\n", opcode);
 
 	switch(opcode)
 	{
