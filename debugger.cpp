@@ -7,21 +7,21 @@
  * Copyright 2017 - Danny Glover. All rights reserved.
  */
 
-// includes 
+// includes
 #include "src/imgui/imgui.h"
 #include "src/imgui/imgui_impl_sdl.h"
 #include "src/imgui/imgui_custom_extensions.h"
 #include "src/imgui/imgui_memory_editor.h"
 #include "src/tinyfiledialogs/tinyfiledialogs.h"
 #include "src/includes/debugger.h"
+#include "src/includes/flags.h"
 #include "src/includes/memory.h"
 #include "src/includes/rom.h"
 
 // init vars
-bool Debugger::stepThrough = false;
+bool Debugger::stepThrough = true;
 bool Debugger::stopAtBreakpoint = false;
 bool Debugger::debuggerActive = false;
-int Debugger::instructionsRan = 0;
 u16 Debugger::breakpoint = 0x00;
 static char breakpointBuffer[256];
 static MemoryEditor memoryViewer;
@@ -36,6 +36,8 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 	if (ImGui::Button("Step Forward", ImVec2(width - 16, 0)))
 	{
 		stepThrough = true;
+		stopAtBreakpoint = false;
+		Cpu::ExecuteOpcode();
 	}
 
 	if (ImGui::Button("Run (no break)", ImVec2(width - 16, 0)))
@@ -50,13 +52,16 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 	if (ImGui::Button("Stop", ImVec2(width - 16, 0)))
 	{
-		stopAtBreakpoint = false;
 		stepThrough = true;
+		stopAtBreakpoint = false;
 	}
 
 	if (ImGui::Button("Reset", ImVec2(width - 16, 0)))
 	{
-		
+		Memory::Init();
+		Rom::Reload();
+		Cpu::Init();
+		// TODO: reload bios here if previously loaded
 	}
 
 	if (ImGui::BeginPopupModal("Set Breakpoint", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
@@ -87,6 +92,13 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 			}
 		}
 
+		ImGui::SameLine();
+
+		if (ImGui::Button("Cancel", ImVec2(80, 0)))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
 		if (ImGui::BeginPopupModal("Breakpoint Error", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
 		{
 			ImGui::SetWindowSize("Breakpoint Error", ImVec2(230, 210));
@@ -102,15 +114,10 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 			ImGui::EndPopup();
 		}
 
-		if (ImGui::Button("Cancel", ImVec2(80, 0)))
-		{
-			ImGui::CloseCurrentPopup();
-		}
-
 		ImGui::EndPopup();
 	}
 
-	ImGuiExtensions::TextWithColors("  {FF0000}Ins Ran:"); ImGui::Indent(20.f); ImGui::Text("%d", instructionsRan); ImGui::Unindent(20.f);
+	ImGuiExtensions::TextWithColors("  {FF0000}Ins Ran:"); ImGui::Indent(20.f); ImGui::Text("%d", Cpu::instructionsRan); ImGui::Unindent(20.f);
 	ImGui::End();
 }
 
@@ -123,7 +130,7 @@ void Debugger::RomInfoWindow(const char *title, int width, int height, int x, in
 	ImGuiExtensions::TextWithColors("{FF0000}Name:"); ImGui::SameLine();
 
 	// print the rom name
-	for (u16 i = 0x0134; i < 0x0143; i++)
+	for (u16 i = Memory::Address::ROM_NAME_START; i < Memory::Address::ROM_NAME_END; i++)
 	{
 		if (Memory::ReadByte(i) != 0)
 		{
@@ -135,11 +142,11 @@ void Debugger::RomInfoWindow(const char *title, int width, int height, int x, in
 	ImGui::NewLine();
 
 	// rom type
-	ImGuiExtensions::TextWithColors("{FF0000}Type: {FFFFFF}%02x", Memory::ReadByte(0x0147));
+	ImGuiExtensions::TextWithColors("{FF0000}Type: {FFFFFF}%02x", Memory::ReadByte(Memory::Address::ROM_TYPE));
 	// rom rom-size
-	ImGuiExtensions::TextWithColors("{FF0000}Rom-Size: {FFFFFF}%02x", Memory::ReadByte(0x0148));
+	ImGuiExtensions::TextWithColors("{FF0000}Rom-Size: {FFFFFF}%02x", Memory::ReadByte(Memory::Address::ROM_SIZE));
 	// rom ram size
-	ImGuiExtensions::TextWithColors("{FF0000}Ram-Size: {FFFFFF}%02x", Memory::ReadByte(0x0149));
+	ImGuiExtensions::TextWithColors("{FF0000}Ram-Size: {FFFFFF}%02x", Memory::ReadByte(Memory::Address::ROM_RAM_SIZE));
 	// rom file name + path
 	ImGuiExtensions::TextWithColors("{FF0000}Filename:");
 	ImGui::TextWrapped("%s", Rom::filename);
@@ -156,11 +163,17 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 	if (ImGui::Button("Open Rom", ImVec2(width - 16, 0)))
 	{
 		char const *validExtensions[4] = {"*.gb", "*.GB", "*.bin", "*.BIN"};
-		const char *fileName = tinyfd_openFileDialog("Select Rom", "", 4, validExtensions, NULL, 0);
+		const char *filename = tinyfd_openFileDialog("Select Rom", "", 4, validExtensions, NULL, 0);
 
-		if (fileName != NULL)
+		if (filename != NULL)
 		{
-				// TODO: reset gameboy and load new game
+			stepThrough = true;
+			stopAtBreakpoint = false;
+
+			Memory::Init();
+			Rom::Load(filename);
+			Cpu::Init();
+			// TODO: reload bios here if previously loaded
 		}
 	}
 
@@ -211,6 +224,11 @@ void Debugger::MemoryEditorWindow(const char *title, int width, int height, int 
 // create a register viewer window
 void Debugger::RegisterViewer(const char *title, int width, int height, int x, int y)
 {
+	bool flagZ = Flags::Get(Flags::z);
+	bool flagN = Flags::Get(Flags::n);
+	bool flagH = Flags::Get(Flags::h);
+	bool flagC = Flags::Get(Flags::c);
+
 	ImGui::Begin(title, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 	ImGui::SetWindowSize(title, ImVec2(width, height));
 	ImGui::SetWindowPos(title, ImVec2(x, y));
@@ -226,7 +244,11 @@ void Debugger::RegisterViewer(const char *title, int width, int height, int x, i
 	ImGuiExtensions::TextWithColors("{FF0000}IE:   {FFFFFF}%02X", Memory::ReadByte(Memory::Address::IE)); ImGui::Unindent(80.f);
 	ImGuiExtensions::TextWithColors("{FF0000}PC: {FFFFFF}%04X", Cpu::pc.reg); ImGui::SameLine(); ImGui::SameLine(); ImGui::Indent(80.f);
 	ImGuiExtensions::TextWithColors("{FF0000}IF:   {FFFFFF}%02X", Memory::ReadByte(Memory::Address::IF)); ImGui::Unindent(80.f);
-	ImGuiExtensions::TextWithColors("{FF0000}TMA:  {FFFFFF}%02X", Memory::ReadByte(Memory::Address::TIMA));  ImGui::SameLine();ImGui::Indent(80.f);
+	ImGuiExtensions::TextWithColors("{FF0000}TMA:  {FFFFFF}%02X", Memory::ReadByte(Memory::Address::TIMA)); ImGui::SameLine(); ImGui::Indent(80.f);
 	ImGuiExtensions::TextWithColors("{FF0000}DIV:  {FFFFFF}%02X", Memory::ReadByte(Memory::Address::DIV)); ImGui::Unindent(80.f);
+	ImGui::Checkbox("Z", &flagZ); ImGui::SameLine();
+	ImGui::Checkbox("N", &flagN); ImGui::SameLine();
+	ImGui::Checkbox("H", &flagH);
+	ImGui::Checkbox("C", &flagC);
 	ImGui::End();
 }

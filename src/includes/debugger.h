@@ -30,7 +30,6 @@ class Debugger
 		static bool stepThrough;
 		static bool stopAtBreakpoint;
 		static bool debuggerActive;
-		static int instructionsRan;
 		static u16 breakpoint;
 };
 

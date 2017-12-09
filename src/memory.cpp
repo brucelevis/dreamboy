@@ -6,11 +6,11 @@
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
  * Copyright 2017 - Danny Glover. All rights reserved.
  */
- 
+
 #include <cstdio>
 #include <cstdlib>
 #include "src/includes/memory.h"
- 
+
 // init vars
 u8 Memory::mem[0x10000] = {0x00};
 
@@ -56,12 +56,12 @@ void Memory:: Init()
 u8 Memory::ReadByte(u16 address)
 {
 	return mem[address];
-} 
+}
 
 // responsible for reading a word from a specific memory location
 u16 Memory::ReadWord(u16 address)
 {
-	return ((mem[address] << 8) | (mem[address + 1]));
+	return ((mem[address + 1] << 8) | (mem[address]));
 }
 
 // responsible for writing a byte to a specific memory location
@@ -77,7 +77,7 @@ void Memory::WriteByte(u16 address, u8 data)
 
 		// read from the serial port (useful for blarggs cpu tests)
 		case Address::SERIAL_CTRL:
-			if (data == 0x81) printf("%c", ReadByte(Address::SERIAL)); 
+			if (data == 0x81) printf("%c", ReadByte(Address::SERIAL));
 			mem[address] = data;
 		break;
 
@@ -106,19 +106,19 @@ void Memory::WriteWord(u16 address, Cpu::Register reg)
 }
 
 // responsible for popping a u16 from the stack
-u16 Memory::Pop(u16 address)
+u16 Memory::Pop()
 {
-	u16 data = ReadWord(address);
+	u16 data = ReadWord(Cpu::sp.reg);
 	Cpu::sp.reg += 2;
 
 	return data;
 }
 
 // responsible for pushing a u16 to the stack
-void Memory::Push(u16 address, Cpu::Register reg)
+void Memory::Push(Cpu::Register reg)
 {
 	Cpu::sp.reg -= 1;
-	mem[Cpu::sp.reg] = reg.lo;
-	Cpu::sp.reg -= 1;
 	mem[Cpu::sp.reg] = reg.hi;
+	Cpu::sp.reg -= 1;
+	mem[Cpu::sp.reg] = reg.lo;
 }

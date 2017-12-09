@@ -19,7 +19,7 @@
 class Cpu
 {
 	public:
-		static void Init(bool useBios);
+		static void Init();
 		static void ExecuteOpcode();
 		static void LoadState();
 		static void SaveState();
@@ -33,7 +33,7 @@ class Cpu
 			u16 reg;
 			struct
 			{
-				u8 hi, lo;
+				u8 lo, hi;
 			};
 		};
 
@@ -45,8 +45,11 @@ class Cpu
 		static Register pc;
 		static u8 opcode;
 		static int cycles;
+		static int instructionsRan;
 		static bool halted;
 		static bool stopped;
+		static bool pendingInterrupt;
+		static bool didLoadBios;
 };
 
 #endif

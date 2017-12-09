@@ -15,6 +15,7 @@
 #include "src/imgui/imgui_custom_extensions.h"
 #include "src/includes/debugger.h"
 #include "src/includes/cpu.h"
+#include "src/includes/memory.h"
 #include "src/includes/rom.h"
 
 // defines
@@ -26,9 +27,8 @@
 static SDL_Window *window;
 static SDL_GLContext glContext;
 static bool quit = false;
-static bool usingBios = false;
 
-// responsible for initializing GL
+// responsible for initializing OpenGL
 static bool InitGL()
 {
 	glContext = SDL_GL_CreateContext(window);
@@ -97,6 +97,14 @@ static void ShutdownSDL()
 	SDL_Quit();
 }
 
+// responsible for stepping the cpu
+static void CpuStep()
+{
+	int cycleCount = Cpu::cycles;
+	Cpu::ExecuteOpcode();
+	int currentCycle = (Cpu::cycles - cycleCount);
+}
+
 // responsible for the emulation loop
 static void EmulationLoop()
 {
@@ -104,9 +112,13 @@ static void EmulationLoop()
 
 	while (Cpu::cycles < (MAX_CYCLES / FRAMERATE))
 	{
-		int cycleCount = Cpu::cycles;
-		Cpu::ExecuteOpcode();
-		int currentCycle = (Cpu::cycles - cycleCount);
+		if (Debugger::stopAtBreakpoint && Cpu::pc.reg == Debugger::breakpoint )
+		{
+			Debugger::stepThrough = true;
+			break;
+		}
+
+		CpuStep();
 	}
 }
 
@@ -124,15 +136,17 @@ static void StartMainLoop()
 			switch(event.type)
 			{
 				case SDL_QUIT: quit = true;
-				
+
 				case SDL_KEYDOWN:
 					switch(event.key.keysym.sym)
 					{
 						case SDLK_ESCAPE: quit = true; break;
 
+						case SDLK_0: Debugger::stepThrough = true; break;
+
 						case SDLK_UP:
 						case SDLK_DOWN:
-							if (Debugger::stepThrough) EmulationLoop();
+							if (Debugger::stepThrough) CpuStep();
 						break;
 
 						default: break;
@@ -140,10 +154,10 @@ static void StartMainLoop()
 				break;
 			}
 		}
-		
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//if (!Debugger::stepThrough) EmulationLoop();
+		if (!Debugger::stepThrough) EmulationLoop();
 
 		ImGui_ImplSdlGL2_NewFrame(window);
 		// show the debugger windows
@@ -163,8 +177,12 @@ int main(int argc, char *argv[])
 {
 	if (InitSDL())
 	{
-		Cpu::Init(usingBios);
+		Memory::Init();
+
+		Cpu::didLoadBios = false;
 		Rom::Load("roms/tests/cpu_instrs/07-jr,jp,call,ret,rst.gb");
+
+		Cpu::Init();
 		StartMainLoop();
 	}
 

@@ -8,6 +8,8 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
+    <File Name="src/bit.cpp"/>
+    <File Name="src/flags.cpp"/>
     <File Name="src/rom.cpp"/>
     <File Name="src/cpuOperations.cpp"/>
     <File Name="src/cpu.cpp"/>
@@ -17,6 +19,8 @@
       <File Name="src/tinyfiledialogs/tinyfiledialogs.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="includes">
+      <File Name="src/includes/bit.h"/>
+      <File Name="src/includes/flags.h"/>
       <File Name="src/includes/rom.h"/>
       <File Name="src/includes/cpuOperations.h"/>
       <File Name="src/includes/cpu.h"/>

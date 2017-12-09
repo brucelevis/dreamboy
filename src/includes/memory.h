@@ -22,8 +22,8 @@ class Memory
 		static u16 ReadWord(u16 address);
 		static void WriteByte(u16 address, u8 data);
 		static void WriteWord(u16 address, Cpu::Register reg);
-		static u16 Pop(u16 address);
-		static void Push(u16 address, Cpu::Register reg);
+		static u16 Pop();
+		static void Push(Cpu::Register reg);
 
 	public:
 		static u8 mem[0x10000];
@@ -82,8 +82,13 @@ class Memory
 				static const u16 ROM_BK0_END = 0x3FFF;
 				static const u16 ROM_BK1_START = 0x4000;
 				static const u16 ROM_BK1_END = 0x7FFF;
-				static const u16 EXTRAM_START = 0xA000; 
+				static const u16 EXTRAM_START = 0xA000;
 				static const u16 EXTRAM_END = 0xBFFF;
+				static const u16 ROM_NAME_START = 0x0134;
+				static const u16 ROM_NAME_END = 0x0143;
+				static const u16 ROM_TYPE = 0x0147;
+				static const u16 ROM_SIZE = 0x0148;
+				static const u16 ROM_RAM_SIZE = 0x0149;
 		};
 };
 

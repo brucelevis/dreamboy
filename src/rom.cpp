@@ -29,14 +29,14 @@ bool Rom::Load(const char *filepath)
 
 		// print the rom name
 		printf("Rom Name: ");
-		for (u16 i = 0x0134; i < 0x0143; i++)
+		for (u16 i = Memory::Address::ROM_NAME_START; i < Memory::Address::ROM_NAME_END; i++)
 		{
 			printf("%c", Memory::mem[i]);
 		}
 		printf("\n");
 
 		// print the rom cartridge type
-		printf("Rom Cartridge Type: %02x | Rom-Size: %02x | Ram-Size: %02x\n", Memory::mem[0x0147], Memory::mem[0x0148], Memory::mem[0x0149]);
+		printf("Rom Cartridge Type: %02x | Rom-Size: %02x | Ram-Size: %02x\n", Memory::mem[Memory::Address::ROM_TYPE], Memory::mem[Memory::Address::ROM_SIZE], Memory::mem[Memory::Address::ROM_RAM_SIZE]);
 	}
 	else
 	{
