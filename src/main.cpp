@@ -15,6 +15,7 @@
 #include "src/imgui/imgui_custom_extensions.h"
 #include "src/includes/debugger.h"
 #include "src/includes/cpu.h"
+#include "src/includes/log.h"
 #include "src/includes/memory.h"
 #include "src/includes/rom.h"
 
@@ -70,7 +71,7 @@ static bool InitGL()
 	}
 	else
 	{
-		printf("InitSDL() - Error creating OGL Context\n");
+		Log::Critical("InitSDL() - Error creating OGL Context");
 		return false;
 	}
 
@@ -90,7 +91,7 @@ static bool InitSDL()
 		}
 		else
 		{
-			printf("InitSDL() - Error creating SDL Window\n");
+			Log::Critical("InitSDL() - Error creating SDL Window");
 			return false;
 		}
 	}
@@ -98,9 +99,10 @@ static bool InitSDL()
 	return true;
 }
 
-// responsible for shutting down SDL
-static void ShutdownSDL()
+// responsible for shutting down SDL + misc stuff
+static void Shutdown()
 {
+	Log::Close();
 	ImGui_ImplSdlGL2_Shutdown();
 	SDL_DestroyWindow(window);
 	SDL_GL_DeleteContext(glContext);
@@ -185,10 +187,9 @@ static void StartMainLoop()
 
 int main(int argc, char *argv[])
 {
-	setbuf(stdout, NULL);
-
 	if (InitSDL())
 	{
+		Log::Init();
 		Memory::Init();
 
 		Cpu::didLoadBios = false;
@@ -198,7 +199,7 @@ int main(int argc, char *argv[])
 		StartMainLoop();
 	}
 
-	ShutdownSDL();
+	Shutdown();
 
 	return 0;
 }

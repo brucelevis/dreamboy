@@ -61,7 +61,7 @@ AS       := /usr/bin/as
 ##
 CodeLiteDir:=/usr/share/codelite
 Objects0=$(IntermediateDirectory)/src_main.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_debugger.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_impl_sdl.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_draw.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_memory.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpu.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_flags.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_bit.cpp$(ObjectSuffix) \
-	$(IntermediateDirectory)/src_rom.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpuOperations.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix) 
+	$(IntermediateDirectory)/src_rom.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpuOperations.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_log.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix) 
 
 
 
@@ -193,6 +193,14 @@ $(IntermediateDirectory)/src_cpuOperations.cpp$(DependSuffix): src/cpuOperations
 
 $(IntermediateDirectory)/src_cpuOperations.cpp$(PreprocessSuffix): src/cpuOperations.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_cpuOperations.cpp$(PreprocessSuffix) src/cpuOperations.cpp
+
+$(IntermediateDirectory)/src_log.cpp$(ObjectSuffix): src/log.cpp $(IntermediateDirectory)/src_log.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/log.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_log.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/src_log.cpp$(DependSuffix): src/log.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_log.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_log.cpp$(DependSuffix) -MM src/log.cpp
+
+$(IntermediateDirectory)/src_log.cpp$(PreprocessSuffix): src/log.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_log.cpp$(PreprocessSuffix) src/log.cpp
 
 $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix): src/imgui/imgui_custom_extensions.cpp $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/imgui/imgui_custom_extensions.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix) $(IncludePath)

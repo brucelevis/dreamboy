@@ -10,6 +10,7 @@
  #include "src/includes/cpu.h"
  #include "src/includes/cpuOperations.h"
  #include "src/includes/flags.h"
+ #include "src/includes/log.h"
  #include "src/includes/memory.h"
 
 // definitions
@@ -76,6 +77,10 @@ void Cpu::ExecuteOpcode()
 {
 	u8 opcode = Memory::ReadByte(PC);
 	instructionsRan += 1;
+
+	char buffer[1024];
+	snprintf(buffer, sizeof(buffer), "%04X:%04X:%04X:%04X:%04X:%04X:%04X\n", PC, opcode, AF, BC, DE, HL, SP);
+	Log::ToFile(buffer);
 
 	// TODO: Handle stop/halt
 	PC += 1;
@@ -327,7 +332,7 @@ void Cpu::ExecuteOpcode()
 		case 0xFB: CpuOps::EI(4); break; // EI
 		case 0xFE: CpuOps::Cmp8(A, Memory::ReadByte(PC), 8); PC += 1; break; // CP A, d8
 		case 0xFF: CpuOps::Rst(0x38, 16); break; // RST 38H
-		default: printf("unimplemented opcode %02X\n", opcode); break;
+		default: Log::Critical("unimplemented opcode %02X", opcode); break;
 	}
 }
 
@@ -486,7 +491,7 @@ void Cpu::ExecuteExtendedOpcode()
 		}
 		break;
 
-		default: printf("unimplemented (prefix-CB) opcode %02X\n", opcode); break;
+		default: Log::Critical("unimplemented (prefix-CB) opcode %02X", opcode);
 	}
 }
 
