@@ -139,8 +139,8 @@ void Cpu::ExecuteOpcode()
 		case 0x31: CpuOps::Load16(SP, Memory::ReadWord(PC), 12); PC += 2; break; // LD SP,d16
 		case 0x32: CpuOps::Write8(HL, A, 8); HL -= 1; break; // LD (HL-),A
 		case 0x33: CpuOps::Inc16(SP, 8); break; // INC SP
-		case 0x34: CpuOps::Inc8Mem(HL, 8); break; // INC (HL)
-		case 0x35: CpuOps::Dec8Mem(HL, 8); break; // DEC (HL)
+		case 0x34: CpuOps::Inc8Mem(HL, 12); break; // INC (HL)
+		case 0x35: CpuOps::Dec8Mem(HL, 12); break; // DEC (HL)
 		case 0x36: CpuOps::Write8(HL, Memory::ReadByte(PC), 12); PC += 1; break; // LD (HL),d8
 		case 0x37: CpuOps::Scf(4); break; // SCF
 		case 0x38: CpuOps::JmpRel(Flags::Get(Flags::c), 8); break; // JR C,r8
@@ -328,7 +328,7 @@ void Cpu::ExecuteOpcode()
 		case 0xF7: CpuOps::Rst(0x30, 16); break; // RST 30H
 		case 0xF8: CpuOps::LoadHlSpR8(Memory::ReadByte(PC), 12); PC += 1; break;// LD HL,SP+r8
 		case 0xF9: CpuOps::Load16(SP, HL, 8); break; // LD SP,HL
-		case 0xFA: CpuOps::Load8(A, Memory::ReadByte(Memory::ReadWord(PC)), 12); PC += 2; break; // LD A,(a16)
+		case 0xFA: CpuOps::Load8(A, Memory::ReadByte(Memory::ReadWord(PC)), 16); PC += 2; break; // LD A,(a16)
 		case 0xFB: CpuOps::EI(4); break; // EI
 		case 0xFE: CpuOps::Cmp8(A, Memory::ReadByte(PC), 8); PC += 1; break; // CP A, d8
 		case 0xFF: CpuOps::Rst(0x38, 16); break; // RST 38H
