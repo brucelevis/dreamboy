@@ -21,7 +21,7 @@ class Cpu
 	public:
 		static void Init();
 		static void ExecuteOpcode();
-		static void LoadState();
+		static bool LoadState();
 		static void SaveState();
 
 	private:

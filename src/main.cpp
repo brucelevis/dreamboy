@@ -15,6 +15,7 @@
 #include "src/imgui/imgui_custom_extensions.h"
 #include "src/includes/debugger.h"
 #include "src/includes/cpu.h"
+#include "src/includes/lcd.h"
 #include "src/includes/log.h"
 #include "src/includes/memory.h"
 #include "src/includes/rom.h"
@@ -109,12 +110,28 @@ static void Shutdown()
 	SDL_Quit();
 }
 
+// responsible for displaying the various debugger windows
+static void ShowDebugger()
+{
+	// show the debugger windows
+	Debugger::ControlsWindow("Controls", 156, 210, SCREEN_WIDTH - 456, 5);
+	Debugger::RomInfoWindow("Rom Info", 240, 270, SCREEN_WIDTH - 480, SCREEN_HEIGHT - 260);
+	Debugger::FileWindow("File", 156, 270, 0, SCREEN_HEIGHT - 260);
+	Debugger::MemoryViewerWindow("Mem View", 100, 210, SCREEN_WIDTH - 289, 5, 0xC000, 0xFFFF);
+	Debugger::RegisterViewer("Reg View", 180, 210, SCREEN_WIDTH - 180, 5);
+	Debugger::MemoryEditorWindow("Program Flow", 240, 200, SCREEN_WIDTH - 234, SCREEN_HEIGHT - 260);
+}
+
 // responsible for stepping the cpu
 static void CpuStep()
 {
 	int cycleCount = Cpu::cycles;
+
 	Cpu::ExecuteOpcode();
+
 	int currentCycle = (Cpu::cycles - cycleCount);
+
+	Lcd::Update(currentCycle);
 }
 
 // responsible for the emulation loop
@@ -124,7 +141,7 @@ static void EmulationLoop()
 
 	while (Cpu::cycles < (MAX_CYCLES / FRAMERATE))
 	{
-		if (Debugger::stopAtBreakpoint && Cpu::pc.reg == Debugger::breakpoint )
+		if (Debugger::stopAtBreakpoint && (Cpu::pc.reg == Debugger::breakpoint))
 		{
 			Debugger::stepThrough = true;
 			break;
@@ -168,17 +185,11 @@ static void StartMainLoop()
 		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		ImGui_ImplSdlGL2_NewFrame(window);
 
 		if (!Debugger::stepThrough) EmulationLoop();
 
-		ImGui_ImplSdlGL2_NewFrame(window);
-		// show the debugger windows
-		Debugger::ControlsWindow("Controls", 156, 210, SCREEN_WIDTH - 456, 5);
-		Debugger::RomInfoWindow("Rom Info", 240, 270, SCREEN_WIDTH - 480, SCREEN_HEIGHT - 260);
-		Debugger::FileWindow("File", 156, 270, 0, SCREEN_HEIGHT - 260);
-		Debugger::MemoryViewerWindow("Mem View", 100, 210, SCREEN_WIDTH - 289, 5, 0xC000, 0xFFFF);
-		Debugger::RegisterViewer("Reg View", 180, 210, SCREEN_WIDTH - 180, 5);
-		Debugger::MemoryEditorWindow("Program Flow", 240, 200, SCREEN_WIDTH - 234, SCREEN_HEIGHT - 260);
+		ShowDebugger();
 		ImGui::Render();
 
 		SDL_GL_SwapWindow(window);
@@ -193,9 +204,10 @@ int main(int argc, char *argv[])
 		Memory::Init();
 
 		Cpu::didLoadBios = false;
-		Rom::Load(cpuTests[5]);
+		Rom::Load(cpuTests[7]);
 
 		Cpu::Init();
+		Lcd::Init();
 		StartMainLoop();
 	}
 

@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=Danny
-Date                   :=09/12/17
+Date                   :=10/12/17
 CodeLitePath           :=/home/danny/.codelite
 LinkerName             :=/usr/bin/clang++
 SharedObjectLinkerName :=/usr/bin/clang++ -shared -fPIC
@@ -60,8 +60,8 @@ AS       := /usr/bin/as
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects0=$(IntermediateDirectory)/src_main.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_debugger.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_impl_sdl.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_draw.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_memory.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpu.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_flags.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_bit.cpp$(ObjectSuffix) \
-	$(IntermediateDirectory)/src_rom.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpuOperations.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_log.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_main.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_debugger.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_impl_sdl.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_draw.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_memory.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpu.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_flags.cpp$(ObjectSuffix) \
+	$(IntermediateDirectory)/src_bit.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_rom.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpuOperations.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_log.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix) 
 
 
 
@@ -98,6 +98,14 @@ PreBuild:
 ##
 ## Objects
 ##
+$(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix): src/lcd.cpp $(IntermediateDirectory)/src_lcd.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/lcd.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/src_lcd.cpp$(DependSuffix): src/lcd.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_lcd.cpp$(DependSuffix) -MM src/lcd.cpp
+
+$(IntermediateDirectory)/src_lcd.cpp$(PreprocessSuffix): src/lcd.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_lcd.cpp$(PreprocessSuffix) src/lcd.cpp
+
 $(IntermediateDirectory)/src_main.cpp$(ObjectSuffix): src/main.cpp $(IntermediateDirectory)/src_main.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/main.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_main.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/src_main.cpp$(DependSuffix): src/main.cpp

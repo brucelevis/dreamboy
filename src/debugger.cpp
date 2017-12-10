@@ -184,7 +184,24 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 
 	if (ImGui::Button("Load State", ImVec2(width - 16, 0)))
 	{
-		Cpu::LoadState();
+		if (!Cpu::LoadState())
+		{
+			ImGui::OpenPopup("State Load Failed");
+		}
+	}
+
+	if (ImGui::BeginPopupModal("State Load Failed", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+	{
+		ImGui::SetWindowSize("State Load Failed", ImVec2(230, 150));
+		ImGui::TextWrapped("Failed to find save state in the executable directory");
+		ImGui::NewLine();
+
+		if (ImGui::Button("Ok", ImVec2(200, 0)))
+		{
+				ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
 	}
 
 	if (ImGui::Button("Hide Debugger", ImVec2(width - 16, 0)))

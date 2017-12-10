@@ -7,11 +7,11 @@
  * Copyright 2017 - Danny Glover. All rights reserved.
  */
 
- #include "src/includes/cpu.h"
- #include "src/includes/cpuOperations.h"
- #include "src/includes/flags.h"
- #include "src/includes/log.h"
- #include "src/includes/memory.h"
+#include "src/includes/cpu.h"
+#include "src/includes/cpuOperations.h"
+#include "src/includes/flags.h"
+#include "src/includes/log.h"
+#include "src/includes/memory.h"
 
 // definitions
 #define A Cpu::af.hi
@@ -496,9 +496,12 @@ void Cpu::ExecuteExtendedOpcode()
 }
 
 // responsible for loading save states
-void Cpu::LoadState()
+bool Cpu::LoadState()
 {
 	FILE *fp = fopen("state1.bin", "r");
+
+	if (fp == NULL) return false;
+
 	char val[512];
 	int i = 0;
 
@@ -531,6 +534,8 @@ void Cpu::LoadState()
 	}
 
 	fclose(fp);
+
+	return true;
 }
 
 // responsible for saving save states

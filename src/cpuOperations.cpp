@@ -14,7 +14,6 @@
 #include "src/includes/flags.h"
 #include "src/includes/memory.h"
 
-
 // # 8 bit operations # //
 
 void CpuOps::Add8(u8 &in, u8 val, int cycles)
@@ -350,6 +349,7 @@ void CpuOps::BitTest(u8 in, u8 bit, int cycles)
 void CpuOps::BitTestMem(u16 address, u8 bit, int cycles)
 {
 	u8 data = Memory::ReadByte(address);
+
 	BitTest(data, bit, cycles);
 	Memory::WriteByte(address, data);
 }
@@ -363,6 +363,7 @@ void CpuOps::BitSet(u8 &in, u8 bit, int cycles)
 void CpuOps::BitSetMem(u16 address, u8 bit, int cycles)
 {
 	u8 data = Memory::ReadByte(address);
+
 	BitSet(data, bit, cycles);
 	Memory::WriteByte(address, data);
 }
@@ -376,6 +377,7 @@ void CpuOps::BitClear(u8 &in, u8 bit, int cycles)
 void CpuOps::BitClearMem(u16 address, u8 bit, int cycles)
 {
 	u8 data = Memory::ReadByte(address);
+
 	BitClear(data, bit, cycles);
 	Memory::WriteByte(address, data);
 }
