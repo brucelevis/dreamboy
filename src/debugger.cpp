@@ -85,6 +85,9 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 			{
 				stepThrough = false;
 				stopAtBreakpoint = true;
+
+				// increase the program counter if needed, so we can run to the same breakpoint again
+				if (Cpu::pc.reg == breakpoint) Cpu::pc.reg += 1;
 				ImGui::CloseCurrentPopup();
 			}
 			else
