@@ -114,12 +114,12 @@ static void Shutdown()
 static void ShowDebugger()
 {
 	// show the debugger windows
-	Debugger::ControlsWindow("Controls", 156, 210, SCREEN_WIDTH - 456, 5);
-	Debugger::RomInfoWindow("Rom Info", 240, 270, SCREEN_WIDTH - 480, SCREEN_HEIGHT - 260);
-	Debugger::FileWindow("File", 156, 270, 0, SCREEN_HEIGHT - 260);
-	Debugger::MemoryViewerWindow("Mem View", 100, 210, SCREEN_WIDTH - 289, 5, 0xC000, 0xFFFF);
-	Debugger::RegisterViewer("Reg View", 180, 210, SCREEN_WIDTH - 180, 5);
-	Debugger::MemoryEditorWindow("Program Flow", 240, 200, SCREEN_WIDTH - 234, SCREEN_HEIGHT - 260);
+	Debugger::ControlsWindow("Controls", 156, 250, SCREEN_WIDTH - 456, 5);
+	Debugger::MemoryViewerWindow("Mem View", 100, 250, SCREEN_WIDTH - 289, 5, 0xC000, 0xFFFF);
+	Debugger::RegisterViewer("Reg View", 180, 250, SCREEN_WIDTH - 180, 5);
+	Debugger::FileWindow("File", 156, 250, 0, SCREEN_HEIGHT - 215);
+	Debugger::RomInfoWindow("Rom Info", 240, 250, SCREEN_WIDTH - 480, SCREEN_HEIGHT - 215);
+	Debugger::MemoryEditorWindow("Program Flow", 240, 230, SCREEN_WIDTH - 234, SCREEN_HEIGHT - 215);
 }
 
 // responsible for stepping the cpu
