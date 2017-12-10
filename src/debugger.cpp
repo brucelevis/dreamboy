@@ -43,6 +43,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 	if (ImGui::Button("Run (no break)", ImVec2(width - 16, 0)))
 	{
 		stepThrough = false;
+		stopAtBreakpoint = false;
 	}
 
 	if (ImGui::Button("Run To Break PT", ImVec2(width - 16, 0)))
