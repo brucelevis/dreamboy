@@ -28,13 +28,13 @@ static char regBuffer[256];
 static MemoryEditor memoryViewer;
 static  enum
 {
-	AF, BC, DE, HL, SP, PC, LCDC, STAT, LY, IME, IF, IE, TIMA, TAC, TMA, DIV
+	AF, BC, DE, HL, SP, PC, LCDC, STAT, LY, IME, IF, IE, TIMA, TAC, TMA, DIV, Z, N, H, C
 } reg;
 
 // create a controls window
 void Debugger::ControlsWindow(const char *title, int width, int height, int x, int y)
 {
-	const char *modifyRegTitle = "Modify Registers";
+	const char *modifyRegTitle = "Modify Reg/Flags";
 	const char *setRegTitle = "Set Register";
 	const char *setBreakPtTitle = "Set Breakpoint";
 	const char *breakPtErrorTitle = "Breakpoint Error";
@@ -46,8 +46,9 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor(102, 102, 255));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor(0, 0, 204));
 
-	if (ImGui::Button("Modify Registers", ImVec2(width - 16, 0)))
+	if (ImGui::Button(modifyRegTitle, ImVec2(width - 16, 0)))
 	{
+		sprintf(regBuffer, "");
 		ImGui::OpenPopup(modifyRegTitle);
 	}
 
@@ -87,7 +88,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 	if (ImGui::BeginPopupModal(modifyRegTitle, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
 	{
-		ImGui::SetWindowSize(modifyRegTitle, ImVec2(280, 280));
+		ImGui::SetWindowSize(modifyRegTitle, ImVec2(280, 310));
 		ImGui::Text("Choose The Register To Modify:");
 		ImGui::NewLine();
 
@@ -99,6 +100,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("AF", ImVec2(60, 0)))
 		{
 			reg = AF;
+			sprintf(regBuffer, "%04X", Cpu::af.reg);
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -107,6 +109,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("BC", ImVec2(60, 0)))
 		{
 			reg = BC;
+			sprintf(regBuffer, "%04X", Cpu::bc.reg);
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -115,6 +118,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("DE", ImVec2(60, 0)))
 		{
 			reg = DE;
+			sprintf(regBuffer, "%04X", Cpu::de.reg);
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -123,6 +127,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("HL", ImVec2(60, 0)))
 		{
 			reg = HL;
+			sprintf(regBuffer, "%04X", Cpu::hl.reg);
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -130,6 +135,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("SP", ImVec2(60, 0)))
 		{
 			reg = SP;
+			sprintf(regBuffer, "%04X", Cpu::sp.reg);
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -138,6 +144,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("PC", ImVec2(60, 0)))
 		{
 			reg = PC;
+			sprintf(regBuffer, "%04X", Cpu::pc.reg);
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -146,6 +153,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("LCDC", ImVec2(60, 0)))
 		{
 			reg = LCDC;
+			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::LCDC));
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -154,6 +162,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("STAT", ImVec2(60, 0)))
 		{
 			reg = STAT;
+			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::STAT));
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -161,6 +170,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("LY", ImVec2(60, 0)))
 		{
 			reg = LY;
+			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::LY));
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -169,6 +179,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("IME", ImVec2(60, 0)))
 		{
 			reg = IME;
+			//sprintf(regBuffer, "%d", ime);
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -177,6 +188,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("IF", ImVec2(60, 0)))
 		{
 			reg = IF;
+			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::IF));
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -185,6 +197,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("IE", ImVec2(60, 0)))
 		{
 			reg = IE;
+			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::IE));
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -192,6 +205,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("TIMA", ImVec2(60, 0)))
 		{
 			reg = TIMA;
+			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::TIMA));
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -200,6 +214,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("TAC", ImVec2(60, 0)))
 		{
 			reg = TAC;
+			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::TAC));
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -208,6 +223,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("TMA", ImVec2(60, 0)))
 		{
 			reg = TMA;
+			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::TMA));
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -216,6 +232,46 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		if (ImGui::Button("DIV", ImVec2(60, 0)))
 		{
 			reg = DIV;
+			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::DIV));
+			ImGui::OpenPopup(setRegTitle);
+		}
+
+		ImGui::NewLine();
+		ImGui::Text("Choose A Flag To Modify:");
+		ImGui::NewLine();
+
+		// block 5
+		if (ImGui::Button("Z", ImVec2(60, 0)))
+		{
+			reg = Z;
+			sprintf(regBuffer, "%d", Flags::Get(Flags::z));
+			ImGui::OpenPopup(setRegTitle);
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("N", ImVec2(60, 0)))
+		{
+			reg = N;
+			sprintf(regBuffer, "%d", Flags::Get(Flags::n));
+			ImGui::OpenPopup(setRegTitle);
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("H", ImVec2(60, 0)))
+		{
+			reg = H;
+			sprintf(regBuffer, "%d", Flags::Get(Flags::h));
+			ImGui::OpenPopup(setRegTitle);
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("C", ImVec2(60, 0)))
+		{
+			reg = C;
+			sprintf(regBuffer, "%d", Flags::Get(Flags::c));
 			ImGui::OpenPopup(setRegTitle);
 		}
 
@@ -262,8 +318,12 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 						case IE: Memory::WriteByte(Memory::Address::IE, value & 0xFF); break;
 						case TIMA: Memory::WriteByte(Memory::Address::TIMA, value & 0xFF); break;
 						case TAC: Memory::WriteByte(Memory::Address::TAC, value & 0xFF); break;
-						case TMA: Memory::WriteByte(Memory::Address::TMA, value & 0xFF);  break;
-						case DIV: Memory::WriteByte(Memory::Address::DIV, value & 0xFF);  break;
+						case TMA: Memory::WriteByte(Memory::Address::TMA, value & 0xFF); break;
+						case DIV: Memory::WriteByte(Memory::Address::DIV, value & 0xFF); break;
+						case Z: if ((value & 0xF) == 1) Flags::Set(Flags::z); else Flags::Clear(Flags::z); break;
+						case N: if ((value & 0xF) == 1) Flags::Set(Flags::n); else Flags::Clear(Flags::n); break;
+						case H: if ((value & 0xF) == 1) Flags::Set(Flags::h); else Flags::Clear(Flags::h); break;
+						case C: if ((value & 0xF) == 1) Flags::Set(Flags::c); else Flags::Clear(Flags::c); break;
 					}
 					ImGui::CloseCurrentPopup();
 				}
