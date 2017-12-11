@@ -31,6 +31,14 @@ static  enum
 	AF, BC, DE, HL, SP, PC, LCDC, STAT, LY, IME, IF, IE, TIMA, TAC, TMA, DIV, Z, N, H, C
 } reg;
 
+// responsible for resetting the system
+void Debugger::ResetSystem(const char *newRomFilename)
+{
+	Memory::Init();
+	if (newRomFilename != NULL) Rom::Load(newRomFilename); else Rom::Reload();
+	Cpu::Init();
+}
+
 // create a controls window
 void Debugger::ControlsWindow(const char *title, int width, int height, int x, int y)
 {
@@ -59,6 +67,22 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		Cpu::ExecuteOpcode();
 	}
 
+	if (ImGui::Button("Step Backward", ImVec2(width - 16, 0)))
+	{
+		stepThrough = true;
+		stopAtBreakpoint = false;
+
+		if (Cpu::instructionsRan > 0)
+		{
+			Cpu::LoadState(Cpu::instructionsRan);
+			Cpu::instructionsRan -= 1;
+		}
+		else
+		{
+			ResetSystem();
+		}
+	}
+
 	if (ImGui::Button("Run (no break)", ImVec2(width - 16, 0)))
 	{
 		stepThrough = false;
@@ -78,10 +102,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 	if (ImGui::Button("Reset", ImVec2(width - 16, 0)))
 	{
-		Memory::Init();
-		Rom::Reload();
-		Cpu::Init();
-		// TODO: reload bios here if previously loaded
+		ResetSystem();
 	}
 
 	ImGui::PopStyleColor(3);
@@ -456,10 +477,7 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 			stepThrough = true;
 			stopAtBreakpoint = false;
 
-			Memory::Init();
-			Rom::Load(filename);
-			Cpu::Init();
-			// TODO: reload bios here if previously loaded
+			ResetSystem(filename);
 		}
 	}
 

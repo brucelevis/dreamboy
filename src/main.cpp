@@ -181,6 +181,20 @@ static void StartMainLoop()
 						case SDLK_0: Debugger::stepThrough = true; break;
 
 						case SDLK_UP:
+							if (Debugger::stepThrough)
+							{
+								if (Cpu::instructionsRan > 0)
+								{
+									Cpu::LoadState(Cpu::instructionsRan);
+									Cpu::instructionsRan -= 1;
+								}
+								else
+								{
+									Debugger::ResetSystem();
+								}
+							}
+						break;
+
 						case SDLK_DOWN:
 							if (Debugger::stepThrough) CpuStep();
 						break;

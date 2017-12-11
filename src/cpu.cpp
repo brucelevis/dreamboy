@@ -496,31 +496,41 @@ void Cpu::ExecuteExtendedOpcode()
 }
 
 // responsible for loading save states
-bool Cpu::LoadState()
+bool Cpu::LoadState(unsigned int num)
 {
 	char val[512];
-	int i = 0;
-	FILE *fp = fopen("state_mem1.bin", "rb");
-	FILE *fp2 = fopen("state_reg1.bin", "r");
+	char memFilename[512];
+	char regFilename[512];
+	int index = 0;
+
+	sprintf(memFilename, "state_mem_%d.bin", num);
+	sprintf(regFilename, "state_reg_%d.bin", num);
+
+	FILE *fp = fopen(memFilename, "rb");
+	FILE *fp2 = fopen(regFilename, "r");
 
 	if (fp == NULL || fp2 == NULL) return false;
 
-	fread(&Memory::mem[0x00], 1, 0x10000, fp);
+	fread(&Memory::mem, 1, 0x10000, fp);
 
 	while(fscanf(fp2, "%s\n", val) != EOF)
 	{
-		if (i == 0) AF = (u16)strtol(val, NULL, 16);
-		else if (i == 1) BC = (u16)strtol(val, NULL, 16);
-		else if (i == 2) DE = (u16)strtol(val, NULL, 16);
-		else if (i == 3) HL = (u16)strtol(val, NULL, 16);
-		else if (i == 4) PC = (u16)strtol(val, NULL, 16);
-		else if (i == 5) SP = (u16)strtol(val, NULL, 16);
-		else if (i == 6) cycles = (int)strtol(val, NULL, 16);
-		else if (i == 7) pendingInterrupt = (int)strtol(val, NULL, 16);
-		else if (i == 8) halted = (int)strtol(val, NULL, 16);
-		else if (i == 9) stopped = (int)strtol(val, NULL, 16);
+		switch(index)
+		{
+			case 0: AF = (u16)strtol(val, NULL, 16); break;
+			case 1: BC = (u16)strtol(val, NULL, 16); break;
+			case 2: DE = (u16)strtol(val, NULL, 16); break;
+			case 3: HL = (u16)strtol(val, NULL, 16); break;
+			case 4: PC = (u16)strtol(val, NULL, 16); break;
+			case 5: SP = (u16)strtol(val, NULL, 16); break;
+			case 6: cycles = (int)strtol(val, NULL, 10); break;
+			case 7: pendingInterrupt = (int)strtol(val, NULL, 10); break;
+			case 8: halted = (int)strtol(val, NULL, 10); break;
+			case 9: stopped = (int)strtol(val, NULL, 10); break;
+			case 10: instructionsRan = (int)strtol(val, NULL, 10); break;
+		}
 
-		i++;
+		index++;
 	}
 
 	fclose(fp);
@@ -530,10 +540,16 @@ bool Cpu::LoadState()
 }
 
 // responsible for saving save states
-void Cpu::SaveState()
+void Cpu::SaveState(unsigned int num)
 {
-	FILE *fp = fopen("state_mem1.bin", "wb");
-	FILE *fp2 = fopen("state_reg1.bin", "w");
+	char memFilename[512];
+	char regFilename[512];
+
+	sprintf(memFilename, "state_mem_%d.bin", num);
+	sprintf(regFilename, "state_reg_%d.bin", num);
+
+	FILE *fp = fopen(memFilename, "wb");
+	FILE *fp2 = fopen(regFilename, "w");
 
 	fwrite(Memory::mem, sizeof(Memory::mem), 1, fp);
 
@@ -549,6 +565,7 @@ void Cpu::SaveState()
 	fprintf(fp2, "%d\n", pendingInterrupt);
 	fprintf(fp2, "%d\n", halted);
 	fprintf(fp2, "%d\n", stopped);
+	fprintf(fp2, "%d\n", instructionsRan);
 
 	fclose(fp);
 	fclose(fp2);

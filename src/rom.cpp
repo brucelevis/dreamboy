@@ -25,7 +25,7 @@ bool Rom::Load(const char *filepath)
 		result = true;
 		filename = filepath;
 
-		fread(&Memory::mem[0x00], 1, 0x8000, gbRom);
+		fread(&Memory::mem, 1, 0x8000, gbRom);
 
 		// print the rom name
 		printf("Rom Name: ");
