@@ -81,7 +81,7 @@
       </Debugger>
       <PreBuild/>
       <PostBuild>
-        <Command Enabled="yes">cp src/imgui/extra_fonts/Cousine-Regular.ttf Debug/Cousine-Regular.ttf</Command>
+        <Command Enabled="yes">cp src/imgui/extra_fonts/Cousine-Bold.ttf Debug/Cousine-Bold.ttf</Command>
         <Command Enabled="yes">rsync -r roms/ Debug/roms/</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
@@ -127,7 +127,7 @@
       </Debugger>
       <PreBuild/>
       <PostBuild>
-        <Command Enabled="yes">cp src/imgui/extra_fonts/Cousine-Regular.ttf Release/Cousine-Regular.ttf</Command>
+        <Command Enabled="yes">cp src/imgui/extra_fonts/Cousine-Bold.ttf Release/Cousine-Bold.ttf</Command>
         <Command Enabled="yes">rsync -r roms/ Debug/roms/</Command>
       </PostBuild>
       <CustomBuild Enabled="no">

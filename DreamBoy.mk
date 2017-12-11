@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=Danny
-Date                   :=10/12/17
+Date                   :=11/12/17
 CodeLitePath           :=/home/danny/.codelite
 LinkerName             :=/usr/bin/clang++
 SharedObjectLinkerName :=/usr/bin/clang++ -shared -fPIC
@@ -81,7 +81,7 @@ $(OutputFile): $(IntermediateDirectory)/.d $(Objects)
 
 PostBuild:
 	@echo Executing Post Build commands ...
-	cp src/imgui/extra_fonts/Cousine-Regular.ttf Debug/Cousine-Regular.ttf
+	cp src/imgui/extra_fonts/Cousine-Bold.ttf Debug/Cousine-Bold.ttf
 	rsync -r roms/ Debug/roms/
 	@echo Done
 
