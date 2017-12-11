@@ -60,8 +60,8 @@ AS       := /usr/bin/as
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects0=$(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_main.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_debugger.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_impl_sdl.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_draw.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_memory.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpu.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_flags.cpp$(ObjectSuffix) \
-	$(IntermediateDirectory)/src_bit.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_rom.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpuOperations.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_log.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/src_imgui_imgui.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_impl_sdl.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_draw.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_memory.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_debugger.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_bit.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_log.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_main.cpp$(ObjectSuffix) \
+	$(IntermediateDirectory)/src_cpu.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_flags.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_rom.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpuOperations.cpp$(ObjectSuffix) 
 
 
 
@@ -98,30 +98,6 @@ PreBuild:
 ##
 ## Objects
 ##
-$(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix): src/lcd.cpp $(IntermediateDirectory)/src_lcd.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/lcd.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/src_lcd.cpp$(DependSuffix): src/lcd.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_lcd.cpp$(DependSuffix) -MM src/lcd.cpp
-
-$(IntermediateDirectory)/src_lcd.cpp$(PreprocessSuffix): src/lcd.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_lcd.cpp$(PreprocessSuffix) src/lcd.cpp
-
-$(IntermediateDirectory)/src_main.cpp$(ObjectSuffix): src/main.cpp $(IntermediateDirectory)/src_main.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/main.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_main.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/src_main.cpp$(DependSuffix): src/main.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_main.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_main.cpp$(DependSuffix) -MM src/main.cpp
-
-$(IntermediateDirectory)/src_main.cpp$(PreprocessSuffix): src/main.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_main.cpp$(PreprocessSuffix) src/main.cpp
-
-$(IntermediateDirectory)/src_debugger.cpp$(ObjectSuffix): src/debugger.cpp $(IntermediateDirectory)/src_debugger.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/debugger.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_debugger.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/src_debugger.cpp$(DependSuffix): src/debugger.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_debugger.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_debugger.cpp$(DependSuffix) -MM src/debugger.cpp
-
-$(IntermediateDirectory)/src_debugger.cpp$(PreprocessSuffix): src/debugger.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_debugger.cpp$(PreprocessSuffix) src/debugger.cpp
-
 $(IntermediateDirectory)/src_imgui_imgui.cpp$(ObjectSuffix): src/imgui/imgui.cpp $(IntermediateDirectory)/src_imgui_imgui.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/imgui/imgui.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_imgui_imgui.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/src_imgui_imgui.cpp$(DependSuffix): src/imgui/imgui.cpp
@@ -137,14 +113,6 @@ $(IntermediateDirectory)/src_imgui_imgui_impl_sdl.cpp$(DependSuffix): src/imgui/
 
 $(IntermediateDirectory)/src_imgui_imgui_impl_sdl.cpp$(PreprocessSuffix): src/imgui/imgui_impl_sdl.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_imgui_imgui_impl_sdl.cpp$(PreprocessSuffix) src/imgui/imgui_impl_sdl.cpp
-
-$(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(ObjectSuffix): src/tinyfiledialogs/tinyfiledialogs.cpp $(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/tinyfiledialogs/tinyfiledialogs.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(DependSuffix): src/tinyfiledialogs/tinyfiledialogs.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(DependSuffix) -MM src/tinyfiledialogs/tinyfiledialogs.cpp
-
-$(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(PreprocessSuffix): src/tinyfiledialogs/tinyfiledialogs.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(PreprocessSuffix) src/tinyfiledialogs/tinyfiledialogs.cpp
 
 $(IntermediateDirectory)/src_imgui_imgui_draw.cpp$(ObjectSuffix): src/imgui/imgui_draw.cpp $(IntermediateDirectory)/src_imgui_imgui_draw.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/imgui/imgui_draw.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_imgui_imgui_draw.cpp$(ObjectSuffix) $(IncludePath)
@@ -162,6 +130,54 @@ $(IntermediateDirectory)/src_memory.cpp$(DependSuffix): src/memory.cpp
 $(IntermediateDirectory)/src_memory.cpp$(PreprocessSuffix): src/memory.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_memory.cpp$(PreprocessSuffix) src/memory.cpp
 
+$(IntermediateDirectory)/src_debugger.cpp$(ObjectSuffix): src/debugger.cpp $(IntermediateDirectory)/src_debugger.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/debugger.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_debugger.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/src_debugger.cpp$(DependSuffix): src/debugger.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_debugger.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_debugger.cpp$(DependSuffix) -MM src/debugger.cpp
+
+$(IntermediateDirectory)/src_debugger.cpp$(PreprocessSuffix): src/debugger.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_debugger.cpp$(PreprocessSuffix) src/debugger.cpp
+
+$(IntermediateDirectory)/src_bit.cpp$(ObjectSuffix): src/bit.cpp $(IntermediateDirectory)/src_bit.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/bit.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_bit.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/src_bit.cpp$(DependSuffix): src/bit.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_bit.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_bit.cpp$(DependSuffix) -MM src/bit.cpp
+
+$(IntermediateDirectory)/src_bit.cpp$(PreprocessSuffix): src/bit.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_bit.cpp$(PreprocessSuffix) src/bit.cpp
+
+$(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix): src/lcd.cpp $(IntermediateDirectory)/src_lcd.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/lcd.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/src_lcd.cpp$(DependSuffix): src/lcd.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_lcd.cpp$(DependSuffix) -MM src/lcd.cpp
+
+$(IntermediateDirectory)/src_lcd.cpp$(PreprocessSuffix): src/lcd.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_lcd.cpp$(PreprocessSuffix) src/lcd.cpp
+
+$(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix): src/imgui/imgui_custom_extensions.cpp $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/imgui/imgui_custom_extensions.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(DependSuffix): src/imgui/imgui_custom_extensions.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(DependSuffix) -MM src/imgui/imgui_custom_extensions.cpp
+
+$(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(PreprocessSuffix): src/imgui/imgui_custom_extensions.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(PreprocessSuffix) src/imgui/imgui_custom_extensions.cpp
+
+$(IntermediateDirectory)/src_log.cpp$(ObjectSuffix): src/log.cpp $(IntermediateDirectory)/src_log.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/log.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_log.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/src_log.cpp$(DependSuffix): src/log.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_log.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_log.cpp$(DependSuffix) -MM src/log.cpp
+
+$(IntermediateDirectory)/src_log.cpp$(PreprocessSuffix): src/log.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_log.cpp$(PreprocessSuffix) src/log.cpp
+
+$(IntermediateDirectory)/src_main.cpp$(ObjectSuffix): src/main.cpp $(IntermediateDirectory)/src_main.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/main.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_main.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/src_main.cpp$(DependSuffix): src/main.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_main.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_main.cpp$(DependSuffix) -MM src/main.cpp
+
+$(IntermediateDirectory)/src_main.cpp$(PreprocessSuffix): src/main.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_main.cpp$(PreprocessSuffix) src/main.cpp
+
 $(IntermediateDirectory)/src_cpu.cpp$(ObjectSuffix): src/cpu.cpp $(IntermediateDirectory)/src_cpu.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/cpu.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_cpu.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/src_cpu.cpp$(DependSuffix): src/cpu.cpp
@@ -178,13 +194,13 @@ $(IntermediateDirectory)/src_flags.cpp$(DependSuffix): src/flags.cpp
 $(IntermediateDirectory)/src_flags.cpp$(PreprocessSuffix): src/flags.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_flags.cpp$(PreprocessSuffix) src/flags.cpp
 
-$(IntermediateDirectory)/src_bit.cpp$(ObjectSuffix): src/bit.cpp $(IntermediateDirectory)/src_bit.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/bit.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_bit.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/src_bit.cpp$(DependSuffix): src/bit.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_bit.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_bit.cpp$(DependSuffix) -MM src/bit.cpp
+$(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(ObjectSuffix): src/tinyfiledialogs/tinyfiledialogs.cpp $(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/tinyfiledialogs/tinyfiledialogs.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(DependSuffix): src/tinyfiledialogs/tinyfiledialogs.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(DependSuffix) -MM src/tinyfiledialogs/tinyfiledialogs.cpp
 
-$(IntermediateDirectory)/src_bit.cpp$(PreprocessSuffix): src/bit.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_bit.cpp$(PreprocessSuffix) src/bit.cpp
+$(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(PreprocessSuffix): src/tinyfiledialogs/tinyfiledialogs.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(PreprocessSuffix) src/tinyfiledialogs/tinyfiledialogs.cpp
 
 $(IntermediateDirectory)/src_rom.cpp$(ObjectSuffix): src/rom.cpp $(IntermediateDirectory)/src_rom.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/rom.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_rom.cpp$(ObjectSuffix) $(IncludePath)
@@ -201,22 +217,6 @@ $(IntermediateDirectory)/src_cpuOperations.cpp$(DependSuffix): src/cpuOperations
 
 $(IntermediateDirectory)/src_cpuOperations.cpp$(PreprocessSuffix): src/cpuOperations.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_cpuOperations.cpp$(PreprocessSuffix) src/cpuOperations.cpp
-
-$(IntermediateDirectory)/src_log.cpp$(ObjectSuffix): src/log.cpp $(IntermediateDirectory)/src_log.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/log.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_log.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/src_log.cpp$(DependSuffix): src/log.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_log.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_log.cpp$(DependSuffix) -MM src/log.cpp
-
-$(IntermediateDirectory)/src_log.cpp$(PreprocessSuffix): src/log.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_log.cpp$(PreprocessSuffix) src/log.cpp
-
-$(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix): src/imgui/imgui_custom_extensions.cpp $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/imgui/imgui_custom_extensions.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(DependSuffix): src/imgui/imgui_custom_extensions.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(DependSuffix) -MM src/imgui/imgui_custom_extensions.cpp
-
-$(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(PreprocessSuffix): src/imgui/imgui_custom_extensions.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(PreprocessSuffix) src/imgui/imgui_custom_extensions.cpp
 
 
 -include $(IntermediateDirectory)/*$(DependSuffix)

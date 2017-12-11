@@ -122,7 +122,7 @@ static void ShowDebugger()
 {
 	// show the debugger windows
 	Debugger::ControlsWindow("Controls", 156, 250, SCREEN_WIDTH - 456, 5);
-	Debugger::MemoryViewerWindow("Mem View", 100, 250, SCREEN_WIDTH - 289, 5, 0xC000, 0xFFFF);
+	Debugger::MemoryViewerWindow("Memory", 100, 250, SCREEN_WIDTH - 289, 5, 0xC000, 0xFFFF);
 	Debugger::RegisterViewer("Reg View", 180, 250, SCREEN_WIDTH - 180, 5);
 	Debugger::FileWindow("File", 156, 250, 0, SCREEN_HEIGHT - 215);
 	Debugger::RomInfoWindow("Rom Info", 240, 250, SCREEN_WIDTH - 480, SCREEN_HEIGHT - 215);
@@ -196,7 +196,11 @@ static void StartMainLoop()
 						break;
 
 						case SDLK_DOWN:
-							if (Debugger::stepThrough) CpuStep();
+							if (Debugger::stepThrough)
+							{
+								CpuStep();
+								Cpu::SaveState(Cpu::instructionsRan);
+							}
 						break;
 
 						default: break;

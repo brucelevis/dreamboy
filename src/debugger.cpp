@@ -25,6 +25,10 @@ bool Debugger::debuggerActive = false;
 u16 Debugger::breakpoint = 0x00;
 static char breakpointBuffer[256];
 static char regBuffer[256];
+static char memBuffer[256];
+static char memValueBuffer[256];
+static char memSetBuffer[256];
+static char memSetAddressBuffer[256];
 static MemoryEditor memoryViewer;
 static  enum
 {
@@ -42,10 +46,10 @@ void Debugger::ResetSystem(const char *newRomFilename)
 // create a controls window
 void Debugger::ControlsWindow(const char *title, int width, int height, int x, int y)
 {
-	const char *modifyRegTitle = "Modify Reg/Flags";
-	const char *setRegTitle = "Set Register";
-	const char *setBreakPtTitle = "Set Breakpoint";
-	const char *breakPtErrorTitle = "Breakpoint Error";
+	const char *modifyRegPopup = "Modify Reg/Flags";
+	const char *setRegPopup = "Set Register";
+	const char *setBreakPtPopup = "Set Breakpoint";
+	const char *breakPtErrorPopup = "Breakpoint Error";
 
 	ImGui::Begin(title, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 	ImGui::SetWindowSize(title, ImVec2(width, height));
@@ -54,10 +58,10 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor(102, 102, 255));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor(0, 0, 204));
 
-	if (ImGui::Button(modifyRegTitle, ImVec2(width - 16, 0)))
+	if (ImGui::Button(modifyRegPopup, ImVec2(width - 16, 0)))
 	{
 		sprintf(regBuffer, "");
-		ImGui::OpenPopup(modifyRegTitle);
+		ImGui::OpenPopup(modifyRegPopup);
 	}
 
 	if (ImGui::Button("Step Forward", ImVec2(width - 16, 0)))
@@ -91,7 +95,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 	if (ImGui::Button("Run To Break PT", ImVec2(width - 16, 0)))
 	{
-		ImGui::OpenPopup(setBreakPtTitle);
+		ImGui::OpenPopup(setBreakPtPopup);
 	}
 
 	if (ImGui::Button("Stop", ImVec2(width - 16, 0)))
@@ -107,12 +111,12 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 	ImGui::PopStyleColor(3);
 
-	if (ImGui::BeginPopupModal(modifyRegTitle, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+	// modify register popup
+	if (ImGui::BeginPopupModal(modifyRegPopup, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
 	{
-		ImGui::SetWindowSize(modifyRegTitle, ImVec2(280, 310));
+		ImGui::SetWindowSize(modifyRegPopup, ImVec2(280, 310));
 		ImGui::Text("Choose The Register To Modify:");
 		ImGui::NewLine();
-
 		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor(25, 0, 51));
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor(102, 102, 255));
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor(0, 0, 204));
@@ -122,7 +126,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = AF;
 			sprintf(regBuffer, "%04X", Cpu::af.reg);
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -131,7 +135,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = BC;
 			sprintf(regBuffer, "%04X", Cpu::bc.reg);
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -140,7 +144,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = DE;
 			sprintf(regBuffer, "%04X", Cpu::de.reg);
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -149,7 +153,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = HL;
 			sprintf(regBuffer, "%04X", Cpu::hl.reg);
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		// block 2
@@ -157,7 +161,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = SP;
 			sprintf(regBuffer, "%04X", Cpu::sp.reg);
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -166,7 +170,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = PC;
 			sprintf(regBuffer, "%04X", Cpu::pc.reg);
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -175,7 +179,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = LCDC;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::LCDC));
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -184,7 +188,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = STAT;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::STAT));
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		// block 3
@@ -192,16 +196,16 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = LY;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::LY));
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::Button("IME", ImVec2(60, 0)))
 		{
-			reg = IME;
+			//reg = IME;
 			//sprintf(regBuffer, "%d", ime);
-			ImGui::OpenPopup(setRegTitle);
+			//ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -210,7 +214,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = IF;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::IF));
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -219,7 +223,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = IE;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::IE));
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		// block 4
@@ -227,7 +231,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = TIMA;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::TIMA));
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -236,7 +240,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = TAC;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::TAC));
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -245,7 +249,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = TMA;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::TMA));
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -254,7 +258,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = DIV;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::DIV));
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::NewLine();
@@ -266,7 +270,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = Z;
 			sprintf(regBuffer, "%d", Flags::Get(Flags::z));
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -275,7 +279,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = N;
 			sprintf(regBuffer, "%d", Flags::Get(Flags::n));
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -284,7 +288,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = H;
 			sprintf(regBuffer, "%d", Flags::Get(Flags::h));
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::SameLine();
@@ -293,7 +297,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		{
 			reg = C;
 			sprintf(regBuffer, "%d", Flags::Get(Flags::c));
-			ImGui::OpenPopup(setRegTitle);
+			ImGui::OpenPopup(setRegPopup);
 		}
 
 		ImGui::PopStyleColor(3);
@@ -305,7 +309,8 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 			ImGui::CloseCurrentPopup();
 		}
 
-		if (ImGui::BeginPopupModal(setRegTitle, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+		// set register popup
+		if (ImGui::BeginPopupModal(setRegPopup, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
 		{
 			ImGui::PushItemWidth(180);
 			ImGui::Text("New Value:");
@@ -363,7 +368,8 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		ImGui::EndPopup();
 	}
 
-	if (ImGui::BeginPopupModal(setBreakPtTitle, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+	// set breakpoint popup
+	if (ImGui::BeginPopupModal(setBreakPtPopup, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
 	{
 		ImGui::PushItemWidth(180);
 		ImGui::Text("Run To PC:");
@@ -390,7 +396,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 			}
 			else
 			{
-				ImGui::OpenPopup(breakPtErrorTitle);
+				ImGui::OpenPopup(breakPtErrorPopup);
 			}
 		}
 
@@ -401,9 +407,10 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 			ImGui::CloseCurrentPopup();
 		}
 
-		if (ImGui::BeginPopupModal(breakPtErrorTitle, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+		// breakpoint error popup
+		if (ImGui::BeginPopupModal(breakPtErrorPopup, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
 		{
-			ImGui::SetWindowSize(breakPtErrorTitle, ImVec2(230, 210));
+			ImGui::SetWindowSize(breakPtErrorPopup, ImVec2(230, 210));
 			ImGuiExtensions::TextWithColors("{FF0000}No Breakpoint Entered!");
 			ImGui::TextWrapped("You must set a breakpoint before you can start execution.\n\nIf you don't want to use a breakpoint, just hit cancel instead.");
 			ImGui::NewLine();
@@ -431,7 +438,7 @@ void Debugger::RomInfoWindow(const char *title, int width, int height, int x, in
 	ImGui::SetWindowPos(title, ImVec2(x, y));
 	ImGuiExtensions::TextWithColors("{FF0000}Name:"); ImGui::SameLine();
 
-	// print the rom name
+	// display the rom name
 	for (u16 i = Memory::Address::ROM_NAME_START; i < Memory::Address::ROM_NAME_END; i++)
 	{
 		if (Memory::ReadByte(i) != 0)
@@ -443,13 +450,9 @@ void Debugger::RomInfoWindow(const char *title, int width, int height, int x, in
 
 	ImGui::NewLine();
 
-	// rom type
 	ImGuiExtensions::TextWithColors("{FF0000}Type: {FFFFFF}%02x", Memory::ReadByte(Memory::Address::ROM_TYPE));
-	// rom rom-size
 	ImGuiExtensions::TextWithColors("{FF0000}Rom-Size: {FFFFFF}%02x", Memory::ReadByte(Memory::Address::ROM_SIZE));
-	// rom ram size
 	ImGuiExtensions::TextWithColors("{FF0000}Ram-Size: {FFFFFF}%02x", Memory::ReadByte(Memory::Address::ROM_RAM_SIZE));
-	// rom file name + path
 	ImGuiExtensions::TextWithColors("{FF0000}Filename:");
 	ImGui::TextWrapped("%s", Rom::filename);
 	ImGui::End();
@@ -458,7 +461,8 @@ void Debugger::RomInfoWindow(const char *title, int width, int height, int x, in
 // create a file info window
 void Debugger::FileWindow(const char *title, int width, int height, int x, int y)
 {
-	const char *stateLoadFailTitle = "State Load Failed";
+	const char *stateLoadFailPopup = "State Load Failed";
+	const char *aboutPopup = "About";
 
 	ImGui::Begin(title, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 	ImGui::SetWindowSize(title, ImVec2(width, height));
@@ -490,7 +494,7 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 	{
 		if (!Cpu::LoadState())
 		{
-			ImGui::OpenPopup(stateLoadFailTitle);
+			ImGui::OpenPopup(stateLoadFailPopup);
 		}
 	}
 
@@ -500,6 +504,11 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 		// should scale the game to full screen here too...
 	}
 
+	if (ImGui::Button(aboutPopup, ImVec2(width - 16, 0)))
+	{
+		ImGui::OpenPopup(aboutPopup);
+	}
+
 	if (ImGui::Button("Quit", ImVec2(width - 16, 0)))
 	{
 		exit(0);
@@ -507,13 +516,41 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 
 	ImGui::PopStyleColor(3);
 
-	if (ImGui::BeginPopupModal(stateLoadFailTitle, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+	// state load failure popup
+	if (ImGui::BeginPopupModal(stateLoadFailPopup, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
 	{
-		ImGui::SetWindowSize(stateLoadFailTitle, ImVec2(230, 150));
+		ImGui::SetWindowSize(stateLoadFailPopup, ImVec2(230, 150));
 		ImGui::TextWrapped("Failed to find save state in the executable directory");
 		ImGui::NewLine();
 
 		if (ImGui::Button("Ok", ImVec2(200, 0)))
+		{
+				ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+
+	// about popup
+	if (ImGui::BeginPopupModal(aboutPopup, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+	{
+		ImGui::SetWindowSize(aboutPopup, ImVec2(400, 380));
+		ImGui::Text("DreamBoy: A Nintendo GameBoy Emulator.");
+		ImGui::Text("Written by Danny Glover.");
+		ImGui::NewLine();
+		ImGui::BulletText("Written in C++");
+		ImGui::BulletText("Uses SDL/OGL for drawing");
+		ImGui::BulletText("Uses ImGui for the debugger");
+		ImGui::NewLine();
+		ImGui::TextWrapped("GitHub:\nhttps://github.com/DannyGlover/dreamboy");
+		ImGui::NewLine();
+		ImGui::Text("Greetz:");
+		ImGui::NewLine();
+		ImGui::BulletText("Izik, Mehcode, Gekkio, Stian");
+		ImGui::BulletText("Emulation Development Slack Channel");
+		ImGui::NewLine();
+
+		if (ImGui::Button("Close", ImVec2(385, 0)))
 		{
 				ImGui::CloseCurrentPopup();
 		}
@@ -527,14 +564,137 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 // create a memory viewer window
 void Debugger::MemoryViewerWindow(const char *title, int width, int height, int x, int y, u16 startAddr, u16 endAddr)
 {
+	const char *memGetAddressPopup = "Memory Address";
+	const char *memSetPopup = "Set Memory";
+	const char *memViewPopup = "View Memory";
+
 	ImGui::Begin(title, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 	ImGui::SetWindowSize(title, ImVec2(width, height));
 	ImGui::SetWindowPos(title, ImVec2(x, y));
+	ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor(25, 0, 51));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor(102, 102, 255));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor(0, 0, 204));
 
-	for (u16 i = endAddr; i >= startAddr; --i)
+	if (ImGui::Button("View", ImVec2(90, 0)))
 	{
-		ImGuiExtensions::TextWithColors("{FF0000}%04X: {FFFFFF}%02X", i, Memory::ReadByte(i));
+		ImGui::OpenPopup(memViewPopup);
 	}
+
+	if (ImGui::Button("Get Value", ImVec2(90, 0)))
+	{
+		ImGui::OpenPopup(memGetAddressPopup);
+	}
+
+	if (ImGui::Button("Set Value", ImVec2(90, 0)))
+	{
+		ImGui::OpenPopup(memSetPopup);
+	}
+
+	if (ImGui::Button("Dump", ImVec2(90, 0)))
+	{
+		char const *validExtensions[4] = {"*.bin", "*.BIN", "*.dump", "*.dump"};
+		const char *filename = tinyfd_saveFileDialog("Save As", "", 4, validExtensions, NULL);
+
+		if (filename != NULL)
+		{
+			FILE *fp = fopen(filename, "wb");
+			fwrite(Memory::mem, sizeof(Memory::mem), 1, fp);
+		}
+	}
+
+	if (ImGui::Button("Import", ImVec2(90, 0)))
+	{
+		char const *validExtensions[4] = {"*.bin", "*.BIN", "*.dump", "*.dump"};
+		const char *filename = tinyfd_openFileDialog("Select Memory Dump", "", 4, validExtensions, NULL, 0);
+
+		if (filename != NULL)
+		{
+			FILE *fp = fopen(filename, "rb");
+			fread(&Memory::mem, 1, 0x10000, fp);
+		}
+	}
+
+	ImGui::PopStyleColor(3);
+
+	// view memory popup
+	if (ImGui::BeginPopupModal(memViewPopup, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+	{
+		int i = 0xFFFF;
+
+		ImGui::SetWindowSize(memViewPopup, ImVec2(208, 380));
+
+		if (ImGui::Button("Close", ImVec2(192, 0)))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::BeginChild("mem");
+
+		while(i  > 0x0000)
+		{
+			ImGuiExtensions::TextWithColors("{FF0000}%04X: {FFFFFF}%02X\t{FF0000}%04X: {FFFFFF}%02X", i, Memory::ReadByte(i), i - 1, Memory::ReadByte(i - 1));
+			i -= 2;
+		}
+
+		ImGui::EndChild();
+		ImGui::EndPopup();
+	}
+
+	// get memory value popup
+	if (ImGui::BeginPopupModal(memGetAddressPopup, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+	{
+		ImGui::SetWindowSize(memGetAddressPopup, ImVec2(190, 180));
+		ImGui::PushItemWidth(175);
+		ImGui::Text("Enter Address:");
+
+		if (ImGui::InputText("a", memBuffer, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_AutoSelectAll))
+		{
+			u16 address = (u16)strtol(memBuffer, NULL, 16);
+			sprintf(memValueBuffer, "%02X", Memory::ReadByte(address));
+		}
+
+		ImGui::Text("Value At Address:");
+		ImGui::InputText("b", memValueBuffer, 5, ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
+		ImGui::NewLine();
+
+		if (ImGui::Button("Close", ImVec2(175, 0)))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+
+	// set memory value popup
+	if (ImGui::BeginPopupModal(memSetPopup, NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+	{
+		ImGui::SetWindowSize(memSetPopup, ImVec2(190, 180));
+		ImGui::PushItemWidth(180);
+		ImGui::Text("Enter Address:");
+		ImGui::InputText("a", memSetAddressBuffer, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_AutoSelectAll);
+		ImGui::Text("Enter Value:");
+		ImGui::InputText("b", memSetBuffer, 5, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_AutoSelectAll);
+		ImGui::NewLine();
+
+		if (ImGui::Button("Submit", ImVec2(80, 0)))
+		{
+			u16 address = (u16)strtol(memSetAddressBuffer, NULL, 16);
+			u8 data = (u8)strtol(memSetBuffer, NULL, 16);
+
+			Memory::WriteByte(address, data);
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Close", ImVec2(80, 0)))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+
 	ImGui::End();
 }
 
