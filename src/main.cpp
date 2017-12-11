@@ -57,6 +57,13 @@ static bool InitGL()
 		ImGuiIO& io = ImGui::GetIO();
 		io.Fonts->AddFontFromFileTTF("Cousine-Bold.ttf", 16.0f);
 
+		ImGuiStyle &style = ImGui::GetStyle();
+		style.AntiAliasedLines = false;
+		style.AntiAliasedShapes = false;
+		style.FrameRounding = 0.0f;
+		style.WindowRounding = 0.0f;
+		style.ScrollbarRounding = 0.0f;
+
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
@@ -198,13 +205,6 @@ static void StartMainLoop()
 
 int main(int argc, char *argv[])
 {
-	ImGuiStyle &style = ImGui::GetStyle();
-	style.AntiAliasedLines = false;
-	style.AntiAliasedShapes = false;
-	style.FrameRounding = 0.0f;
-	style.WindowRounding = 0.0f;
-	style.ScrollbarRounding = 0.0f;
-
 	if (InitSDL())
 	{
 		Log::Init();
