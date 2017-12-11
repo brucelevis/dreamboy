@@ -498,42 +498,33 @@ void Cpu::ExecuteExtendedOpcode()
 // responsible for loading save states
 bool Cpu::LoadState()
 {
-	FILE *fp = fopen("state1.bin", "r");
-
-	if (fp == NULL) return false;
-
 	char val[512];
 	int i = 0;
+	FILE *fp = fopen("state_mem1.bin", "rb");
+	FILE *fp2 = fopen("state_reg1.bin", "r");
 
-	while(fscanf(fp, "%s\n", val) != EOF)
+	if (fp == NULL || fp2 == NULL) return false;
+
+	fread(&Memory::mem[0x00], 1, 0x10000, fp);
+
+	while(fscanf(fp2, "%s\n", val) != EOF)
 	{
-		if (i == 0)
-			AF = (u16)strtol(val, NULL, 16);
-		else if (i == 1)
-			BC = (u16)strtol(val, NULL, 16);
-		else if (i == 2)
-			DE = (u16)strtol(val, NULL, 16);
-		else if (i == 3)
-			HL = (u16)strtol(val, NULL, 16);
-		else if (i == 4)
-			PC = (u16)strtol(val, NULL, 16);
-		else if (i == 5)
-			SP = (u16)strtol(val, NULL, 16);
-		else if (i == 6)
-			cycles = (int)strtol(val, NULL, 16);
-		else if (i == 7)
-			pendingInterrupt = (int)strtol(val, NULL, 16);
-		else if (i == 8)
-			halted = (int)strtol(val, NULL, 16);
-		else if (i == 9)
-			stopped = (int)strtol(val, NULL, 16);
-		else if (i >= 10)
-			Memory::WriteByte(0x0000 + (i - 10), (u8)strtol(val, NULL, 16));
+		if (i == 0) AF = (u16)strtol(val, NULL, 16);
+		else if (i == 1) BC = (u16)strtol(val, NULL, 16);
+		else if (i == 2) DE = (u16)strtol(val, NULL, 16);
+		else if (i == 3) HL = (u16)strtol(val, NULL, 16);
+		else if (i == 4) PC = (u16)strtol(val, NULL, 16);
+		else if (i == 5) SP = (u16)strtol(val, NULL, 16);
+		else if (i == 6) cycles = (int)strtol(val, NULL, 16);
+		else if (i == 7) pendingInterrupt = (int)strtol(val, NULL, 16);
+		else if (i == 8) halted = (int)strtol(val, NULL, 16);
+		else if (i == 9) stopped = (int)strtol(val, NULL, 16);
 
 		i++;
 	}
 
 	fclose(fp);
+	fclose(fp2);
 
 	return true;
 }
@@ -541,24 +532,24 @@ bool Cpu::LoadState()
 // responsible for saving save states
 void Cpu::SaveState()
 {
-	FILE *fp = fopen("state1.bin", "w");
+	FILE *fp = fopen("state_mem1.bin", "wb");
+	FILE *fp2 = fopen("state_reg1.bin", "w");
+
+	fwrite(Memory::mem, sizeof(Memory::mem), 1, fp);
+
 	// save registers
-	fprintf(fp, "%04X\n", AF);
-	fprintf(fp, "%04X\n", BC);
-	fprintf(fp, "%04X\n", DE);
-	fprintf(fp, "%04X\n", HL);
-	fprintf(fp, "%04X\n", PC);
-	fprintf(fp, "%04X\n", SP);
+	fprintf(fp2, "%04X\n", AF);
+	fprintf(fp2, "%04X\n", BC);
+	fprintf(fp2, "%04X\n", DE);
+	fprintf(fp2, "%04X\n", HL);
+	fprintf(fp2, "%04X\n", PC);
+	fprintf(fp2, "%04X\n", SP);
 	// save misc
-	fprintf(fp, "%d\n", cycles);
-	fprintf(fp, "%d\n", pendingInterrupt);
-	fprintf(fp, "%d\n", halted);
-	fprintf(fp, "%d\n", stopped);
-	// save the memory
-	for (int i = 0x0000; i < 0x10000; i++)
-	{
-		fprintf(fp, "%02X\n", Memory::ReadByte(i));
-	}
+	fprintf(fp2, "%d\n", cycles);
+	fprintf(fp2, "%d\n", pendingInterrupt);
+	fprintf(fp2, "%d\n", halted);
+	fprintf(fp2, "%d\n", stopped);
 
 	fclose(fp);
+	fclose(fp2);
 }
