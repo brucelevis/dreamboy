@@ -15,6 +15,7 @@
 #include "src/tinyfiledialogs/tinyfiledialogs.h"
 #include "src/includes/debugger.h"
 #include "src/includes/flags.h"
+#include "src/includes/log.h"
 #include "src/includes/memory.h"
 #include "src/includes/rom.h"
 
@@ -30,10 +31,14 @@ static char memValueBuffer[256];
 static char memSetBuffer[256];
 static char memSetAddressBuffer[256];
 static MemoryEditor memoryViewer;
-static  enum
+struct Reg
 {
-	AF, BC, DE, HL, SP, PC, LCDC, STAT, LY, IME, IF, IE, TIMA, TAC, TMA, DIV, Z, N, H, C
-} reg;
+	enum name
+	{
+		AF, BC, DE, HL, SP, PC, LCDC, STAT, LY, IME, IF, IE, TIMA, TAC, TMA, DIV, Z, N, H, C
+	};
+};
+int modRegister = Reg::name::AF;
 
 // responsible for resetting the system
 void Debugger::ResetSystem(const char *newRomFilename)
@@ -124,7 +129,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		// block 1
 		if (ImGui::Button("AF", ImVec2(60, 0)))
 		{
-			reg = AF;
+			modRegister = Reg::name::AF;
 			sprintf(regBuffer, "%04X", Cpu::af.reg);
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -133,7 +138,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("BC", ImVec2(60, 0)))
 		{
-			reg = BC;
+			modRegister = Reg::name::BC;
 			sprintf(regBuffer, "%04X", Cpu::bc.reg);
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -142,7 +147,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("DE", ImVec2(60, 0)))
 		{
-			reg = DE;
+			modRegister = Reg::name::DE;
 			sprintf(regBuffer, "%04X", Cpu::de.reg);
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -151,7 +156,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("HL", ImVec2(60, 0)))
 		{
-			reg = HL;
+			modRegister = Reg::name::HL;
 			sprintf(regBuffer, "%04X", Cpu::hl.reg);
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -159,7 +164,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		// block 2
 		if (ImGui::Button("SP", ImVec2(60, 0)))
 		{
-			reg = SP;
+			modRegister = Reg::name::SP;
 			sprintf(regBuffer, "%04X", Cpu::sp.reg);
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -168,7 +173,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("PC", ImVec2(60, 0)))
 		{
-			reg = PC;
+			modRegister = Reg::name::PC;
 			sprintf(regBuffer, "%04X", Cpu::pc.reg);
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -177,7 +182,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("LCDC", ImVec2(60, 0)))
 		{
-			reg = LCDC;
+			modRegister = Reg::name::LCDC;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::LCDC));
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -186,7 +191,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("STAT", ImVec2(60, 0)))
 		{
-			reg = STAT;
+			modRegister = Reg::name::STAT;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::STAT));
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -194,7 +199,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		// block 3
 		if (ImGui::Button("LY", ImVec2(60, 0)))
 		{
-			reg = LY;
+			modRegister = Reg::name::LY;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::LY));
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -203,7 +208,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("IME", ImVec2(60, 0)))
 		{
-			//reg = IME;
+			//modRegister = Reg::name::IME;
 			//sprintf(regBuffer, "%d", ime);
 			//ImGui::OpenPopup(setRegPopup);
 		}
@@ -212,7 +217,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("IF", ImVec2(60, 0)))
 		{
-			reg = IF;
+			modRegister = Reg::name::IF;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::IF));
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -221,7 +226,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("IE", ImVec2(60, 0)))
 		{
-			reg = IE;
+			modRegister = Reg::name::IE;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::IE));
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -229,7 +234,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		// block 4
 		if (ImGui::Button("TIMA", ImVec2(60, 0)))
 		{
-			reg = TIMA;
+			modRegister = Reg::name::TIMA;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::TIMA));
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -238,7 +243,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("TAC", ImVec2(60, 0)))
 		{
-			reg = TAC;
+			modRegister = Reg::name::TAC;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::TAC));
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -247,7 +252,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("TMA", ImVec2(60, 0)))
 		{
-			reg = TMA;
+			modRegister = Reg::name::TMA;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::TMA));
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -256,7 +261,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("DIV", ImVec2(60, 0)))
 		{
-			reg = DIV;
+			modRegister = Reg::name::DIV;
 			sprintf(regBuffer, "%02X", Memory::ReadByte(Memory::Address::DIV));
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -268,7 +273,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 		// block 5
 		if (ImGui::Button("Z", ImVec2(60, 0)))
 		{
-			reg = Z;
+			modRegister = Reg::name::Z;
 			sprintf(regBuffer, "%d", Flags::Get(Flags::z));
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -277,7 +282,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("N", ImVec2(60, 0)))
 		{
-			reg = N;
+			modRegister = Reg::name::N;
 			sprintf(regBuffer, "%d", Flags::Get(Flags::n));
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -286,7 +291,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("H", ImVec2(60, 0)))
 		{
-			reg = H;
+			modRegister = Reg::name::H;
 			sprintf(regBuffer, "%d", Flags::Get(Flags::h));
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -295,7 +300,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 		if (ImGui::Button("C", ImVec2(60, 0)))
 		{
-			reg = C;
+			modRegister = Reg::name::C;
 			sprintf(regBuffer, "%d", Flags::Get(Flags::c));
 			ImGui::OpenPopup(setRegPopup);
 		}
@@ -328,28 +333,28 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 				if (strlen(regBuffer) > 0)
 				{
-					switch(reg)
+					switch(modRegister)
 					{
-						case AF: Cpu::af.reg = value; break;
-						case BC: Cpu::bc.reg = value; break;
-						case DE: Cpu::de.reg = value; break;
-						case HL: Cpu::hl.reg = value; break;
-						case SP: Cpu::sp.reg = value; break;
-						case PC: Cpu::pc.reg = value; break;
-						case LCDC: Memory::WriteByte(Memory::Address::LCDC, value & 0xFF);  break;
-						case STAT: Memory::WriteByte(Memory::Address::STAT, value & 0xFF); break;
-						case LY: Memory::WriteByte(Memory::Address::LY, value & 0xFF); break;
-						case IME:  break;
-						case IF: Memory::WriteByte(Memory::Address::IF, value & 0xFF); break;
-						case IE: Memory::WriteByte(Memory::Address::IE, value & 0xFF); break;
-						case TIMA: Memory::WriteByte(Memory::Address::TIMA, value & 0xFF); break;
-						case TAC: Memory::WriteByte(Memory::Address::TAC, value & 0xFF); break;
-						case TMA: Memory::WriteByte(Memory::Address::TMA, value & 0xFF); break;
-						case DIV: Memory::WriteByte(Memory::Address::DIV, value & 0xFF); break;
-						case Z: if ((value & 0xF) == 1) Flags::Set(Flags::z); else Flags::Clear(Flags::z); break;
-						case N: if ((value & 0xF) == 1) Flags::Set(Flags::n); else Flags::Clear(Flags::n); break;
-						case H: if ((value & 0xF) == 1) Flags::Set(Flags::h); else Flags::Clear(Flags::h); break;
-						case C: if ((value & 0xF) == 1) Flags::Set(Flags::c); else Flags::Clear(Flags::c); break;
+						case Reg::name::AF: Cpu::af.reg = value; break;
+						case Reg::name::BC: Cpu::bc.reg = value; break;
+						case Reg::name::DE: Cpu::de.reg = value; break;
+						case Reg::name::HL: Cpu::hl.reg = value; break;
+						case Reg::name::SP: Cpu::sp.reg = value; break;
+						case Reg::name::PC: Cpu::pc.reg = value; break;
+						case Reg::name::LCDC: Memory::WriteByte(Memory::Address::LCDC, value & 0xFF);  break;
+						case Reg::name::STAT: Memory::WriteByte(Memory::Address::STAT, value & 0xFF); break;
+						case Reg::name::LY: Memory::mem[Memory::Address::LY] =  (value & 0xFF); break;
+						case Reg::name::IME:  break;
+						case Reg::name::IF: Memory::WriteByte(Memory::Address::IF, value & 0xFF); break;
+						case Reg::name::IE: Memory::WriteByte(Memory::Address::IE, value & 0xFF); break;
+						case Reg::name::TIMA: Memory::WriteByte(Memory::Address::TIMA, value & 0xFF); break;
+						case Reg::name::TAC: Memory::WriteByte(Memory::Address::TAC, value & 0xFF); break;
+						case Reg::name::TMA: Memory::WriteByte(Memory::Address::TMA, value & 0xFF); break;
+						case Reg::name::DIV: Memory::WriteByte(Memory::Address::DIV, value & 0xFF); break;
+						case Reg::name::Z: if ((value & 0xF) == 1) Flags::Set(Flags::z); else Flags::Clear(Flags::z); break;
+						case Reg::name::N: if ((value & 0xF) == 1) Flags::Set(Flags::n); else Flags::Clear(Flags::n); break;
+						case Reg::name::H: if ((value & 0xF) == 1) Flags::Set(Flags::h); else Flags::Clear(Flags::h); break;
+						case Reg::name::C: if ((value & 0xF) == 1) Flags::Set(Flags::c); else Flags::Clear(Flags::c); break;
 					}
 					ImGui::CloseCurrentPopup();
 				}
@@ -732,11 +737,11 @@ void Debugger::RegisterViewer(const char *title, int width, int height, int x, i
 	ImGuiExtensions::TextWithColors("{FF0000}IE:   {FFFFFF}%02X", Memory::ReadByte(Memory::Address::IE)); ImGui::Unindent(80.f);
 	ImGuiExtensions::TextWithColors("{FF0000}PC: {FFFFFF}%04X", Cpu::pc.reg); ImGui::SameLine(); ImGui::SameLine(); ImGui::Indent(80.f);
 	ImGuiExtensions::TextWithColors("{FF0000}IF:   {FFFFFF}%02X", Memory::ReadByte(Memory::Address::IF)); ImGui::Unindent(80.f);
-	ImGuiExtensions::TextWithColors("{FF0000}TMA:  {FFFFFF}%02X", Memory::ReadByte(Memory::Address::TIMA)); ImGui::SameLine(); ImGui::Indent(80.f);
+	ImGuiExtensions::TextWithColors("{FF0000}TIMA: {FFFFFF}%02X", Memory::ReadByte(Memory::Address::TIMA)); ImGui::SameLine(); ImGui::Indent(80.f);
 	ImGuiExtensions::TextWithColors("{FF0000}DIV:  {FFFFFF}%02X", Memory::ReadByte(Memory::Address::DIV)); ImGui::Unindent(80.f);
 	ImGui::Checkbox("Z", &flagZ); ImGui::SameLine();
 	ImGui::Checkbox("N", &flagN); ImGui::SameLine();
-	ImGui::Checkbox("H", &flagH);
-	ImGui::Checkbox("C", &flagC);
+	ImGui::Checkbox("H", &flagH); ImGui::SameLine();
+	ImGui::Checkbox("C", &flagC); ImGui::SameLine();
 	ImGui::End();
 }

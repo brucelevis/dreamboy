@@ -16,7 +16,6 @@
     <File Name="src/flags.cpp"/>
     <File Name="src/rom.cpp"/>
     <File Name="src/cpuOperations.cpp"/>
-    <File Name="src/cpu.cpp"/>
     <File Name="src/memory.cpp"/>
     <VirtualDirectory Name="tinyfiledialogs">
       <File Name="src/tinyfiledialogs/tinyfiledialogs.h"/>
@@ -35,6 +34,7 @@
       <File Name="src/includes/debugger.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="imgui">
+      <File Name="src/cpu.cpp"/>
       <File Name="src/imgui/stb_truetype.h"/>
       <File Name="src/imgui/stb_textedit.h"/>
       <File Name="src/imgui/stb_rect_pack.h"/>
