@@ -739,6 +739,9 @@ void Debugger::RegisterViewer(const char *title, int width, int height, int x, i
 	ImGuiExtensions::TextWithColors("{FF0000}IF:   {FFFFFF}%02X", Memory::ReadByte(Memory::Address::IF)); ImGui::Unindent(80.f);
 	ImGuiExtensions::TextWithColors("{FF0000}TIMA: {FFFFFF}%02X", Memory::ReadByte(Memory::Address::TIMA)); ImGui::SameLine(); ImGui::Indent(80.f);
 	ImGuiExtensions::TextWithColors("{FF0000}DIV:  {FFFFFF}%02X", Memory::ReadByte(Memory::Address::DIV)); ImGui::Unindent(80.f);
+	ImGuiExtensions::TextWithColors("{FF0000}TAC:  {FFFFFF}%02X", Memory::ReadByte(Memory::Address::TAC)); ImGui::SameLine(); ImGui::Indent(80.f);
+	ImGuiExtensions::TextWithColors("{FF0000}TMA:  {FFFFFF}%02X", Memory::ReadByte(Memory::Address::TMA)); ImGui::SameLine(); ImGui::Unindent(80.f);
+	ImGui::NewLine();
 	ImGui::Checkbox("Z", &flagZ); ImGui::SameLine();
 	ImGui::Checkbox("N", &flagN); ImGui::SameLine();
 	ImGui::Checkbox("H", &flagH); ImGui::SameLine();
