@@ -38,6 +38,8 @@ class CpuOps
 		static void Rr8Mem(u16 address, bool checkZero, int cycles);
 		static void Slc8(u8 &in, int cycles);
 		static void Slc8Mem(u16 address, int cycles);
+		static void Sr8(u8 &in, int cycles);
+		static void Sr8Mem(u16 address, int cycles);
 		static void Src8(u8 &in, int cycles);
 		static void Src8Mem(u16 address, int cycles);
 		static void Daa(int cycles);
@@ -57,9 +59,9 @@ class CpuOps
 		static void Add16(u16 &in, u16 val, int cycles);
 		static void Inc16(u16 &in, int cycles);
 		static void Dec16(u16 &in, int cycles);
-		static void AddSpR8(s8 r8, int cycles);
+		static void AddSpR8(int cycles);
 		static void Load16(u16 &in, u16 val, int cycles);
-		static void LoadHlSpR8(s8 r8, int cycles);
+		static void LoadHlSpR8(int cycles);
 		static void JmpRel(bool condition, int cycles);
 		static void JmpImm(bool condition, int cycles);
 		static void Call(bool condition, int cycles);

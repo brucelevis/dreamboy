@@ -310,11 +310,11 @@ void Cpu::ExecuteOpcode()
 		case 0xDF: CpuOps::Rst(0x18, 16); break; // RST 18H
 		case 0xE0: CpuOps::Write8(0xFF00 + Memory::ReadByte(PC), A, 12); PC += 1; break; // LDH (a8),A
 		case 0xE1: HL = Memory::Pop(); cycles += 12; break; // POP HL
-		case 0xE2: CpuOps::Write8(0xFF00 + Memory::ReadByte(C), A, 8); break; // LD (C),A
+		case 0xE2: CpuOps::Write8(0xFF00 + C, A, 8); break; // LD (C),A
 		case 0xE5: Memory::Push(hl); cycles += 16; break; // PUSH HL
 		case 0xE6: CpuOps::And8(A, Memory::ReadByte(PC), 8); PC += 1; break; // AND A, d8
 		case 0xE7: CpuOps::Rst(0x20, 16); break; // RST 20H
-		case 0xE8: CpuOps::AddSpR8(Memory::ReadByte(PC), 16); PC += 1; break; // ADD SP,r8
+		case 0xE8: CpuOps::AddSpR8(16); PC += 1; break; // ADD SP,r8
 		case 0xE9: PC = HL; cycles += 4; break; // JP (HL)
 		case 0xEA: CpuOps::Write8(Memory::ReadWord(PC), A, 16); PC += 2; break; // LD (a16),A
 		case 0xEE: CpuOps::Xor8(A, Memory::ReadByte(PC), 8); PC += 1; break; // XOR A, d8
@@ -326,7 +326,7 @@ void Cpu::ExecuteOpcode()
 		case 0xF5: Memory::Push(af); cycles += 16; break; // PUSH AF
 		case 0xF6: CpuOps::Or8(A, Memory::ReadByte(PC), 8); PC += 1; break; // OR A, d8
 		case 0xF7: CpuOps::Rst(0x30, 16); break; // RST 30H
-		case 0xF8: CpuOps::LoadHlSpR8(Memory::ReadByte(PC), 12); PC += 1; break;// LD HL,SP+r8
+		case 0xF8: CpuOps::LoadHlSpR8(12); PC += 1; break; // LD HL,SP+r8
 		case 0xF9: CpuOps::Load16(SP, HL, 8); break; // LD SP,HL
 		case 0xFA: CpuOps::Load8(A, Memory::ReadByte(Memory::ReadWord(PC)), 16); PC += 2; break; // LD A,(a16)
 		case 0xFB: CpuOps::EI(4); break; // EI
@@ -385,14 +385,14 @@ void Cpu::ExecuteExtendedOpcode()
 		case 0x25: CpuOps::Slc8(L, 8); break; // SLA L
 		case 0x26: CpuOps::Slc8Mem(HL, 16); break; // SLA (HL)
 		case 0x27: CpuOps::Slc8(A, 8); break; // SLA A
-		case 0x28: CpuOps::Src8(B, 8); break; // SRA B
-		case 0x29: CpuOps::Src8(C, 8); break; // SRA C
-		case 0x2A: CpuOps::Src8(D, 8); break; // SRA D
-		case 0x2B: CpuOps::Src8(E, 8); break; // SRA E
-		case 0x2C: CpuOps::Src8(H, 8); break; // SRA H
-		case 0x2D: CpuOps::Src8(L, 8); break; // SRA L
-		case 0x2E: CpuOps::Src8Mem(HL, 16); break; // SRA (HL)
-		case 0x2F: CpuOps::Src8(A, 8); break; // SRA A
+		case 0x28: CpuOps::Sr8(B, 8); break; // SRA B
+		case 0x29: CpuOps::Sr8(C, 8); break; // SRA C
+		case 0x2A: CpuOps::Sr8(D, 8); break; // SRA D
+		case 0x2B: CpuOps::Sr8(E, 8); break; // SRA E
+		case 0x2C: CpuOps::Sr8(H, 8); break; // SRA H
+		case 0x2D: CpuOps::Sr8(L, 8); break; // SRA L
+		case 0x2E: CpuOps::Sr8Mem(HL, 16); break; // SRA (HL)
+		case 0x2F: CpuOps::Sr8(A, 8); break; // SRA A
 		case 0x30: CpuOps::BitSwap(B, 8); break; // SWAP B
 		case 0x31: CpuOps::BitSwap(C, 8); break; // SWAP C
 		case 0x32: CpuOps::BitSwap(D, 8); break; // SWAP D
@@ -401,19 +401,18 @@ void Cpu::ExecuteExtendedOpcode()
 		case 0x35: CpuOps::BitSwap(L, 8); break; // SWAP L
 		case 0x36: CpuOps::BitSwapMem(HL, 16); break; // SWAP (HL)
 		case 0x37: CpuOps::BitSwap(A, 8); break; // SWAP A
-		case 0x38: CpuOps::Rrc8(B, true, 8); break; // SRL B
-		case 0x39: CpuOps::Rrc8(C, true, 8); break; // SRL C
-		case 0x3A: CpuOps::Rrc8(D, true, 8); break; // SRL D
-		case 0x3B: CpuOps::Rrc8(E, true, 8); break; // SRL E
-		case 0x3C: CpuOps::Rrc8(H, true, 8); break; // SRL H
-		case 0x3D: CpuOps::Rrc8(L, true, 8); break; // SRL L
-		case 0x3E: CpuOps::Rrc8Mem(HL, true, 16); break; // SRL (HL)
-		case 0x3F: CpuOps::Rrc8(A, true, 8); break; // SRL A
+		case 0x38: CpuOps::Src8(B, 8); break; // SRL B
+		case 0x39: CpuOps::Src8(C, 8); break; // SRL C
+		case 0x3A: CpuOps::Src8(D, 8); break; // SRL D
+		case 0x3B: CpuOps::Src8(E, 8); break; // SRL E
+		case 0x3C: CpuOps::Src8(H, 8); break; // SRL H
+		case 0x3D: CpuOps::Src8(L, 8); break; // SRL L
+		case 0x3E: CpuOps::Src8Mem(HL, 16); break; // SRL (HL)
+		case 0x3F: CpuOps::Src8(A, 8); break; // SRL A
 
 		case 0x40 ... 0x7F:
 		{
-			u8 bit = (((opcode >> 4) - 4) + 1);
-			if (bit == 1) bit = 0;
+			u8 bit = ((opcode >> 3) & 0x7);
 
 			switch(opcode & 0xF)
 			{
@@ -425,22 +424,21 @@ void Cpu::ExecuteExtendedOpcode()
 				case 0x5: CpuOps::BitTest(L, bit, 8); break;  // BIT L,x
 				case 0x6: CpuOps::BitTestMem(HL, bit, 16); break; // BIT HL,x
 				case 0x7: CpuOps::BitTest(A, bit, 8); break; // BIT A,x
-				case 0x8: CpuOps::BitTest(B, bit + 1, 8); break; // BIT B,x
-				case 0x9: CpuOps::BitTest(C, bit + 1, 8); break; // BIT C,x
-				case 0xA: CpuOps::BitTest(D, bit + 1, 8); break; // BIT D,x
-				case 0xB: CpuOps::BitTest(E, bit + 1, 8); break; // BIT E,x
-				case 0xC: CpuOps::BitTest(H, bit + 1, 8); break; // BIT H,x
-				case 0xD: CpuOps::BitTest(L, bit + 1, 8); break; // BIT L,x
-				case 0xE: CpuOps::BitTestMem(HL, bit + 1, 16); break; // BIT HL,x
-				case 0xF: CpuOps::BitTest(A, bit + 1, 8); break; // BIT A,x
+				case 0x8: CpuOps::BitTest(B, bit, 8); break; // BIT B,x
+				case 0x9: CpuOps::BitTest(C, bit, 8); break; // BIT C,x
+				case 0xA: CpuOps::BitTest(D, bit, 8); break; // BIT D,x
+				case 0xB: CpuOps::BitTest(E, bit, 8); break; // BIT E,x
+				case 0xC: CpuOps::BitTest(H, bit, 8); break; // BIT H,x
+				case 0xD: CpuOps::BitTest(L, bit, 8); break; // BIT L,x
+				case 0xE: CpuOps::BitTestMem(HL, bit, 16); break; // BIT HL,x
+				case 0xF: CpuOps::BitTest(A, bit, 8); break; // BIT A,x
 			}
 		}
 		break;
 
 		case 0x80 ... 0xBF:
 		{
-			u8 bit = (((opcode >> 4) - 8) + 1);
-			if (bit == 1) bit = 0;
+			u8 bit = ((opcode >> 3) & 0x7);
 
 			switch(opcode & 0xF)
 			{
@@ -452,22 +450,21 @@ void Cpu::ExecuteExtendedOpcode()
 				case 0x5: CpuOps::BitClear(L, bit, 8); break;  // RES L,x
 				case 0x6: CpuOps::BitClearMem(HL, bit, 16); break; // RES HL,x
 				case 0x7: CpuOps::BitClear(A, bit, 8); break; // RES A,x
-				case 0x8: CpuOps::BitClear(B, bit + 1, 8); break; // RES B,x
-				case 0x9: CpuOps::BitClear(C, bit + 1, 8); break; // RES C,x
-				case 0xA: CpuOps::BitClear(D, bit + 1, 8); break; // RES D,x
-				case 0xB: CpuOps::BitClear(E, bit + 1, 8); break; // RES E,x
-				case 0xC: CpuOps::BitClear(H, bit + 1, 8); break; // RES H,x
-				case 0xD: CpuOps::BitClear(L, bit + 1, 8); break; // RES L,x
-				case 0xE: CpuOps::BitClearMem(HL, bit + 1, 16); break; // RES HL,x
-				case 0xF: CpuOps::BitClear(A, bit + 1, 8); break; // RES A,x
+				case 0x8: CpuOps::BitClear(B, bit, 8); break; // RES B,x
+				case 0x9: CpuOps::BitClear(C, bit, 8); break; // RES C,x
+				case 0xA: CpuOps::BitClear(D, bit, 8); break; // RES D,x
+				case 0xB: CpuOps::BitClear(E, bit, 8); break; // RES E,x
+				case 0xC: CpuOps::BitClear(H, bit, 8); break; // RES H,x
+				case 0xD: CpuOps::BitClear(L, bit, 8); break; // RES L,x
+				case 0xE: CpuOps::BitClearMem(HL, bit, 16); break; // RES HL,x
+				case 0xF: CpuOps::BitClear(A, bit, 8); break; // RES A,x
 			}
 		}
 		break;
 
 		case 0xC0 ... 0xFF:
 		{
-			u8 bit = (((opcode >> 4) - 12) + 1);
-			if (bit == 1) bit = 0;
+			u8 bit = ((opcode >> 3) & 0x7);
 
 			switch(opcode & 0xF)
 			{
@@ -479,14 +476,14 @@ void Cpu::ExecuteExtendedOpcode()
 				case 0x5: CpuOps::BitSet(L, bit, 8); break;  // SET L,x
 				case 0x6: CpuOps::BitSetMem(HL, bit, 16); break; // SET HL,x
 				case 0x7: CpuOps::BitSet(A, bit, 8); break; // SET A,x
-				case 0x8: CpuOps::BitSet(B, bit + 1, 8); break; // SET B,x
-				case 0x9: CpuOps::BitSet(C, bit + 1, 8); break; // SET C,x
-				case 0xA: CpuOps::BitSet(D, bit + 1, 8); break; // SET D,x
-				case 0xB: CpuOps::BitSet(E, bit + 1, 8); break; // SET E,x
-				case 0xC: CpuOps::BitSet(H, bit + 1, 8); break; // SET H,x
-				case 0xD: CpuOps::BitSet(L, bit + 1, 8); break; // SET L,x
-				case 0xE: CpuOps::BitSetMem(HL, bit + 1, 16); break; // SET HL,x
-				case 0xF: CpuOps::BitSet(A, bit + 1, 8); break; // SET A,x
+				case 0x8: CpuOps::BitSet(B, bit, 8); break; // SET B,x
+				case 0x9: CpuOps::BitSet(C, bit, 8); break; // SET C,x
+				case 0xA: CpuOps::BitSet(D, bit, 8); break; // SET D,x
+				case 0xB: CpuOps::BitSet(E, bit, 8); break; // SET E,x
+				case 0xC: CpuOps::BitSet(H, bit, 8); break; // SET H,x
+				case 0xD: CpuOps::BitSet(L, bit, 8); break; // SET L,x
+				case 0xE: CpuOps::BitSetMem(HL, bit, 16); break; // SET HL,x
+				case 0xF: CpuOps::BitSet(A, bit, 8); break; // SET A,x
 			}
 		}
 		break;

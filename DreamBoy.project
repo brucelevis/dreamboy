@@ -8,6 +8,7 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
+    <File Name="src/cpu.cpp"/>
     <File Name="src/lcd.cpp"/>
     <File Name="src/log.cpp"/>
     <File Name="src/main.cpp"/>
@@ -34,7 +35,6 @@
       <File Name="src/includes/debugger.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="imgui">
-      <File Name="src/cpu.cpp"/>
       <File Name="src/imgui/stb_truetype.h"/>
       <File Name="src/imgui/stb_textedit.h"/>
       <File Name="src/imgui/stb_rect_pack.h"/>

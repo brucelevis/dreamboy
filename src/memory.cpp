@@ -84,13 +84,13 @@ void Memory::WriteByte(u16 address, u8 data)
 		// if writing to work ram, write to echo ram
 		case Address::WRAM_START ... Address::WRAM_END:
 			mem[address] = data;
-			mem[address + 2000] = data;
+			mem[address + 0x2000] = data;
 		break;
 
 		// if writing to echo ram, write to work ram
 		case Address::ERAM_START ... Address::ERAM_END:
 			mem[address] = data;
-			mem[address - 2000] = data;
+			mem[address - 0x2000] = data;
 		break;
 
 		// everything should be ok to write to memory here...

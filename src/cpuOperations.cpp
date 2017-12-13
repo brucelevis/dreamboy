@@ -197,7 +197,7 @@ void CpuOps::Rlc8Mem(u16 address, bool checkZero,  int cycles)
 
 void CpuOps::Rrc8(u8 &in, bool checkZero, int cycles)
 {
-	u8 result = ((in << 1) | (in << 7));
+	u8 result = ((in >> 1) | (in << 7));
 
 	Flags::Clear(Flags::all);
 
@@ -219,7 +219,7 @@ void CpuOps::Rrc8Mem(u16 address, bool checkZero, int cycles)
 void CpuOps::Rl8(u8 &in, bool checkZero, int cycles)
 {
 	u8 carry = Flags::Get(Flags::c);
-	u8 result = ((in << 1) | carry);
+	u8 result = ((in << 1) | (carry));
 
 	Flags::Clear(Flags::all);
 
@@ -241,7 +241,7 @@ void CpuOps::Rl8Mem(u16 address, bool checkZero, int cycles)
 void CpuOps::Rr8(u8 &in, bool checkZero, int cycles)
 {
 	u8 carry = Flags::Get(Flags::c);
-	u8 result = ((in >> 1) | carry);
+	u8 result = ((in >> 1) | (carry << 7));
 
 	Flags::Clear(Flags::all);
 
@@ -281,7 +281,7 @@ void CpuOps::Slc8Mem(u16 address, int cycles)
 	Memory::WriteByte(address, data);
 }
 
-void CpuOps::Src8(u8 &in, int cycles)
+void CpuOps::Sr8(u8 &in, int cycles)
 {
 	u8 result = (in >> 1);
 	u8 oldMsb = Bit::Get(in, 7);
@@ -298,6 +298,28 @@ void CpuOps::Src8(u8 &in, int cycles)
 	Cpu::cycles += cycles;
 }
 
+void CpuOps::Sr8Mem(u16 address, int cycles)
+{
+	u8 data = Memory::ReadByte(address);
+
+	Sr8(data, cycles);
+	Memory::WriteByte(address, data);
+}
+
+void CpuOps::Src8(u8 &in, int cycles)
+{
+	u8 result = (in >> 1);
+
+	Flags::Clear(Flags::all);
+
+	if (result == 0) Flags::Set(Flags::z);
+	if (Bit::Get(in, 0)) Flags::Set(Flags::c);
+
+	in = result;
+
+	Cpu::cycles += cycles;
+}
+
 void CpuOps::Src8Mem(u16 address, int cycles)
 {
 	u8 data = Memory::ReadByte(address);
@@ -308,6 +330,27 @@ void CpuOps::Src8Mem(u16 address, int cycles)
 
 void CpuOps::Daa(int cycles)
 {
+	unsigned int a = Cpu::af.hi;
+
+	if (!Flags::Get(Flags::n))
+	{
+		if ((Flags::Get(Flags::h)) || ((a & 0xF) > 0x09)) a += 0x06;
+		if ((Flags::Get(Flags::c)) || (a > 0x9F)) a += 0x60;
+	}
+	else
+	{
+		if (Flags::Get(Flags::h)) a = ((a - 0x06) & 0xFF);
+		if (Flags::Get(Flags::c)) a -= 0x60;
+	}
+
+	if (a & 0x100) Flags::Set(Flags::c);
+	a &= 0xFF;
+
+	Flags::Clear(Flags::z | Flags::h);
+
+	if (a == 0) Flags::Set(Flags::z);
+
+	Cpu::af.hi = a;
 	Cpu::cycles += cycles;
 }
 
@@ -384,7 +427,7 @@ void CpuOps::BitClearMem(u16 address, u8 bit, int cycles)
 
 void CpuOps::BitSwap(u8 &in, int cycles)
 {
-	u8 result = (((in & 0xF0) >> 4) | ((in << 0x0F) << 4));
+	u8 result = (((in & 0xF0) >> 4) | ((in & 0x0F) << 4));
 
 	Flags::Clear(Flags::all);
 
@@ -441,14 +484,15 @@ void CpuOps::Dec16(u16 &in, int cycles)
 	Cpu::cycles += cycles;
 }
 
-void CpuOps::AddSpR8(s8 r8, int cycles)
+void CpuOps::AddSpR8(int cycles)
 {
+	s8 r8 = (s8)Memory::ReadByte(Cpu::pc.reg);
 	u16 result = (Cpu::sp.reg + r8);
 
 	Flags::Clear(Flags::all);
 
-	if (Bit::DidHalfCarry(Cpu::sp.reg, r8, 0xF)) Flags::Set(Flags::h);
-	if (Bit::DidCarry(Cpu::sp.reg + r8, 0xFF)) Flags::Set(Flags::c);
+	if (((Cpu::sp.reg & 0xF) + (r8 & 0xF)) > 0xF) Flags::Set(Flags::h);
+	if (((Cpu::sp.reg & 0xFF) + (r8)) > 0xFF) Flags::Set(Flags::c);
 
 	Cpu::sp.reg = result;
 	Cpu::cycles += cycles;
@@ -460,14 +504,15 @@ void CpuOps::Load16(u16 &in, u16 val, int cycles)
 	Cpu::cycles += cycles;
 }
 
-void CpuOps::LoadHlSpR8(s8 r8, int cycles)
+void CpuOps::LoadHlSpR8(int cycles)
 {
+	s8 r8 = (s8)Memory::ReadByte(Cpu::pc.reg);
 	u16 result = (Cpu::sp.reg + r8);
 
 	Flags::Clear(Flags::all);
 
-	if (Bit::DidHalfCarry(Cpu::hl.reg, result, 0xF)) Flags::Set(Flags::h);
-	if (Bit::DidCarry(Cpu::hl.reg + result, 0xFF)) Flags::Set(Flags::c);
+	if (((Cpu::hl.reg & 0xF) + (r8 & 0xF)) > 0xF) Flags::Set(Flags::h);
+	if (((Cpu::hl.reg & 0xFF) + (r8)) > 0xFF) Flags::Set(Flags::c);
 
 	Cpu::hl.reg = result;
 	Cpu::cycles += cycles;
