@@ -487,14 +487,13 @@ void CpuOps::Dec16(u16 &in, int cycles)
 void CpuOps::AddSpR8(int cycles)
 {
 	s8 r8 = (s8)Memory::ReadByte(Cpu::pc.reg);
-	u16 result = (Cpu::sp.reg + r8);
 
 	Flags::Clear(Flags::all);
 
-	if (((Cpu::sp.reg & 0xF) + (r8 & 0xF)) > 0xF) Flags::Set(Flags::h);
-	if (((Cpu::sp.reg & 0xFF) + (r8)) > 0xFF) Flags::Set(Flags::c);
+	if (Bit::DidHalfCarry(Cpu::sp.lo, (u8)r8, 0xF)) Flags::Set(Flags::h);
+	if (Bit::DidCarry(Cpu::sp.lo + (u8)r8, 0xFF)) Flags::Set(Flags::c);
 
-	Cpu::sp.reg = result;
+	Cpu::sp.reg =  (Cpu::sp.reg + r8);
 	Cpu::cycles += cycles;
 }
 
@@ -507,14 +506,13 @@ void CpuOps::Load16(u16 &in, u16 val, int cycles)
 void CpuOps::LoadHlSpR8(int cycles)
 {
 	s8 r8 = (s8)Memory::ReadByte(Cpu::pc.reg);
-	u16 result = (Cpu::sp.reg + r8);
 
 	Flags::Clear(Flags::all);
 
-	if (((Cpu::hl.reg & 0xF) + (r8 & 0xF)) > 0xF) Flags::Set(Flags::h);
-	if (((Cpu::hl.reg & 0xFF) + (r8)) > 0xFF) Flags::Set(Flags::c);
+	if (Bit::DidHalfCarry(Cpu::sp.lo, (u8)r8, 0xF)) Flags::Set(Flags::h);
+	if (Bit::DidCarry(Cpu::sp.lo + (u8)r8, 0xFF)) Flags::Set(Flags::c);
 
-	Cpu::hl.reg = result;
+	Cpu::hl.reg = (Cpu::sp.reg + r8);
 	Cpu::cycles += cycles;
 }
 
