@@ -8,10 +8,10 @@
  */
 
 // includes
-#include "src/includes/bit.h"
-#include "src/includes/lcd.h"
-#include "src/includes/log.h"
-#include "src/includes/memory.h"
+#include "includes/bit.h"
+#include "includes/lcd.h"
+#include "includes/log.h"
+#include "includes/memory.h"
 
 // definitions
 #define LCD_CLOCK_CYCLES 456

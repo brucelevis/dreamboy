@@ -9,7 +9,7 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include "src/includes/memory.h"
+#include "includes/memory.h"
 
 // init vars
 u8 Memory::mem[0x10000] = {0x00};

@@ -10,15 +10,15 @@
 // includes
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
-#include "src/imgui/imgui.h"
-#include "src/imgui/imgui_impl_sdl.h"
-#include "src/imgui/imgui_custom_extensions.h"
-#include "src/includes/debugger.h"
-#include "src/includes/cpu.h"
-#include "src/includes/lcd.h"
-#include "src/includes/log.h"
-#include "src/includes/memory.h"
-#include "src/includes/rom.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_sdl.h"
+#include "imgui/imgui_custom_extensions.h"
+#include "includes/debugger.h"
+#include "includes/cpu.h"
+#include "includes/lcd.h"
+#include "includes/log.h"
+#include "includes/memory.h"
+#include "includes/rom.h"
 
 // defines
 #define SCREEN_WIDTH 640

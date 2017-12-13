@@ -8,7 +8,7 @@
  */
 
 // includes
-#include "src/includes/log.h"
+#include "includes/log.h"
 
 static FILE *logFile;
 

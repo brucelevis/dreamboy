@@ -8,8 +8,8 @@
  */
 
 // includes
-#include "src/includes/cpu.h"
-#include "src/includes/flags.h"
+#include "includes/cpu.h"
+#include "includes/flags.h"
 
 // definitions
 #define F Cpu::af.lo

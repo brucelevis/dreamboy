@@ -8,16 +8,16 @@
  */
 
 // includes
-#include "src/imgui/imgui.h"
-#include "src/imgui/imgui_impl_sdl.h"
-#include "src/imgui/imgui_custom_extensions.h"
-#include "src/imgui/imgui_memory_editor.h"
-#include "src/tinyfiledialogs/tinyfiledialogs.h"
-#include "src/includes/debugger.h"
-#include "src/includes/flags.h"
-#include "src/includes/log.h"
-#include "src/includes/memory.h"
-#include "src/includes/rom.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_sdl.h"
+#include "imgui/imgui_custom_extensions.h"
+#include "imgui/imgui_memory_editor.h"
+#include "tinyfiledialogs/tinyfiledialogs.h"
+#include "includes/debugger.h"
+#include "includes/flags.h"
+#include "includes/log.h"
+#include "includes/memory.h"
+#include "includes/rom.h"
 
 // init vars
 bool Debugger::stepThrough = true;

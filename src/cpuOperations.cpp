@@ -8,11 +8,11 @@
  */
 
 // includes
-#include "src/includes/bit.h"
-#include "src/includes/cpu.h"
-#include "src/includes/cpuOperations.h"
-#include "src/includes/flags.h"
-#include "src/includes/memory.h"
+#include "includes/bit.h"
+#include "includes/cpu.h"
+#include "includes/cpuOperations.h"
+#include "includes/flags.h"
+#include "includes/memory.h"
 
 // # 8 bit operations # //
 

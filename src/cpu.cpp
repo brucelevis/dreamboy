@@ -7,11 +7,11 @@
  * Copyright 2017 - Danny Glover. All rights reserved.
  */
 
-#include "src/includes/cpu.h"
-#include "src/includes/cpuOperations.h"
-#include "src/includes/flags.h"
-#include "src/includes/log.h"
-#include "src/includes/memory.h"
+#include "includes/cpu.h"
+#include "includes/cpuOperations.h"
+#include "includes/flags.h"
+#include "includes/log.h"
+#include "includes/memory.h"
 
 // definitions
 #define A Cpu::af.hi

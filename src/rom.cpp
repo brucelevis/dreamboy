@@ -7,8 +7,8 @@
  * Copyright 2017 - Danny Glover. All rights reserved.
  */
 
-#include "src/includes/memory.h"
-#include "src/includes/rom.h"
+#include "includes/memory.h"
+#include "includes/rom.h"
 
 // init vars
 const char *Rom::filename = NULL;

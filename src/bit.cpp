@@ -8,7 +8,7 @@
  */
 
 // includes
-#include "src/includes/bit.h"
+#include "includes/bit.h"
 
 // responsible for setting a bit
 void Bit::Set(u8 &in, u8 bit)
