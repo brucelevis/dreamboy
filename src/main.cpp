@@ -15,6 +15,7 @@
 #include "imgui/imgui_custom_extensions.h"
 #include "includes/debugger.h"
 #include "includes/cpu.h"
+#include "includes/interrupts.h"
 #include "includes/lcd.h"
 #include "includes/log.h"
 #include "includes/memory.h"
@@ -139,6 +140,7 @@ static void CpuStep()
 	int currentCycle = (Cpu::cycles - cycleCount);
 
 	Lcd::Update(currentCycle);
+	Interrupts::Service();
 }
 
 // responsible for the emulation loop
@@ -229,7 +231,7 @@ int main(int argc, char *argv[])
 		Memory::Init();
 
 		Cpu::didLoadBios = false;
-		Rom::Load(cpuTests[7]);
+		Rom::Load(cpuTests[3]);
 		Cpu::Init();
 		Lcd::Init();
 		StartMainLoop();
