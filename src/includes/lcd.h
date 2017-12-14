@@ -22,7 +22,7 @@ class Lcd
 		static void Update(int cycles);
 		static void Render();
 
-private:
+	private:
 		struct Rgb
 		{
 			u8 r, g, b;
