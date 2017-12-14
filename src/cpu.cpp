@@ -10,6 +10,7 @@
 #include "includes/cpu.h"
 #include "includes/cpuOperations.h"
 #include "includes/flags.h"
+#include "includes/interrupts.h"
 #include "includes/log.h"
 #include "includes/memory.h"
 
@@ -78,12 +79,12 @@ void Cpu::ExecuteOpcode()
 	u8 opcode = Memory::ReadByte(PC);
 	instructionsRan += 1;
 
-	char buffer[1024];
-	snprintf(buffer, sizeof(buffer), "%04X:%04X:%04X:%04X:%04X:%04X:%04X\n", PC, opcode, AF, BC, DE, HL, SP);
-	Log::ToFile(buffer);
+	//char buffer[1024];
+	//snprintf(buffer, sizeof(buffer), "%04X:%04X:%04X:%04X:%04X:%04X:%04X\n", PC, opcode, AF, BC, DE, HL, SP);
+	//snprintf(buffer, sizeof(buffer), "%04X\n", opcode);
+	//Log::ToFile(buffer);
 
-	// TODO: Handle stop/halt
-	PC += 1;
+	if (!halted && !stopped) PC += 1;
 
 	switch(opcode)
 	{
@@ -303,7 +304,7 @@ void Cpu::ExecuteOpcode()
 		case 0xD6: CpuOps::Sub8(A, Memory::ReadByte(PC), 8); PC += 1; break; // SUB A, d8
 		case 0xD7: CpuOps::Rst(0x10, 16); break; // RST 10H
 		case 0xD8: CpuOps::Ret(Flags::Get(Flags::c), 8); break; // RET C
-		case 0xD9: CpuOps::Ret(true, 8); break; // RETI
+		case 0xD9: CpuOps::Ret(true, 8); Interrupts::ime = true; break; // RETI
 		case 0xDA: CpuOps::JmpImm(Flags::Get(Flags::c), 12); break; // JP C,a16
 		case 0xDC: CpuOps::Call(Flags::Get(Flags::c), 12); break; // CALL C,a16
 		case 0xDE: CpuOps::Sbc8(A, Memory::ReadByte(PC), 8); PC += 1; break; // SBC A,d8
@@ -333,6 +334,18 @@ void Cpu::ExecuteOpcode()
 		case 0xFE: CpuOps::Cmp8(A, Memory::ReadByte(PC), 8); PC += 1; break; // CP A, d8
 		case 0xFF: CpuOps::Rst(0x38, 16); break; // RST 38H
 		default: Log::Critical("unimplemented opcode %02X", opcode); break;
+	}
+
+	if (pendingInterrupt)
+	{
+		if (Interrupts::pendingCount >= 2)
+		{
+				Interrupts::ime = true;
+				Interrupts::pendingCount = -1;
+				pendingInterrupt = false;
+		}
+
+		Interrupts::pendingCount += 1;
 	}
 }
 

@@ -12,6 +12,7 @@
 #include "includes/cpu.h"
 #include "includes/cpuOperations.h"
 #include "includes/flags.h"
+#include "includes/interrupts.h"
 #include "includes/memory.h"
 
 // # 8 bit operations # //
@@ -600,10 +601,12 @@ void CpuOps::Halt(int cycles)
 
 void CpuOps::DI(int cycles)
 {
+	Interrupts::ime = false;
 	Cpu::cycles += cycles;
 }
 
 void CpuOps::EI(int cycles)
 {
+	Cpu::pendingInterrupt = true;
 	Cpu::cycles += cycles;
 }

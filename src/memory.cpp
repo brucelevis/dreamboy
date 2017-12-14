@@ -7,8 +7,7 @@
  * Copyright 2017 - Danny Glover. All rights reserved.
  */
 
-#include <cstdio>
-#include <cstdlib>
+// includes
 #include "includes/memory.h"
 
 // init vars
@@ -19,37 +18,40 @@ void Memory:: Init()
 {
 	memset(mem, 0x00, sizeof(mem));
 
-	Memory::mem[Address::TIMA] = 0x00;
-	Memory::mem[Address::TMA] = 0x00;
-	Memory::mem[Address::TAC] = 0x00;
-	Memory::mem[Address::LCDC] = 0x91;
-	Memory::mem[Address::STAT] = 0x00;
-	Memory::mem[Address::SCY] = 0x00;
-	Memory::mem[Address::SCX] = 0x00;
-	Memory::mem[Address::LYC] = 0x00;
-	Memory::mem[Address::BGP] = 0xBF;
-	Memory::mem[Address::OP0] = 0xFF;
-	Memory::mem[Address::OP1] = 0xFF;
-	Memory::mem[Address::WY] = 0x00;
-	Memory::mem[Address::WX] = 0x00;
-	Memory::mem[Address::IE] = 0x00;
-	Memory::mem[Address::NR10] = 0x80;
-	Memory::mem[Address::NR11] = 0xBF;
-	Memory::mem[Address::NR12] = 0xF3;
-	Memory::mem[Address::NR14] = 0xBF;
- 	Memory::mem[Address::NR21] = 0x3F;
-	Memory::mem[Address::NR22] = 0x00;
-	Memory::mem[Address::NR24] = 0xBF;
-	Memory::mem[Address::NR30] = 0x7F;
-	Memory::mem[Address::NR31] = 0xFF;
-	Memory::mem[Address::NR32] = 0x9F;
-	Memory::mem[Address::NR33] = 0xBF;
-	Memory::mem[Address::NR41] = 0xFF;
-	Memory::mem[Address::NR42] = 0xFF;
-	Memory::mem[Address::NR43] = 0x00;
-	Memory::mem[Address::NR50] = 0x77;
-	Memory::mem[Address::NR51] = 0xF3;
-	Memory::mem[Address::NR52] = 0xF1;
+	mem[Address::DIV] = 0xAB;
+	mem[Address::TIMA] = 0x00;
+	mem[Address::TMA] = 0x00;
+	mem[Address::TAC] = 0xF8;
+	mem[Address::LCDC] = 0x91;
+	mem[Address::STAT] = 0x85;
+	mem[Address::SCY] = 0x00;
+	mem[Address::SCX] = 0x00;
+	mem[Address::LYC] = 0x00;
+	mem[Address::BGP] = 0xBF;
+	mem[Address::OP0] = 0xFF;
+	mem[Address::OP1] = 0xFF;
+	mem[Address::WY] = 0x00;
+	mem[Address::WX] = 0x00;
+	mem[Address::P1] = 0xFF;
+	mem[Address::IF] = 0xE1;
+	mem[Address::IE] = 0x00;
+	mem[Address::NR10] = 0x80;
+	mem[Address::NR11] = 0xBF;
+	mem[Address::NR12] = 0xF3;
+	mem[Address::NR14] = 0xBF;
+ 	mem[Address::NR21] = 0x3F;
+	mem[Address::NR22] = 0x00;
+	mem[Address::NR24] = 0xBF;
+	mem[Address::NR30] = 0x7F;
+	mem[Address::NR31] = 0xFF;
+	mem[Address::NR32] = 0x9F;
+	mem[Address::NR33] = 0xBF;
+	mem[Address::NR41] = 0xFF;
+	mem[Address::NR42] = 0xFF;
+	mem[Address::NR43] = 0x00;
+	mem[Address::NR50] = 0x77;
+	mem[Address::NR51] = 0xF3;
+	mem[Address::NR52] = 0xF1;
 }
 
 // responsible for reading a byte from a specific memory location
@@ -74,6 +76,9 @@ void Memory::WriteByte(u16 address, u8 data)
 
 		// disable writes to LY (should never happen...)
 		case Address::LY: break;
+
+		// reset DIV if it is written to
+		case Address::DIV: mem[address] = 0x00; break;
 
 		// read from the serial port (useful for blarggs cpu tests)
 		case Address::SERIAL_CTRL:

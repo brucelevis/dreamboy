@@ -8,6 +8,7 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
+    <File Name="src/timer.cpp"/>
     <File Name="src/interrupts.cpp"/>
     <File Name="src/cpu.cpp"/>
     <File Name="src/lcd.cpp"/>
@@ -24,6 +25,7 @@
       <File Name="src/tinyfiledialogs/tinyfiledialogs.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="includes">
+      <File Name="src/includes/timer.h"/>
       <File Name="src/includes/interrupts.h"/>
       <File Name="src/includes/lcd.h"/>
       <File Name="src/includes/log.h"/>

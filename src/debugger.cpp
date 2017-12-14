@@ -15,9 +15,12 @@
 #include "tinyfiledialogs/tinyfiledialogs.h"
 #include "includes/debugger.h"
 #include "includes/flags.h"
+#include "includes/interrupts.h"
+#include "includes/lcd.h"
 #include "includes/log.h"
 #include "includes/memory.h"
 #include "includes/rom.h"
+#include "includes/timer.h"
 
 // init vars
 bool Debugger::stepThrough = true;
@@ -46,6 +49,9 @@ void Debugger::ResetSystem(const char *newRomFilename)
 	Memory::Init();
 	if (newRomFilename != NULL) Rom::Load(newRomFilename); else Rom::Reload();
 	Cpu::Init();
+	Timer::Init();
+	Lcd::Init();
+	Interrupts::Init();
 }
 
 // create a controls window
@@ -111,6 +117,8 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 
 	if (ImGui::Button("Reset", ImVec2(width - 16, 0)))
 	{
+		stepThrough = true;
+		stopAtBreakpoint = false;
 		ResetSystem();
 	}
 

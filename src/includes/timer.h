@@ -7,32 +7,19 @@
  * Copyright 2017 - Danny Glover. All rights reserved.
  */
 
-#ifndef INTERRUPTS_H
-#define INTERRUPTS_H
-
 // includes
 #include "typedefs.h"
 
-class Interrupts
+class Timer
 {
 	public:
 		static void Init();
-		static void Request(int id);
-		static void Service();
+		static u16 GetFrequency();
+		static bool Enabled();
+		static void Update(int cycles);
 
 	private:
-		static bool IsRequested(int id);
-		static bool IsEnabled(int id);
-		static void Reset(int id);
-		static int RequestedId();
-
-	public:
-		enum ID
-		{
-			VBLANK, LCD, TIMER, SERIAL, JOYPAD
-		};
-		static bool ime;
-		static u8 pendingCount;
+		static void UpdateDiv(int cycles);
+		static int timerCounter;
+		static int divCounter;
 };
-
-#endif

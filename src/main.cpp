@@ -20,6 +20,8 @@
 #include "includes/log.h"
 #include "includes/memory.h"
 #include "includes/rom.h"
+#include "includes/timer.h"
+#include "includes/typedefs.h"
 
 // defines
 #define SCREEN_WIDTH 640
@@ -136,10 +138,8 @@ static void CpuStep()
 	int cycleCount = Cpu::cycles;
 
 	Cpu::ExecuteOpcode();
-
-	int currentCycle = (Cpu::cycles - cycleCount);
-
-	Lcd::Update(currentCycle);
+	Timer::Update(Cpu::cycles - cycleCount);
+	Lcd::Update(Cpu::cycles - cycleCount);
 	Interrupts::Service();
 }
 
@@ -231,9 +231,11 @@ int main(int argc, char *argv[])
 		Memory::Init();
 
 		Cpu::didLoadBios = false;
-		Rom::Load(cpuTests[3]);
+		Rom::Load(cpuTests[2]);
 		Cpu::Init();
+		Timer::Init();
 		Lcd::Init();
+		Interrupts::Init();
 		StartMainLoop();
 	}
 

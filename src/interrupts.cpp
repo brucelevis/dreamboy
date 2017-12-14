@@ -7,7 +7,7 @@
  * Copyright 2017 - Danny Glover. All rights reserved.
  */
 
- // includes
+// includes
 #include "includes/bit.h"
 #include "includes/cpu.h"
 #include "includes/interrupts.h"
@@ -23,25 +23,27 @@ union InterruptType
 		u16 address;
 	};
 };
-static InterruptType vblank  = {{.bit = 0, .address = 0x0040}};
-static InterruptType stat = {{.bit = 1, .address = 0x0048}};
-static InterruptType timer = {{.bit = 2, .address = 0x0050}};
-static InterruptType serial = {{.bit = 3, .address = 0x0058}};
-static InterruptType joypad = {{.bit = 4, .address = 0x0060}};
-static InterruptType interruptList[5] = {vblank, stat, timer, serial, joypad};
+static InterruptType vblank  = {{.bit = 0, .address = 0x40}};
+static InterruptType lcd = {{.bit = 1, .address = 0x48}};
+static InterruptType timer = {{.bit = 2, .address = 0x50}};
+static InterruptType serial = {{.bit = 3, .address = 0x58}};
+static InterruptType joypad = {{.bit = 4, .address = 0x60}};
+static InterruptType interruptList[5] = {vblank, lcd, timer, serial, joypad};
 bool Interrupts::ime = false;
 u8 Interrupts::pendingCount = 0;
+static bool wasHalted = false;
 
 // responsible for initialisizing the interrupt system
 void Interrupts::Init()
 {
 	ime = false;
 	pendingCount = 0;
-	Memory::WriteByte(Memory::Address::IF, 0x00);
+	Memory::WriteByte(Memory::Address::IF, 0xE1);
+	Memory::WriteByte(Memory::Address::IE, 0x00);
 }
 
 // responsible for resetting a pending interrupt
-void Interrupts::Reset(u8 id)
+void Interrupts::Reset(int id)
 {
 	u8 data = Memory::ReadByte(Memory::Address::IF);
 	Bit::Clear(data, interruptList[id].bit);
@@ -49,44 +51,47 @@ void Interrupts::Reset(u8 id)
 }
 
 // responsible for detecting if an interrupt has been requested
-bool Interrupts::IsRequested(u8 id)
+bool Interrupts::IsRequested(int id)
 {
 	u8 data = Memory::ReadByte(Memory::Address::IF);
 	return Bit::Get(data, interruptList[id].bit);
 }
 
 // responsible for detecting if an interrupt has been enabled
-bool Interrupts::IsEnabled(u8 id)
+bool Interrupts::IsEnabled(int id)
 {
 	u8 data = Memory::ReadByte(Memory::Address::IE);
 	return Bit::Get(data, interruptList[id].bit);
 }
 
 // responsible for requesting an interrupt
-void Interrupts::Request(u8 id)
+void Interrupts::Request(int id)
 {
 	u8 data = Memory::ReadByte(Memory::Address::IF);
 	Bit::Set(data, interruptList[id].bit);
-	Memory::WriteByte(Memory::Address::IF, data);
+	Memory::WriteByte(Memory::Address::IF, data & 0xE);
 }
 
 // responsible for returning the id of the requested interrupt (if enabled)
-u8 Interrupts::RequestedId()
+int Interrupts::RequestedId()
 {
-	u8 id = -1;
-
-	for (u8 i = 0; i < 5; i++)
+	for (int i = 0; i < 5; i++)
 	{
-		if (IsRequested(i) && IsEnabled(i)) id = i; break;
+		if (IsRequested(i) && IsEnabled(i))
+		{
+			wasHalted = Cpu::halted;
+			Cpu::halted = false;
+			return i;
+		}
 	}
 
-	return id;
+	return -1;
 }
 
 // responsible for servicing an interrupt
 void Interrupts::Service()
 {
-	u8 id = RequestedId();
+	int id = RequestedId();
 
 	if (id >= 0 && ime)
 	{
@@ -94,6 +99,7 @@ void Interrupts::Service()
 		Memory::Push(Cpu::pc);
 
 		Cpu::pc.reg = interruptList[id].address;
+		wasHalted = false;
 		ime = false;
 	}
 }

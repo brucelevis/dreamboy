@@ -9,6 +9,7 @@
 
 // includes
 #include "includes/bit.h"
+#include "includes/interrupts.h"
 #include "includes/lcd.h"
 #include "includes/log.h"
 #include "includes/memory.h"
@@ -51,7 +52,11 @@ void Lcd::Update(int cycles)
 	{
 		LY += 1;
 
-		if (LY > 153)
+		if (LY == 144)
+		{
+			Interrupts::Request(Interrupts::ID::VBLANK);
+		}
+		else if (LY > 153)
 		{
 			LY = 0;
 		}
