@@ -253,10 +253,11 @@ void Lcd::DrawBackground()
 		u8 pixelData2 = Memory::ReadByte(tileLocation + tileYLine + 1);
 		u8 colorBit = (((xPos % 8) - 7) * -1);
 		u8 colorNum = ((Bit::Get(pixelData2, colorBit) << 1) | (Bit::Get(pixelData1, colorBit)));
+		Rgb pixelColor = GetColor(BGP, colorNum);
 
-		screen[LY][xPos][0] = GetColor(BGP, colorNum).r;
-		screen[LY][xPos][1] = GetColor(BGP, colorNum).g;
-		screen[LY][xPos][2] = GetColor(BGP, colorNum).b;
+		screen[LY][xPos][0] = pixelColor.r;
+		screen[LY][xPos][1] = pixelColor.g;
+		screen[LY][xPos][2] = pixelColor.b;
 	}
 }
 
