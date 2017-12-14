@@ -27,7 +27,7 @@ class Interrupts
 		static int RequestedId();
 
 	public:
-		enum ID
+		enum
 		{
 			VBLANK, LCD, TIMER, SERIAL, JOYPAD
 		};

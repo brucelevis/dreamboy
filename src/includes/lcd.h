@@ -20,8 +20,28 @@ class Lcd
 		static void Reset();
 		static bool Enabled();
 		static void Update(int cycles);
+		static void Render();
+
+private:
+		struct Rgb
+		{
+			u8 r, g, b;
+		};
+
+		static u8 SetMode(u8 mode);
+		static void SetStatus();
+		static bool IsBackgroundEnabled();
+		static bool IsWindowEnabled();
+		static bool IsSpritesEnabled();
+		static void UpdateTexture();
+		static Rgb GetColor(u8 palette, u8 bit);
+		static void DrawScanline();
+		static void DrawBackground();
+		static void DrawWindow();
+		static void DrawSprites();
 
 	private:
+		static u8 screen[144][160][3];
 		static int scanlineCounter;
 };
 

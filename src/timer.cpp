@@ -68,7 +68,7 @@ void Timer::Update(int cycles)
 
 		if (tima > 255)
 		{
-			Interrupts::Request(Interrupts::ID::TIMER);
+			Interrupts::Request(Interrupts::TIMER);
 			Memory::mem[Memory::Address::TIMA] = Memory::ReadByte(Memory::Address::TMA);
 		}
 

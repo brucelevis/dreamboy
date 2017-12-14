@@ -218,6 +218,7 @@ static void StartMainLoop()
 
 		ShowDebugger();
 		ImGui::Render();
+		Lcd::Render();
 
 		SDL_GL_SwapWindow(window);
 	}
