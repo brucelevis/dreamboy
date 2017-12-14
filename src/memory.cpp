@@ -9,6 +9,7 @@
 
 // includes
 #include "includes/memory.h"
+#include "includes/rom.h"
 
 // init vars
 u8 Memory::mem[0x10000] = {0x00};
@@ -96,6 +97,14 @@ void Memory::WriteByte(u16 address, u8 data)
 		case Address::ERAM_START ... Address::ERAM_END:
 			mem[address] = data;
 			mem[address - 0x2000] = data;
+		break;
+
+		// if writing specific data to unmapped memory
+		case Address::UNMAPPED_START ... Address::UNMAPPED_END:
+		{
+			// copy rom back over bios
+			if (data == 0x1) Rom::Reload();
+		}
 		break;
 
 		// everything should be ok to write to memory here...

@@ -7,17 +7,19 @@
  * Copyright 2017 - Danny Glover. All rights reserved.
  */
 
-#ifndef ROM_H
-#define ROM_H
+#ifndef BIOS_H
+#define BIOS_H
 
 // includes
 #include "typedefs.h"
 
-class Rom
+class Bios
 {
 	public:
 		static bool Load(const char *filePath);
 		static void Reload();
+
+	private:
 		static const char *filename;
 };
 

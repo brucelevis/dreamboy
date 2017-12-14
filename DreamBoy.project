@@ -8,6 +8,7 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
+    <File Name="src/bios.cpp"/>
     <File Name="src/timer.cpp"/>
     <File Name="src/interrupts.cpp"/>
     <File Name="src/cpu.cpp"/>
@@ -25,6 +26,7 @@
       <File Name="src/tinyfiledialogs/tinyfiledialogs.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="includes">
+      <File Name="src/includes/bios.h"/>
       <File Name="src/includes/timer.h"/>
       <File Name="src/includes/interrupts.h"/>
       <File Name="src/includes/lcd.h"/>
@@ -86,6 +88,7 @@
       <PreBuild/>
       <PostBuild>
         <Command Enabled="yes">cp src/imgui/extra_fonts/Cousine-Bold.ttf Debug/Cousine-Bold.ttf</Command>
+        <Command Enabled="yes">cp bios.bin Debug/bios.bin</Command>
         <Command Enabled="yes">rsync -r roms/ Debug/roms/</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
@@ -132,7 +135,8 @@
       <PreBuild/>
       <PostBuild>
         <Command Enabled="yes">cp src/imgui/extra_fonts/Cousine-Bold.ttf Release/Cousine-Bold.ttf</Command>
-        <Command Enabled="yes">rsync -r roms/ Debug/roms/</Command>
+        <Command Enabled="yes">cp bios.bin Release/bios.bin</Command>
+        <Command Enabled="yes">rsync -r roms/ Release/roms/</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>

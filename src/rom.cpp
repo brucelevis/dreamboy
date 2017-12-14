@@ -14,16 +14,16 @@
 const char *Rom::filename = NULL;
 
 // responsible for loading a rom
-bool Rom::Load(const char *filepath)
+bool Rom::Load(const char *filePath)
 {
 	bool result = false;
-	FILE *gbRom = fopen(filepath, "rb");
+	FILE *gbRom = fopen(filePath, "rb");
 
 	if (gbRom)
 	{
-		printf("loaded rom '%s' successfully\n", filepath);
+		printf("loaded rom '%s' successfully\n", filePath);
 		result = true;
-		filename = filepath;
+		filename = filePath;
 
 		fread(&Memory::mem, 1, 0x8000, gbRom);
 

@@ -60,8 +60,8 @@ AS       := /usr/bin/as
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects0=$(IntermediateDirectory)/src_interrupts.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_impl_sdl.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_draw.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_memory.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_debugger.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_bit.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_log.cpp$(ObjectSuffix) \
-	$(IntermediateDirectory)/src_main.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpu.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_flags.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_timer.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_rom.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpuOperations.cpp$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/src_bios.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_interrupts.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_impl_sdl.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_draw.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_memory.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_debugger.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_bit.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_lcd.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_imgui_imgui_custom_extensions.cpp$(ObjectSuffix) \
+	$(IntermediateDirectory)/src_log.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_main.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpu.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_flags.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_tinyfiledialogs_tinyfiledialogs.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_timer.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_rom.cpp$(ObjectSuffix) $(IntermediateDirectory)/src_cpuOperations.cpp$(ObjectSuffix) 
 
 
 
@@ -82,6 +82,7 @@ $(OutputFile): $(IntermediateDirectory)/.d $(Objects)
 PostBuild:
 	@echo Executing Post Build commands ...
 	cp src/imgui/extra_fonts/Cousine-Bold.ttf Debug/Cousine-Bold.ttf
+	cp bios.bin Debug/bios.bin
 	rsync -r roms/ Debug/roms/
 	@echo Done
 
@@ -98,6 +99,14 @@ PreBuild:
 ##
 ## Objects
 ##
+$(IntermediateDirectory)/src_bios.cpp$(ObjectSuffix): src/bios.cpp $(IntermediateDirectory)/src_bios.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/bios.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_bios.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/src_bios.cpp$(DependSuffix): src/bios.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/src_bios.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/src_bios.cpp$(DependSuffix) -MM src/bios.cpp
+
+$(IntermediateDirectory)/src_bios.cpp$(PreprocessSuffix): src/bios.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/src_bios.cpp$(PreprocessSuffix) src/bios.cpp
+
 $(IntermediateDirectory)/src_interrupts.cpp$(ObjectSuffix): src/interrupts.cpp $(IntermediateDirectory)/src_interrupts.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/danny/projects/dreamboy/src/interrupts.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/src_interrupts.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/src_interrupts.cpp$(DependSuffix): src/interrupts.cpp

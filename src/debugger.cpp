@@ -13,6 +13,7 @@
 #include "imgui/imgui_custom_extensions.h"
 #include "imgui/imgui_memory_editor.h"
 #include "tinyfiledialogs/tinyfiledialogs.h"
+#include "includes/bios.h"
 #include "includes/debugger.h"
 #include "includes/flags.h"
 #include "includes/interrupts.h"
@@ -48,6 +49,7 @@ void Debugger::ResetSystem(const char *newRomFilename)
 {
 	Memory::Init();
 	if (newRomFilename != NULL) Rom::Load(newRomFilename); else Rom::Reload();
+	if (Cpu::didLoadBios) Bios::Reload();
 	Cpu::Init();
 	Timer::Init();
 	Lcd::Init();

@@ -78,6 +78,8 @@ class Memory
 				static const u16 PROT_MEM_END = 0xFEFF;
 				static const u16 HRAM_START = 0xFF80;
 				static const u16 HRAM_END = 0xFFFE;
+				static const u16 UNMAPPED_START = 0xFF4C;
+				static const u16 UNMAPPED_END = 0xFF7F;
 				static const u16 ROM_BK0_START = 0x0000;
 				static const u16 ROM_BK0_END = 0x3FFF;
 				static const u16 ROM_BK1_START = 0x4000;

@@ -13,6 +13,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_custom_extensions.h"
+#include "includes/bios.h"
 #include "includes/debugger.h"
 #include "includes/cpu.h"
 #include "includes/interrupts.h"
@@ -231,8 +232,9 @@ int main(int argc, char *argv[])
 		Log::Init();
 		Memory::Init();
 
-		Cpu::didLoadBios = false;
-		Rom::Load(cpuTests[2]);
+		//Rom::Load(cpuTests[2]);
+		Rom::Load("roms/Tetris.gb");
+		Cpu::didLoadBios = Bios::Load("bios.bin");
 		Cpu::Init();
 		Timer::Init();
 		Lcd::Init();
