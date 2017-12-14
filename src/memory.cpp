@@ -58,6 +58,29 @@ void Memory:: Init()
 // responsible for reading a byte from a specific memory location
 u8 Memory::ReadByte(u16 address)
 {
+	switch(address)
+	{
+		case Address::P1: return 0xFF; break;
+		case Address::NR10: return 0xFF; break;
+		case Address::NR11: return 0xFF; break;
+		case Address::NR12: return 0xFF; break;
+		case Address::NR14: return 0xFF; break;
+		case Address::NR21: return 0xFF; break;
+		case Address::NR22: return 0xFF; break;
+		case Address::NR24: return 0xFF; break;
+		case Address::NR30: return 0xFF; break;
+		case Address::NR31: return 0xFF; break;
+		case Address::NR32: return 0xFF; break;
+		case Address::NR33: return 0xFF; break;
+		case Address::NR41: return 0xFF; break;
+		case Address::NR42: return 0xFF; break;
+		case Address::NR43: return 0xFF; break;
+		case Address::NR50: return 0xFF; break;
+		case Address::NR51: return 0xFF; break;
+		case Address::NR52: return 0xFF; break;
+		default: break;
+	}
+
 	return mem[address];
 }
 

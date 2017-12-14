@@ -247,7 +247,7 @@ void Lcd::DrawBackground()
 		u16 tileRow = ((yPos / 8) * 32);
 		u8 tileYLine = ((yPos % 8) * 2);
 		u16 tileAddress = (tileMemory + tileCol + tileRow);
-		s16 tileNum = (unsignedTile) ? Memory::ReadByte(tileAddress) : (s8)Memory::ReadByte(tileAddress);
+		s16 tileNum = (unsignedTile) ? (u8)Memory::ReadByte(tileAddress) : (s8)Memory::ReadByte(tileAddress);
 		u16 tileLocation = (unsignedTile) ? (tileData +  (tileNum * 16)) : ((tileData) + ((tileNum  + 128) * 16));
 		u8 pixelData1 = Memory::ReadByte(tileLocation + tileYLine);
 		u8 pixelData2 = Memory::ReadByte(tileLocation + tileYLine + 1);

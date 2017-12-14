@@ -47,7 +47,7 @@ void Interrupts::Reset(int id)
 {
 	u8 data = Memory::ReadByte(Memory::Address::IF);
 	Bit::Clear(data, interruptList[id].bit);
-	Memory::WriteByte(Memory::Address::IF, data);
+	Memory::WriteByte(Memory::Address::IF, (data & 0x1F));
 }
 
 // responsible for detecting if an interrupt has been requested
@@ -69,7 +69,7 @@ void Interrupts::Request(int id)
 {
 	u8 data = Memory::ReadByte(Memory::Address::IF);
 	Bit::Set(data, interruptList[id].bit);
-	Memory::WriteByte(Memory::Address::IF, data & 0xE);
+	Memory::WriteByte(Memory::Address::IF, (data & 0x1F));
 }
 
 // responsible for returning the id of the requested interrupt (if enabled)
