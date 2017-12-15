@@ -8,14 +8,16 @@
  */
 
 // includes
+#include "includes/mbc.h"
 #include "includes/mbc1.h"
-#include "includes/log.h"
 #include "includes/memory.h"
 #include "includes/rom.h"
 
-// responsible for managing MBC1
-void Mbc1::Manage(u16 address, u8 data)
+void Mbc::Manage(u16 address, u8 data)
 {
-	int bankNo = (data * 0x4000);
-	memcpy(&Memory::mem[0x4000], &Rom::rom[bankNo], 0x4000);
+	switch(Rom::mbcType)
+	{
+		case 0x1 ... 0x3: Mbc1::Manage(address, data); break;
+		default: break;
+	}
 }

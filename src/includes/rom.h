@@ -18,6 +18,12 @@ class Rom
 	public:
 		static bool Load(const char *filePath);
 		static void Reload();
+
+	public:
+		static u8 rom[0x4000 * 128];
+		static u8 mbcType;
+		static u8 romSize;
+		static u8 ramSize;
 		static const char *filename;
 };
 

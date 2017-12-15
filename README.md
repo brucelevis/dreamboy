@@ -1,4 +1,4 @@
-## DreamBoy - A [Nintendo GameBoy](https://en.wikipedia.org/wiki/Game_Boy) Emulator written in C++
+## DreamBoy - A [Nintendo GameBoy](https://en.wiki![Super Mario Land II](/home/danny/projects/dreamboy/screenshots/Super Mario Land_II.png) pedia.org/wiki/Game_Boy) Emulator written in C++
 
 DreamBoy is a work in-progress [Nintendo GameBoy](https://en.wikipedia.org/wiki/Game_Boy) Emulator. Its aim is to offer high compatibility and good performance. 
 
@@ -6,11 +6,31 @@ This project is a "next step" project for me, after writing several [Chip8](http
 
 #### Screenshots:
 
-- none yet...
+![Aladdin](./screenshots/Aladdin.png) ![Balloon Kid](./screenshots/Balloon_Kid.png) ![Castlevania II](./screenshots/Castlevania_II.png)
+![Donkey Kong](/home/danny/projects/dreamboy/screenshots/Donkey_Kong.png) ![Dr Mario](/home/danny/projects/dreamboy/screenshots/Dr_Mario.png) ![Kirbys Dreamland](/home/danny/projects/dreamboy/screenshots/Kirbys_Dreamland.png) 
+![Super Mario Land](/home/danny/projects/dreamboy/screenshots/Super_Mario_Land.png) ![Super Mario Land II](/home/danny/projects/dreamboy/screenshots/Super_Mario_Land_II.png) ![Tetris](/home/danny/projects/dreamboy/screenshots/Tetris.png) 
+
+#### Status:
+
+Blarggs Cpu Instruction tests:
+
+|#|name|state|
+|-|-|-|
+|01|special|:white_check_mark:|
+|02|interrupts|:white_check_mark:|
+|03|op sp,hl|:white_check_mark:|
+|04|op r,imm|:white_check_mark:|
+|05|op rp|:white_check_mark:|
+|06|ld r,r|:white_check_mark:|
+|07|jr,jp,call,ret,rst|:white_check_mark:|
+|08|misc instrs|:white_check_mark:|
+|09|op r,r|:white_check_mark:|
+|10|bit ops|:white_check_mark:|
+|11|op a,(hl)|:white_check_mark:|
 
 #### Technology Used:
 
-DreamBoy uses [C++ 11](https://en.wikipedia.org/wiki/C%2B%2B11) and [SDL 2](https://www.libsdl.org/download-2.0.php).
+DreamBoy uses [C++ 11](https://en.wikipedia.org/wiki/C%2B%2B11) and [SDL 2](https://www.libsdl.org/download-2.0.php) with OpenGL for drawing the GameBoy Lcd.
 
 #### Supported Operating Systems:
 

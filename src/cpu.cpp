@@ -333,7 +333,7 @@ void Cpu::ExecuteOpcode()
 		case 0xFB: CpuOps::EI(4); break; // EI
 		case 0xFE: CpuOps::Cmp8(A, Memory::ReadByte(PC), 8); PC += 1; break; // CP A, d8
 		case 0xFF: CpuOps::Rst(0x38, 16); break; // RST 38H
-		default: Log::Critical("unimplemented opcode %02X", opcode); break;
+		default: Log::Critical("Unimplemented opcode %02X", opcode); break;
 	}
 
 	if (pendingInterrupt)
@@ -501,7 +501,7 @@ void Cpu::ExecuteExtendedOpcode()
 		}
 		break;
 
-		default: Log::Critical("unimplemented (prefix-CB) opcode %02X", opcode);
+		default: Log::Critical("Unimplemented (prefix-CB) opcode %02X", opcode);
 	}
 }
 

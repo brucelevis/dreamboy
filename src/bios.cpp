@@ -9,6 +9,7 @@
 
 // includes
 #include "includes/bios.h"
+#include "includes/log.h"
 #include "includes/memory.h"
 
 // init vars
@@ -22,18 +23,17 @@ bool Bios::Load(const char *filePath)
 
 	if (biosRom)
 	{
-		printf("loaded bios '%s' successfully\n", filePath);
 		result = true;
 		filename = filePath;
 
 		fread(&Memory::mem, 1, 0x100, biosRom);
+		Log::Print("Loaded bios '%s' successfully", filePath);
 	}
 	else
 	{
-		printf("FAILED TO LOAD bios '%s'\n", filename);
+		Log::Critical("Failed to load bios at filepath: '%s'", filePath);
 	}
 
-	// close the bios
 	fclose(biosRom);
 
 	return result;

@@ -8,6 +8,7 @@
  */
 
 // includes
+#include "includes/mbc.h"
 #include "includes/memory.h"
 #include "includes/rom.h"
 
@@ -124,10 +125,13 @@ void Memory::WriteByte(u16 address, u8 data)
 
 		// if writing specific data to unmapped memory
 		case Address::UNMAPPED_START ... Address::UNMAPPED_END:
-		{
 			// copy rom back over bios
 			if (data == 0x1) Rom::Reload();
-		}
+		break;
+
+		// rom banking
+		case 0x2000 ... 0x3FFF:
+			Mbc::Manage(address, data);
 		break;
 
 		// everything should be ok to write to memory here...

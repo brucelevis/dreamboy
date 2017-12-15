@@ -8,9 +8,14 @@
  */
 
 #include "includes/memory.h"
+#include "includes/log.h"
 #include "includes/rom.h"
 
 // init vars
+u8 Rom::rom[0x4000 * 128] = {0x00};
+u8 Rom::mbcType = 0x00;
+u8 Rom::romSize = 0x00;
+u8 Rom::ramSize = 0x00;
 const char *Rom::filename = NULL;
 
 // responsible for loading a rom
@@ -21,29 +26,32 @@ bool Rom::Load(const char *filePath)
 
 	if (gbRom)
 	{
-		printf("loaded rom '%s' successfully\n", filePath);
-		result = true;
-		filename = filePath;
-
+		fread(&rom, 1, sizeof(rom), gbRom);
+		fseek(gbRom, SEEK_SET, SEEK_SET);
 		fread(&Memory::mem, 1, 0x8000, gbRom);
 
-		// print the rom name
+		result = true;
+		filename = filePath;
+		mbcType = Memory::ReadByte(Memory::Address::ROM_TYPE);
+		romSize = Memory::ReadByte(Memory::Address::ROM_SIZE);
+		ramSize = Memory::ReadByte(Memory::Address::ROM_RAM_SIZE);
+
+		Log::Print("Loaded rom '%s' successfully", filePath);
 		printf("Rom Name: ");
+
 		for (u16 i = Memory::Address::ROM_NAME_START; i < Memory::Address::ROM_NAME_END; i++)
 		{
-			printf("%c", Memory::mem[i]);
+			printf("%c", Memory::ReadByte(i));
 		}
-		printf("\n");
 
-		// print the rom cartridge type
-		printf("Rom Cartridge Type: %02x | Rom-Size: %02x | Ram-Size: %02x\n", Memory::mem[Memory::Address::ROM_TYPE], Memory::mem[Memory::Address::ROM_SIZE], Memory::mem[Memory::Address::ROM_RAM_SIZE]);
+		printf("\n");
+		Log::Print("Rom Cartridge Type: %02X | Rom-Size: %02X | Ram-Size: %02X", mbcType, romSize, ramSize);
 	}
 	else
 	{
-		printf("FAILED TO LOAD rom '%s'\n", filename);
+		Log::Critical("Failed to load rom at filepath: '%s'", filePath);
 	}
 
-	// close the rom
 	fclose(gbRom);
 
 	return result;

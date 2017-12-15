@@ -8,6 +8,8 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
+    <File Name="src/mbc.cpp"/>
+    <File Name="src/mbc1.cpp"/>
     <File Name="src/bios.cpp"/>
     <File Name="src/timer.cpp"/>
     <File Name="src/interrupts.cpp"/>
@@ -26,6 +28,8 @@
       <File Name="src/tinyfiledialogs/tinyfiledialogs.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="includes">
+      <File Name="src/includes/mbc.h"/>
+      <File Name="src/includes/mbc1.h"/>
       <File Name="src/includes/bios.h"/>
       <File Name="src/includes/timer.h"/>
       <File Name="src/includes/interrupts.h"/>

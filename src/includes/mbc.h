@@ -7,15 +7,16 @@
  * Copyright 2017 - Danny Glover. All rights reserved.
  */
 
-// includes
-#include "includes/mbc1.h"
-#include "includes/log.h"
-#include "includes/memory.h"
-#include "includes/rom.h"
+#ifndef MBC_H
+#define MBC_H
 
-// responsible for managing MBC1
-void Mbc1::Manage(u16 address, u8 data)
+// includes
+#include "typedefs.h"
+
+class Mbc
 {
-	int bankNo = (data * 0x4000);
-	memcpy(&Memory::mem[0x4000], &Rom::rom[bankNo], 0x4000);
-}
+	public:
+		static void Manage(u16 address, u8 data);
+};
+
+#endif
