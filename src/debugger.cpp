@@ -516,6 +516,9 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 	if (ImGui::Button("Hide Debugger", ImVec2(width - 16, 0)))
 	{
 		debuggerActive = false;
+		// make the GameBoy Lcd occupy the entire screen
+		Lcd::width = 640;
+		Lcd::height = 480;
 		// should scale the game to full screen here too...
 	}
 

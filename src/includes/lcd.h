@@ -40,6 +40,10 @@ class Lcd
 		static void DrawWindow();
 		static void DrawSprites();
 
+	public:
+		static int width;
+		static int height;
+
 	private:
 		static u8 screen[144][160][3];
 		static int scanlineCounter;
