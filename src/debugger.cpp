@@ -23,13 +23,13 @@
 #include "includes/log.h"
 #include "includes/memory.h"
 #include "includes/rom.h"
-#include "includes/stb/stb_image_write.h"
+#include "src/stb/stb_image_write.h"
 #include "includes/timer.h"
 
 // init vars
 bool Debugger::stepThrough = true;
 bool Debugger::stopAtBreakpoint = false;
-bool Debugger::debuggerActive = false;
+bool Debugger::active = true;
 u16 Debugger::breakpoint = 0x00;
 static char breakpointBuffer[256];
 static char regBuffer[256];
@@ -71,6 +71,39 @@ void Debugger::SaveScreenshot()
 	sprintf(outputFilename,"%s.jpg",outputFilename);
 
 	stbi_write_jpg(outputFilename, 160, 144, 3, Lcd::screen, 100);
+}
+
+// responsible for showing the debugger
+void Debugger::ShowDebugger()
+{
+	active = true;
+	// make the GameBoy Lcd occupy the entire screen
+	Lcd::width = 160;
+	Lcd::height = 144;
+}
+
+// responsible for hiding the debugger
+void Debugger::HideDebugger()
+{
+	active = false;
+	// make the GameBoy Lcd occupy the entire screen
+	Lcd::width = 640;
+	Lcd::height = 480;
+}
+
+// responsible for selecting a rom
+void Debugger::SelectRom()
+{
+	char const *validExtensions[4] = {"*.gb", "*.GB", "*.bin", "*.BIN"};
+	const char *filename = tinyfd_openFileDialog("Select Rom", "", 4, validExtensions, NULL, 0);
+
+	if (filename != NULL)
+	{
+		stepThrough = true;
+		stopAtBreakpoint = false;
+
+		ResetSystem(filename);
+	}
 }
 
 // create a controls window
@@ -505,16 +538,7 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 
 	if (ImGui::Button("Open Rom", ImVec2(width - 16, 0)))
 	{
-		char const *validExtensions[4] = {"*.gb", "*.GB", "*.bin", "*.BIN"};
-		const char *filename = tinyfd_openFileDialog("Select Rom", "", 4, validExtensions, NULL, 0);
-
-		if (filename != NULL)
-		{
-			stepThrough = true;
-			stopAtBreakpoint = false;
-
-			ResetSystem(filename);
-		}
+		SelectRom();
 	}
 
 	if (ImGui::Button("Save State", ImVec2(width - 16, 0)))
@@ -537,10 +561,7 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 
 	if (ImGui::Button("Hide Debugger", ImVec2(width - 16, 0)))
 	{
-		debuggerActive = false;
-		// make the GameBoy Lcd occupy the entire screen
-		Lcd::width = 640;
-		Lcd::height = 480;
+		HideDebugger();
 	}
 
 	if (ImGui::Button(aboutPopup, ImVec2(width - 16, 0)))

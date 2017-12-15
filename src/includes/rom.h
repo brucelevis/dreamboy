@@ -21,6 +21,7 @@ class Rom
 
 	public:
 		static u8 rom[0x4000 * 128];
+		static u8 ram[0x2000 * 4];
 		static u8 mbcType;
 		static u8 romSize;
 		static u8 ramSize;

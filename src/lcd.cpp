@@ -81,8 +81,6 @@ void Lcd::Update(int cycles)
 
 	if (scanlineCounter >= LCD_CLOCK_CYCLES)
 	{
-		LY += 1;
-
 		if (LY < 144)
 		{
 			DrawScanline();
@@ -96,6 +94,8 @@ void Lcd::Update(int cycles)
 		{
 			LY = 0x00;
 		}
+
+		LY += 1;
 
 		scanlineCounter -= LCD_CLOCK_CYCLES;
 	}
