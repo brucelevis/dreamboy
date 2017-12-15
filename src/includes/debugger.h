@@ -24,6 +24,7 @@ class Debugger
 		static void ShowDebugger();
 		static void HideDebugger();
 		static void SelectRom();
+		static void RemoveStates();
 		static void ControlsWindow(const char *title, int width, int height, int x, int y);
 		static void RomInfoWindow(const char *title, int width, int height, int x, int y);
 		static void FileWindow(const char *title, int width, int height, int x, int y);

@@ -21,8 +21,8 @@ class Cpu
 	public:
 		static void Init();
 		static void ExecuteOpcode();
-		static bool LoadState(unsigned int num = 0);
-		static void SaveState(unsigned int num = 0);
+		static bool LoadState(bool fromDebugger, unsigned int num = 0);
+		static void SaveState(bool fromDebugger, unsigned int num = 0);
 
 	private:
 		static void ExecuteExtendedOpcode();

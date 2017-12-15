@@ -23,7 +23,8 @@
 #include "includes/log.h"
 #include "includes/memory.h"
 #include "includes/rom.h"
-#include "src/stb/stb_image_write.h"
+#include "stb/stb_image_write.h"
+#include "tinydir/tinydir.h"
 #include "includes/timer.h"
 
 // init vars
@@ -62,15 +63,42 @@ void Debugger::ResetSystem(const char *newRomFilename)
 // responsible for saving a screenshot
 void Debugger::SaveScreenshot()
 {
-	char outputFilename[256];
+	char outputFilename[512];
+	char outputFilePath[512];
 	const char *filename;
 	(filename = strrchr(Rom::filename, '/')) ? ++filename : (filename = Rom::filename);
 
 	// get the current file extension and rename it to jpg
 	sscanf(filename,"%[^.]",outputFilename);
 	sprintf(outputFilename,"%s.jpg",outputFilename);
+	sprintf(outputFilePath,"screenshots/%s",outputFilename);
+	stbi_write_jpg(outputFilePath, 160, 144, 3, Lcd::screen, 100);
+}
 
-	stbi_write_jpg(outputFilename, 160, 144, 3, Lcd::screen, 100);
+// responsible for removing previous save states
+void Debugger::RemoveStates()
+{
+	struct stat st = {0};
+
+	if (stat("saves/states/debugger", &st) >= 0)
+	{
+		char filePath[512];
+		tinydir_dir dir;
+		tinydir_open(&dir, "saves/states/debugger");
+
+		while (dir.has_next)
+		{
+			tinydir_file file;
+			tinydir_readfile(&dir, &file);
+			sprintf(filePath, "saves/states/debugger/%s", file.name);
+
+			if (!file.is_dir) remove(filePath);
+
+			tinydir_next(&dir);
+		}
+
+		tinydir_close(&dir);
+	}
 }
 
 // responsible for showing the debugger
@@ -543,12 +571,12 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 
 	if (ImGui::Button("Save State", ImVec2(width - 16, 0)))
 	{
-		Cpu::SaveState();
+		Cpu::SaveState(false);
 	}
 
 	if (ImGui::Button("Load State", ImVec2(width - 16, 0)))
 	{
-		if (!Cpu::LoadState())
+		if (!Cpu::LoadState(false))
 		{
 			ImGui::OpenPopup(stateLoadFailPopup);
 		}
@@ -571,6 +599,7 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 
 	if (ImGui::Button("Quit", ImVec2(width - 16, 0)))
 	{
+		RemoveStates();
 		exit(0);
 	}
 

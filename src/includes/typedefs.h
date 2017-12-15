@@ -14,6 +14,9 @@
 #include <cstring>
 #include <cstdio>
 #include <cstdlib>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 // definitions
 typedef unsigned char u8;

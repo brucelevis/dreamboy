@@ -22,6 +22,7 @@
 #include "includes/memory.h"
 #include "includes/rom.h"
 #include "includes/timer.h"
+#include "tinydir/tinydir.h"
 #include "includes/typedefs.h"
 
 // defines
@@ -111,6 +112,32 @@ static bool InitSDL()
 	return true;
 }
 
+// responsible for creating initial directories
+static void CreateDirectories()
+{
+	struct stat st = {0};
+
+	if (stat("screenshots", &st) == -1)
+	{
+		mkdir("screenshots", 0700);
+	}
+
+	if (stat("saves", &st) == -1)
+	{
+		mkdir("saves", 0700);
+	}
+
+	if (stat("saves/states", &st) == -1)
+	{
+		mkdir("saves/states", 0700);
+	}
+
+	if (stat("saves/states/debugger", &st) == -1)
+	{
+		mkdir("saves/states/debugger", 0700);
+	}
+}
+
 // responsible for shutting down SDL + misc stuff
 static void Shutdown()
 {
@@ -174,12 +201,18 @@ static void StartMainLoop()
 
 			switch(event.type)
 			{
-				case SDL_QUIT: quit = true;
+				case SDL_QUIT:
+					Debugger::RemoveStates();
+					quit = true;
+				break;
 
 				case SDL_KEYDOWN:
 					switch(event.key.keysym.sym)
 					{
-						case SDLK_ESCAPE: quit = true; break;
+						case SDLK_ESCAPE:
+							Debugger::RemoveStates();
+							quit = true;
+						break;
 
 						//  save a screenshot
 						case SDLK_s: Debugger::SaveScreenshot(); break;
@@ -205,7 +238,7 @@ static void StartMainLoop()
 							{
 								if (Cpu::instructionsRan > 0)
 								{
-									Cpu::LoadState(Cpu::instructionsRan);
+									Cpu::LoadState(true, Cpu::instructionsRan);
 									Cpu::instructionsRan -= 1;
 								}
 								else
@@ -220,7 +253,7 @@ static void StartMainLoop()
 							if (Debugger::stepThrough)
 							{
 								CpuStep();
-								Cpu::SaveState(Cpu::instructionsRan);
+								Cpu::SaveState(true, Cpu::instructionsRan);
 							}
 						break;
 
@@ -247,12 +280,13 @@ int main(int argc, char *argv[])
 {
 	if (InitSDL())
 	{
+		CreateDirectories();
 		Log::Init();
 		Memory::Init();
 
 		//Rom::Load(cpuTests[2]);
-		Rom::Load("roms/Tetris.gb");
-		Cpu::didLoadBios = Bios::Load("bios.bin");
+		Rom::Load("roms/The Legend of Zelda - Link's Awakening.gb");
+		//Cpu::didLoadBios = Bios::Load("bios.bin");
 		Cpu::Init();
 		Timer::Init();
 		Lcd::Init();

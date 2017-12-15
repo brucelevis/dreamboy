@@ -13,6 +13,7 @@
 #include "includes/interrupts.h"
 #include "includes/log.h"
 #include "includes/memory.h"
+#include "includes/rom.h"
 
 // definitions
 #define A Cpu::af.hi
@@ -506,15 +507,32 @@ void Cpu::ExecuteExtendedOpcode()
 }
 
 // responsible for loading save states
-bool Cpu::LoadState(unsigned int num)
+bool Cpu::LoadState(bool fromDebugger, unsigned int num)
 {
 	char val[512];
 	char memFilename[512];
 	char regFilename[512];
 	int index = 0;
 
-	sprintf(memFilename, "state_mem_%d.bin", num);
-	sprintf(regFilename, "state_reg_%d.bin", num);
+	if (fromDebugger)
+	{
+		sprintf(memFilename, "saves/states/debugger/state_mem_%d.bin", num);
+		sprintf(regFilename, "saves/states/debugger/state_reg_%d.bin", num);
+	}
+	else
+	{
+		char romName[512];
+		char filePath[512];
+		const char *filename;
+		(filename = strrchr(Rom::filename, '/')) ? ++filename : (filename = Rom::filename);
+
+		// get the current file extension and rename it to jpg
+		sscanf(filename,"%[^.]", romName);
+		sprintf(romName,"%s", romName);
+		sprintf(filePath, "saves/states/%s", romName);
+		sprintf(memFilename, "%s/mem_%d.bin", filePath, num);
+		sprintf(regFilename, "%s/reg_%d.bin", filePath, num);
+	}
 
 	FILE *fp = fopen(memFilename, "rb");
 	FILE *fp2 = fopen(regFilename, "r");
@@ -550,13 +568,37 @@ bool Cpu::LoadState(unsigned int num)
 }
 
 // responsible for saving save states
-void Cpu::SaveState(unsigned int num)
+void Cpu::SaveState(bool fromDebugger, unsigned int num)
 {
+	struct stat st = {0};
 	char memFilename[512];
 	char regFilename[512];
 
-	sprintf(memFilename, "state_mem_%d.bin", num);
-	sprintf(regFilename, "state_reg_%d.bin", num);
+	if (fromDebugger)
+	{
+		sprintf(memFilename, "saves/states/debugger/state_mem_%d.bin", num);
+		sprintf(regFilename, "saves/states/debugger/state_reg_%d.bin", num);
+	}
+	else
+	{
+		char romName[512];
+		char filePath[512];
+		const char *filename;
+		(filename = strrchr(Rom::filename, '/')) ? ++filename : (filename = Rom::filename);
+
+		// get the current file extension and rename it to jpg
+		sscanf(filename,"%[^.]", romName);
+		sprintf(romName,"%s", romName);
+		sprintf(filePath, "saves/states/%s", romName);
+
+		if (stat(filePath, &st) == -1)
+		{
+			mkdir(filePath, 0700);
+		}
+
+		sprintf(memFilename, "%s/mem_%d.bin", filePath, num);
+		sprintf(regFilename, "%s/reg_%d.bin", filePath, num);
+	}
 
 	FILE *fp = fopen(memFilename, "wb");
 	FILE *fp2 = fopen(regFilename, "w");
