@@ -21,6 +21,9 @@ class Debugger
 	public:
 		static void ResetSystem(const char *newRomFilename = NULL);
 		static void SaveScreenshot();
+		static void ShowDebugger();
+		static void HideDebugger();
+		static void SelectRom();
 		static void ControlsWindow(const char *title, int width, int height, int x, int y);
 		static void RomInfoWindow(const char *title, int width, int height, int x, int y);
 		static void FileWindow(const char *title, int width, int height, int x, int y);
@@ -31,7 +34,7 @@ class Debugger
 	public:
 		static bool stepThrough;
 		static bool stopAtBreakpoint;
-		static bool debuggerActive;
+		static bool active;
 		static u16 breakpoint;
 };
 

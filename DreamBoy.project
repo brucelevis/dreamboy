@@ -8,6 +8,12 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
+    <VirtualDirectory Name="tinydir">
+      <File Name="src/tinydir/tinydir.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="stb">
+      <File Name="src/stb/stb_image_write.h"/>
+    </VirtualDirectory>
     <File Name="src/mbc.cpp"/>
     <File Name="src/mbc1.cpp"/>
     <File Name="src/bios.cpp"/>
@@ -28,9 +34,6 @@
       <File Name="src/tinyfiledialogs/tinyfiledialogs.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="includes">
-      <VirtualDirectory Name="stb">
-        <File Name="src/includes/stb/stb_image_write.h"/>
-      </VirtualDirectory>
       <File Name="src/includes/mbc.h"/>
       <File Name="src/includes/mbc1.h"/>
       <File Name="src/includes/bios.h"/>

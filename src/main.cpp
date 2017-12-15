@@ -181,10 +181,25 @@ static void StartMainLoop()
 					{
 						case SDLK_ESCAPE: quit = true; break;
 
-						case SDLK_0: Debugger::stepThrough = true; break;
-
+						//  save a screenshot
 						case SDLK_s: Debugger::SaveScreenshot(); break;
 
+						// enable/disable the debugger
+						case SDLK_d:
+							if (Debugger::active) Debugger::HideDebugger();
+							else Debugger::ShowDebugger();
+						break;
+
+						// run/stop
+						case SDLK_r:
+							Debugger::stepThrough = !Debugger::stepThrough;
+							Debugger::stopAtBreakpoint = false;
+						break;
+
+						// open the select rom popup
+						case SDLK_o: Debugger::SelectRom(); break;
+
+						// step backward
 						case SDLK_UP:
 							if (Debugger::stepThrough)
 							{
@@ -200,6 +215,7 @@ static void StartMainLoop()
 							}
 						break;
 
+						// step forward
 						case SDLK_DOWN:
 							if (Debugger::stepThrough)
 							{
