@@ -1,4 +1,4 @@
-## DreamBoy - A [Nintendo GameBoy](https://en.wiki![Super Mario Land II](/home/danny/projects/dreamboy/screenshots/Super Mario Land_II.png) pedia.org/wiki/Game_Boy) Emulator written in C++
+## DreamBoy - A [Nintendo GameBoy](https://en.wikipedia.org/wiki/Game_Boy) Emulator written in C++
 
 DreamBoy is a work in-progress [Nintendo GameBoy](https://en.wikipedia.org/wiki/Game_Boy) Emulator. Its aim is to offer high compatibility and good performance. 
 
