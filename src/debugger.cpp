@@ -7,6 +7,8 @@
  * Copyright 2017 - Danny Glover. All rights reserved.
  */
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
 // includes
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
@@ -21,6 +23,7 @@
 #include "includes/log.h"
 #include "includes/memory.h"
 #include "includes/rom.h"
+#include "includes/stb/stb_image_write.h"
 #include "includes/timer.h"
 
 // init vars
@@ -54,6 +57,20 @@ void Debugger::ResetSystem(const char *newRomFilename)
 	Timer::Init();
 	Lcd::Init();
 	Interrupts::Init();
+}
+
+// responsible for saving a screenshot
+void Debugger::SaveScreenshot()
+{
+	char outputFilename[256];
+	const char *filename;
+	(filename = strrchr(Rom::filename, '/')) ? ++filename : (filename = Rom::filename);
+
+	// get the current file extension and rename it to jpg
+	sscanf(filename,"%[^.]",outputFilename);
+	sprintf(outputFilename,"%s.jpg",outputFilename);
+
+	stbi_write_jpg(outputFilename, 160, 144, 3, Lcd::screen, 100);
 }
 
 // create a controls window
@@ -513,13 +530,17 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 		}
 	}
 
+	if (ImGui::Button("Save Screenshot", ImVec2(width - 16, 0)))
+	{
+		SaveScreenshot();
+	}
+
 	if (ImGui::Button("Hide Debugger", ImVec2(width - 16, 0)))
 	{
 		debuggerActive = false;
 		// make the GameBoy Lcd occupy the entire screen
 		Lcd::width = 640;
 		Lcd::height = 480;
-		// should scale the game to full screen here too...
 	}
 
 	if (ImGui::Button(aboutPopup, ImVec2(width - 16, 0)))

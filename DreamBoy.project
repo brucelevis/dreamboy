@@ -28,6 +28,9 @@
       <File Name="src/tinyfiledialogs/tinyfiledialogs.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="includes">
+      <VirtualDirectory Name="stb">
+        <File Name="src/includes/stb/stb_image_write.h"/>
+      </VirtualDirectory>
       <File Name="src/includes/mbc.h"/>
       <File Name="src/includes/mbc1.h"/>
       <File Name="src/includes/bios.h"/>
@@ -141,6 +144,8 @@
         <Command Enabled="yes">cp src/imgui/extra_fonts/Cousine-Bold.ttf Release/Cousine-Bold.ttf</Command>
         <Command Enabled="yes">cp bios.bin Release/bios.bin</Command>
         <Command Enabled="yes">rsync -r roms/ Release/roms/</Command>
+        <Command Enabled="yes">rm Debug/*.o</Command>
+        <Command Enabled="yes">rm Debug/*.d</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <RebuildCommand/>

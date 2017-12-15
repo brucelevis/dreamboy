@@ -183,6 +183,8 @@ static void StartMainLoop()
 
 						case SDLK_0: Debugger::stepThrough = true; break;
 
+						case SDLK_s: Debugger::SaveScreenshot(); break;
+
 						case SDLK_UP:
 							if (Debugger::stepThrough)
 							{

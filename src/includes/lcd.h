@@ -43,9 +43,9 @@ class Lcd
 	public:
 		static int width;
 		static int height;
+		static u8 screen[144][160][3];
 
 	private:
-		static u8 screen[144][160][3];
 		static int scanlineCounter;
 };
 

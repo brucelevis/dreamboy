@@ -20,6 +20,7 @@ class Debugger
 {
 	public:
 		static void ResetSystem(const char *newRomFilename = NULL);
+		static void SaveScreenshot();
 		static void ControlsWindow(const char *title, int width, int height, int x, int y);
 		static void RomInfoWindow(const char *title, int width, int height, int x, int y);
 		static void FileWindow(const char *title, int width, int height, int x, int y);
