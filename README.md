@@ -7,8 +7,8 @@ This project is a "next step" project for me, after writing several [Chip8](http
 #### Screenshots:
 
 ![Aladdin](./screenshots/Aladdin.png) ![Balloon Kid](./screenshots/Balloon_Kid.png) ![Castlevania II](./screenshots/Castlevania_II.png)
-![Donkey Kong](/home/danny/projects/dreamboy/screenshots/Donkey_Kong.png) ![Dr Mario](/home/danny/projects/dreamboy/screenshots/Dr_Mario.png) ![Kirbys Dreamland](/home/danny/projects/dreamboy/screenshots/Kirbys_Dreamland.png) 
-![Super Mario Land](/home/danny/projects/dreamboy/screenshots/Super_Mario_Land.png) ![Super Mario Land II](/home/danny/projects/dreamboy/screenshots/Super_Mario_Land_II.png) ![Tetris](/home/danny/projects/dreamboy/screenshots/Tetris.png) 
+![Donkey Kong](./screenshots/Donkey_Kong.png) ![Dr Mario](./screenshots/Dr_Mario.png) ![Kirbys Dreamland](./screenshots/Kirbys_Dreamland.png) 
+![Super Mario Land](./screenshots/Super_Mario_Land.png) ![Super Mario Land II](./screenshots/Super_Mario_Land_II.png) ![Tetris](./screenshots/Tetris.png) 
 
 #### Status:
 
