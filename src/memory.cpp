@@ -131,7 +131,7 @@ void Memory::WriteByte(u16 address, u8 data)
 
 		// rom banking
 		case 0x2000 ... 0x3FFF:
-			Mbc::Manage(address, data);
+			Mbc::RomBanking(data);
 		break;
 
 		// everything should be ok to write to memory here...

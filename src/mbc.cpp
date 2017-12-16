@@ -8,16 +8,25 @@
  */
 
 // includes
+#include "includes/log.h"
 #include "includes/mbc.h"
 #include "includes/mbc1.h"
 #include "includes/memory.h"
 #include "includes/rom.h"
 
-void Mbc::Manage(u16 address, u8 data)
+// responsible for managing rom banking
+void Mbc::RomBanking(u8 data)
 {
 	switch(Rom::mbcType)
 	{
-		case 0x1 ... 0x3: Mbc1::Manage(address, data); break;
+		case 0x1 ... 0x3: Mbc1::RomBanking(data); break;
 		default: break;
 	}
 }
+
+// responsible for managing ram banking
+void Mbc::RamBanking(u16 address, u8 data)
+{
+
+}
+

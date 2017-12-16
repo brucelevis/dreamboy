@@ -542,7 +542,6 @@ void Debugger::RomInfoWindow(const char *title, int width, int height, int x, in
 	}
 
 	ImGui::NewLine();
-
 	ImGuiExtensions::TextWithColors("{FF0000}Type: {FFFFFF}%02X", Memory::ReadByte(Memory::Address::ROM_TYPE));
 	ImGuiExtensions::TextWithColors("{FF0000}Rom-Size: {FFFFFF}%02X", Memory::ReadByte(Memory::Address::ROM_SIZE));
 	ImGuiExtensions::TextWithColors("{FF0000}Ram-Size: {FFFFFF}%02X", Memory::ReadByte(Memory::Address::ROM_RAM_SIZE));
