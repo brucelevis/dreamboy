@@ -10,3 +10,9 @@ roms/
 \.codelite/
 
 DreamBoy\.txt
+
+DreamBoy\.mk
+
+\.DS_Store
+
+Makefile

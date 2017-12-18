@@ -18,6 +18,7 @@
 #include "includes/bios.h"
 #include "includes/debugger.h"
 #include "includes/flags.h"
+#include "includes/input.h"
 #include "includes/interrupts.h"
 #include "includes/lcd.h"
 #include "includes/log.h"
@@ -55,6 +56,7 @@ void Debugger::ResetSystem(const char *newRomFilename)
 	if (newRomFilename != NULL) Rom::Load(newRomFilename); else Rom::Reload();
 	if (Cpu::didLoadBios) Bios::Reload();
 	Cpu::Init();
+	Input::Init();
 	Timer::Init();
 	Lcd::Init();
 	Interrupts::Init();

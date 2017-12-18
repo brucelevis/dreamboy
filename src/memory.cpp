@@ -8,6 +8,8 @@
  */
 
 // includes
+#include "includes/input.h"
+#include "includes/log.h"
 #include "includes/mbc.h"
 #include "includes/memory.h"
 #include "includes/rom.h"
@@ -61,7 +63,7 @@ u8 Memory::ReadByte(u16 address)
 {
 	switch(address)
 	{
-		case Address::P1: return 0xFF; break;
+		case Address::P1: return Input::GetKey(mem[address]); break;
 		case Address::NR10: return 0xFF; break;
 		case Address::NR11: return 0xFF; break;
 		case Address::NR12: return 0xFF; break;

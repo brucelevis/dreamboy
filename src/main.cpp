@@ -16,6 +16,7 @@
 #include "includes/bios.h"
 #include "includes/debugger.h"
 #include "includes/cpu.h"
+#include "includes/input.h"
 #include "includes/interrupts.h"
 #include "includes/lcd.h"
 #include "includes/log.h"
@@ -197,6 +198,7 @@ static void StartMainLoop()
 	{
 		while (SDL_PollEvent(&event) != 0)
 		{
+			Input::HandleKeys(event);
 			ImGui_ImplSdlGL2_ProcessEvent(&event);
 
 			switch(event.type)
@@ -233,7 +235,7 @@ static void StartMainLoop()
 						case SDLK_o: Debugger::SelectRom(); break;
 
 						// step backward
-						case SDLK_UP:
+						case SDLK_LCTRL:
 							if (Debugger::stepThrough)
 							{
 								if (Cpu::instructionsRan > 0)
@@ -249,7 +251,7 @@ static void StartMainLoop()
 						break;
 
 						// step forward
-						case SDLK_DOWN:
+						case SDLK_SPACE:
 							if (Debugger::stepThrough)
 							{
 								CpuStep();
@@ -283,7 +285,7 @@ int main(int argc, char *argv[])
 		CreateDirectories();
 		Log::Init();
 		Memory::Init();
-
+		Input::Init();
 		//Rom::Load(cpuTests[2]);
 		Rom::Load("roms/The Legend of Zelda - Link's Awakening.gb");
 		//Cpu::didLoadBios = Bios::Load("bios.bin");

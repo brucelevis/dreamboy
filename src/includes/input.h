@@ -7,22 +7,26 @@
  * Copyright 2017 - Danny Glover. All rights reserved.
  */
 
-#ifndef TYPEDEFS_H
-#define TYPEDEFS_H
+#ifndef INPUT_H
+#define INPUT_H
 
 // includes
-#include <cstdarg>
-#include <cstring>
-#include <cstdio>
-#include <cstdlib>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include <SDL2/SDL.h>
+#include "typedefs.h"
 
-// definitions
-typedef unsigned char u8;
-typedef signed char s8;
-typedef unsigned short u16;
-typedef signed short s16;
+class Input
+{
+	public:
+		static void Init();
+		static void HandleKeys(SDL_Event event);
+		static u8 GetKey(u8 data);
+
+	private:
+		static void PressKey(u8 bit, u8 keyType);
+		static void ReleaseKey(u8 bit);
+
+	private:
+		static u8 buttons;
+};
 
 #endif

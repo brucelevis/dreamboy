@@ -95,6 +95,7 @@ void Interrupts::Service()
 
 	if (id >= 0 && ime)
 	{
+		Cpu::cycles += 20;
 		Reset(id);
 		Memory::Push(Cpu::pc);
 

@@ -16,12 +16,14 @@
 // responsible for managing MBC1 rom banking
 void Mbc1::RomBanking(u8 data)
 {
-	u8 bankNo = data;
-	if (bankNo == 0) bankNo = 1;
-
+	u8 bankNo = (data & 0x3F);
+	if (bankNo == 0x00 || bankNo == 0x20 || bankNo == 0x40 || bankNo == 0x60)
+	{
+		bankNo += 0x1;
+	}
 	int bankAddress = (bankNo * 0x4000);
 
-	memcpy(&Memory::mem[0x4000], &Rom::rom[bankAddress], 0x4000);
+	memcpy(&Memory::mem[0x4000], &Rom::rom[bankAddress], 0x3FFF);
 }
 
 // responsible for managing MBC1 ram banking
