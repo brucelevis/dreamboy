@@ -48,6 +48,7 @@ class Cpu
 		static bool halted;
 		static bool stopped;
 		static bool pendingInterrupt;
+		static bool haltBug;
 		static bool didLoadBios;
 };
 

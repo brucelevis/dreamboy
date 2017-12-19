@@ -615,7 +615,7 @@ void Debugger::FileWindow(const char *title, int width, int height, int x, int y
 
 		if (ImGui::Button("Ok", ImVec2(200, 0)))
 		{
-				ImGui::CloseCurrentPopup();
+			ImGui::CloseCurrentPopup();
 		}
 
 		ImGui::EndPopup();

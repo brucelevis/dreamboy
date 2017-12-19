@@ -9,6 +9,7 @@
 
 // includes
 #include "includes/bit.h"
+#include "includes/cpu.h"
 #include "includes/input.h"
 #include "includes/interrupts.h"
 #include "includes/log.h"
@@ -40,6 +41,7 @@ void Input::PressKey(u8 bit, u8 keyType)
 {
 	bool wasSet = Bit::Get(buttons, bit);
 
+	Cpu::stopped = false;
 	Bit::Clear(buttons, bit);
 	if (wasSet) Interrupts::Request(Interrupts::JOYPAD);
 }

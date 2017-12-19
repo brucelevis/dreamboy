@@ -12,6 +12,7 @@
 #include "includes/cpu.h"
 #include "includes/cpuOperations.h"
 #include "includes/flags.h"
+#include "includes/log.h"
 #include "includes/interrupts.h"
 #include "includes/memory.h"
 
@@ -595,7 +596,35 @@ void CpuOps::Stop(int cycles)
 
 void CpuOps::Halt(int cycles)
 {
-	Cpu::halted = true;
+	const u8 IF = Memory::ReadByte(Memory::Address::IF);
+	const u8 IE = Memory::ReadByte(Memory::Address::IE);
+
+	if (!Interrupts::ime)
+	{
+		// HALT mode is entered. It works like the IME = 1 case
+		if (((IE & IF) & 0x1F) == 0)
+		{
+			Cpu::halted = true;
+			Interrupts::clearIF = false;
+			Interrupts::shouldExecute = false;
+		}
+		// HALT mode is not entered. HALT bug occurs
+		else
+		{
+			Interrupts::clearIF = false;
+			Interrupts::shouldExecute = true;
+			Cpu::halted = false;
+			Cpu::haltBug = true;
+		}
+	}
+	// HALT executed normally
+	else
+	{
+		Cpu::halted = true;
+		Interrupts::clearIF = true;
+		Interrupts::shouldExecute = true;
+	}
+
 	Cpu::cycles += cycles;
 }
 

@@ -166,10 +166,10 @@ static void CpuStep()
 {
 	int cycleCount = Cpu::cycles;
 
+	Interrupts::Service();
 	Cpu::ExecuteOpcode();
 	Timer::Update(Cpu::cycles - cycleCount);
 	Lcd::Update(Cpu::cycles - cycleCount);
-	Interrupts::Service();
 }
 
 // responsible for the emulation loop
@@ -179,6 +179,8 @@ static void EmulationLoop()
 
 	while (Cpu::cycles < (MAX_CYCLES / FRAMERATE))
 	{
+		//if (Cpu::stopped) break;
+
 		if (Debugger::stopAtBreakpoint && (Cpu::pc.reg == Debugger::breakpoint))
 		{
 			Debugger::stepThrough = true;

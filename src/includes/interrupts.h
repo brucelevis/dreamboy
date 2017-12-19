@@ -32,6 +32,8 @@ class Interrupts
 			VBLANK, LCD, TIMER, SERIAL, JOYPAD
 		};
 		static bool ime;
+		static bool clearIF;
+		static bool shouldExecute;
 		static u8 pendingCount;
 };
 

@@ -43,6 +43,7 @@ int Cpu::instructionsRan = 0;
 bool Cpu::halted = false;
 bool Cpu::stopped = false;
 bool Cpu::pendingInterrupt = false;
+bool Cpu::haltBug = false;
 bool Cpu::didLoadBios = false;
 
 // responsible for initializing the Cpu
@@ -78,14 +79,24 @@ void Cpu::Init()
 void Cpu::ExecuteOpcode()
 {
 	u8 opcode = Memory::ReadByte(PC);
-	instructionsRan += 1;
 
 	//char buffer[1024];
 	//snprintf(buffer, sizeof(buffer), "%04X:%04X:%04X:%04X:%04X:%04X:%04X\n", PC, opcode, AF, BC, DE, HL, SP);
 	//snprintf(buffer, sizeof(buffer), "%04X\n", opcode);
 	//Log::ToFile(buffer);
 
-	if (!halted && !stopped) PC += 1;
+	if (halted)
+	{
+		cycles += 4;
+		return;
+	}
+	else
+	{
+		PC += 1;
+		instructionsRan += 1;
+
+		if (haltBug) PC -= 1; haltBug = false;
+	}
 
 	switch(opcode)
 	{
@@ -341,13 +352,16 @@ void Cpu::ExecuteOpcode()
 	{
 		if (Interrupts::pendingCount >= 2)
 		{
-				Interrupts::ime = true;
-				Interrupts::pendingCount = -1;
-				pendingInterrupt = false;
+			Interrupts::ime = true;
+			Interrupts::pendingCount = -1;
+			pendingInterrupt = false;
 		}
 
 		Interrupts::pendingCount += 1;
 	}
+
+	Interrupts::shouldExecute = true;
+	Interrupts::clearIF = true;
 }
 
 // responsible for executing extended opcodes (prefix CB)

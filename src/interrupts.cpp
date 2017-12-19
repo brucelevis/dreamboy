@@ -14,6 +14,10 @@
 #include "includes/log.h"
 #include "includes/memory.h"
 
+// definitions
+#define IF Memory::mem[Memory::Address::IF]
+#define IE Memory::mem[Memory::Address::IE]
+
 // init vars
 union InterruptType
 {
@@ -30,46 +34,46 @@ static InterruptType serial = {{.bit = 3, .address = 0x58}};
 static InterruptType joypad = {{.bit = 4, .address = 0x60}};
 static InterruptType interruptList[5] = {vblank, lcd, timer, serial, joypad};
 bool Interrupts::ime = false;
+bool Interrupts::clearIF = true;
+bool Interrupts::shouldExecute = true;
 u8 Interrupts::pendingCount = 0;
 static bool wasHalted = false;
 
 // responsible for initialisizing the interrupt system
 void Interrupts::Init()
 {
+	IF = 0xE1;
+	IE = 0x00;
 	ime = false;
 	pendingCount = 0;
-	Memory::WriteByte(Memory::Address::IF, 0xE1);
-	Memory::WriteByte(Memory::Address::IE, 0x00);
+	clearIF = true;
+	shouldExecute = true;
 }
 
 // responsible for resetting a pending interrupt
 void Interrupts::Reset(int id)
 {
-	u8 data = Memory::ReadByte(Memory::Address::IF);
-	Bit::Clear(data, interruptList[id].bit);
-	Memory::WriteByte(Memory::Address::IF, (data & 0x1F));
+	if (!clearIF) return;
+	Bit::Clear(IF, interruptList[id].bit);
 }
 
 // responsible for detecting if an interrupt has been requested
 bool Interrupts::IsRequested(int id)
 {
-	u8 data = Memory::ReadByte(Memory::Address::IF);
-	return Bit::Get(data, interruptList[id].bit);
+	return Bit::Get(IF, interruptList[id].bit);
 }
 
 // responsible for detecting if an interrupt has been enabled
 bool Interrupts::IsEnabled(int id)
 {
-	u8 data = Memory::ReadByte(Memory::Address::IE);
-	return Bit::Get(data, interruptList[id].bit);
+	return Bit::Get(IE, interruptList[id].bit);
 }
 
 // responsible for requesting an interrupt
 void Interrupts::Request(int id)
 {
-	u8 data = Memory::ReadByte(Memory::Address::IF);
-	Bit::Set(data, interruptList[id].bit);
-	Memory::WriteByte(Memory::Address::IF, (data & 0x1F));
+	Bit::Set(IF, interruptList[id].bit);
+	IF |= 0xE0;
 }
 
 // responsible for returning the id of the requested interrupt (if enabled)
@@ -95,12 +99,15 @@ void Interrupts::Service()
 
 	if (id >= 0 && ime)
 	{
-		Cpu::cycles += 20;
-		Reset(id);
-		Memory::Push(Cpu::pc);
+		if (shouldExecute)
+		{
+			Reset(id);
+			Memory::Push(Cpu::pc);
 
-		Cpu::pc.reg = interruptList[id].address;
-		wasHalted = false;
-		ime = false;
+			Cpu::cycles += (wasHalted) ? 24 : 20;
+			Cpu::pc.reg = interruptList[id].address;
+			wasHalted = false;
+			ime = false;
+		}
 	}
 }
