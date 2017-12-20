@@ -25,6 +25,7 @@ class Rom
 		static u8 mbcType;
 		static u8 romSize;
 		static u8 ramSize;
+		static u8 romBank;
 		static const char *filename;
 };
 

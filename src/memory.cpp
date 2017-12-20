@@ -63,6 +63,12 @@ u8 Memory::ReadByte(u16 address)
 {
 	switch(address)
 	{
+		case Address::ROM_BK1_START ... Address::ROM_BK1_END:
+		{
+			int bankAddr = ((Rom::romBank * 0x4000) + (address - 0x4000));
+			return Rom::rom[bankAddr];
+		}
+		break;
 		case Address::P1: return Input::GetKey(mem[address]); break;
 		case Address::NR10: return 0xFF; break;
 		case Address::NR11: return 0xFF; break;
@@ -90,6 +96,12 @@ u8 Memory::ReadByte(u16 address)
 // responsible for reading a word from a specific memory location
 u16 Memory::ReadWord(u16 address)
 {
+	if (address >= Address::ROM_BK1_START && address <= Address::ROM_BK1_END)
+	{
+		int bankAddr = ((Rom::romBank * 0x4000) + (address - 0x4000));
+		return ((Rom::rom[bankAddr + 1] << 8) | (Rom::rom[bankAddr]));
+	}
+
 	return ((mem[address + 1] << 8) | (mem[address]));
 }
 

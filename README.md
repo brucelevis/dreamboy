@@ -28,6 +28,19 @@ Blarggs Cpu Instruction tests:
 |10|bit ops|:white_check_mark:|
 |11|op a,(hl)|:white_check_mark:|
 
+Blarggs Misc Instruction tests:
+
+|#|name|state|
+|-|-|-|
+|01|CB Sound|:x:|
+|02|DMG Sound|:x:|
+|03|Halt Bug|:white_check_mark:|
+|04|Instruction Timing|:x:|
+|05|Interrupt Timing|:x:|
+|06|Mem Timing|:x:|
+|07|Mem Timing 2|:x:|
+|08|OAM Bug|:x:|
+
 #### Technology Used:
 
 DreamBoy uses [C++ 11](https://en.wikipedia.org/wiki/C%2B%2B11) and [SDL 2](https://www.libsdl.org/download-2.0.php) with OpenGL for drawing the GameBoy Lcd.

@@ -21,9 +21,8 @@ void Mbc1::RomBanking(u8 data)
 	{
 		bankNo += 0x1;
 	}
-	int bankAddress = (bankNo * 0x4000);
 
-	memcpy(&Memory::mem[0x4000], &Rom::rom[bankAddress], 0x3FFF);
+	Rom::romBank = bankNo;
 }
 
 // responsible for managing MBC1 ram banking

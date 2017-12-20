@@ -17,6 +17,7 @@ u8 Rom::ram[0x2000 * 4] = {0x00};
 u8 Rom::mbcType = 0x00;
 u8 Rom::romSize = 0x00;
 u8 Rom::ramSize = 0x00;
+u8 Rom::romBank = 0x01;
 const char *Rom::filename = NULL;
 
 // responsible for loading a rom
@@ -24,12 +25,14 @@ bool Rom::Load(const char *filePath)
 {
 	bool result = false;
 	FILE *gbRom = fopen(filePath, "rb");
+	romBank = 0x01;
+	ramSize = 0x00;
 
 	if (gbRom)
 	{
+		memset(&rom, 0x00, sizeof(rom));
 		fread(&rom, 1, sizeof(rom), gbRom);
-		fseek(gbRom, SEEK_SET, SEEK_SET);
-		fread(&Memory::mem, 1, 0x8000, gbRom);
+		memcpy(&Memory::mem, &rom, 0x3FFF);
 
 		result = true;
 		filename = filePath;
