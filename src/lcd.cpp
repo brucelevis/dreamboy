@@ -84,10 +84,10 @@ void Lcd::Update(int cycles)
 		if (LY < 144)
 		{
 			DrawScanline();
-			UpdateTexture();
 		}
 		else if (LY == 144)
 		{
+			UpdateTexture();
 			Interrupts::Request(Interrupts::VBLANK);
 		}
 		else if (LY > 153)
