@@ -20,6 +20,7 @@ u8 Rom::ramSize = 0x00;
 u8 Rom::romBank = 0x01;
 u16 Rom::ramBank = 0x0000;
 u8 Rom::currentMode = 0x00;
+bool Rom::hasBatteryBackup = false;
 const char *Rom::filename = NULL;
 
 // responsible for loading a rom
@@ -43,6 +44,15 @@ bool Rom::Load(const char *filePath)
 		mbcType = Memory::ReadByte(Memory::Address::ROM_TYPE);
 		romSize = Memory::ReadByte(Memory::Address::ROM_SIZE);
 		ramSize = Memory::ReadByte(Memory::Address::ROM_RAM_SIZE);
+
+		switch(mbcType)
+		{
+			case 0x3: case 0x6: case 0x9: case 0xD:
+			case 0x13: case 0x1B: case 0x1E: case 0x20:
+			case 0x22: case 0xFF:
+				hasBatteryBackup = true;
+			break;
+		}
 
 		Log::Print("Loaded rom '%s' successfully", filePath);
 		printf("Rom Name: ");
@@ -76,6 +86,8 @@ void Rom::Reload()
 // responsible for loading the games ram bank from a file
 bool Rom::LoadRam(int num)
 {
+	if (!hasBatteryBackup) return;
+
 	char outputFilename[512];
 	char romName[512];
 	char filePath[512];
@@ -102,6 +114,8 @@ bool Rom::LoadRam(int num)
 // responsible for saving the games ram bank to a file
 void Rom::SaveRam(int num)
 {
+	if (!hasBatteryBackup) return;
+
 	struct stat st = {0};
 	char outputFilename[512];
 	char romName[512];

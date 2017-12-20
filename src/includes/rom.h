@@ -30,6 +30,7 @@ class Rom
 		static u8 romBank;
 		static u16 ramBank;
 		static u8 currentMode;
+		static bool hasBatteryBackup;
 		static const char *filename;
 };
 
