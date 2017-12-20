@@ -257,9 +257,9 @@ void Lcd::DrawBackground()
 		u8 colorNum = ((Bit::Get(pixelData2, colorBit) << 1) | (Bit::Get(pixelData1, colorBit)));
 		Rgb pixelColor = GetColor(BGP, colorNum);
 
-		screen[LY][xPos][0] = pixelColor.r;
-		screen[LY][xPos][1] = pixelColor.g;
-		screen[LY][xPos][2] = pixelColor.b;
+		screen[LY][x][0] = pixelColor.r;
+		screen[LY][x][1] = pixelColor.g;
+		screen[LY][x][2] = pixelColor.b;
 	}
 }
 

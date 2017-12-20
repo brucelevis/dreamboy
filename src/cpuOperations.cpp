@@ -79,7 +79,7 @@ void CpuOps::Sbc8(u8 &in, u8 sub, int cycles)
 	if ((in - carry) < sub) Flags::Set(Flags::c);
 
 	in = result;
-	Cpu::cycles +=cycles;
+	Cpu::cycles += cycles;
 }
 
 void CpuOps::Inc8(u8 &in, int cycles)
@@ -136,7 +136,7 @@ void CpuOps::Cmp8(u8 &in, u8 compare, int cycles)
 	if ((in & 0xF) < (compare & 0xF)) Flags::Set(Flags::h);
 	if (in < compare) Flags::Set(Flags::c);
 
-	Cpu::cycles +=cycles;
+	Cpu::cycles += cycles;
 }
 
 void CpuOps::And8(u8 &in, u8 val, int cycles)
@@ -161,7 +161,7 @@ void CpuOps::Or8(u8 &in, u8 val, int cycles)
 	if (result == 0) Flags::Set(Flags::z);
 
 	in = result;
-	Cpu::cycles +=cycles;
+	Cpu::cycles += cycles;
 }
 
 void CpuOps::Xor8(u8 &in, u8 val, int cycles)
