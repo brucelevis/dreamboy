@@ -73,7 +73,7 @@ u8 Memory::ReadByte(u16 address)
 		}
 		break;
 		case Address::EXTRAM_START ... Address::EXTRAM_END:
-			if (useRamBank) return Rom::ram[Rom::ramBank + (address - Address::EXTRAM_START)];
+			if (useRamBank) return Rom::ram[(Rom::ramBank * 0x2000) + (address - Address::EXTRAM_START)];
 		break;
 		case Address::P1: return Input::GetKey(mem[address]); break;
 		case Address::NR10: return 0xFF; break;
@@ -179,7 +179,7 @@ void Memory::WriteByte(u16 address, u8 data)
 			if (data == 0x0)
 			{
 				useRomBank = true;
-				Rom::ramBank = 0x0000;
+				Rom::ramBank = 0x00;
 			}
 			else
 			{
@@ -191,7 +191,7 @@ void Memory::WriteByte(u16 address, u8 data)
 		case Address::EXTRAM_START ... Address::EXTRAM_END:
 			if (useRamBank)
 			{
-				Rom::ram[Rom::ramBank + (address - Address::EXTRAM_START)] = data;
+				Rom::ram[(Rom::ramBank * 0x2000) + (address - Address::EXTRAM_START)] = data;
 				Rom::SaveRam();
 			}
 			else

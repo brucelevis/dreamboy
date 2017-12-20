@@ -11,9 +11,11 @@
 #include "includes/cpuOperations.h"
 #include "includes/flags.h"
 #include "includes/interrupts.h"
+#include "includes/lcd.h"
 #include "includes/log.h"
 #include "includes/memory.h"
 #include "includes/rom.h"
+#include "includes/timer.h"
 
 // definitions
 #define A Cpu::af.hi
@@ -526,6 +528,7 @@ bool Cpu::LoadState(bool fromDebugger, unsigned int num)
 	char val[512];
 	char memFilename[512];
 	char regFilename[512];
+	char screenFileName[512];
 	int index = 0;
 
 	if (fromDebugger)
@@ -535,25 +538,22 @@ bool Cpu::LoadState(bool fromDebugger, unsigned int num)
 	}
 	else
 	{
-		char romName[512];
 		char filePath[512];
-		const char *filename;
-		(filename = strrchr(Rom::filename, '/')) ? ++filename : (filename = Rom::filename);
 
-		// get the current file extension and rename it to jpg
-		sscanf(filename,"%[^.]", romName);
-		sprintf(romName,"%s", romName);
-		sprintf(filePath, "saves/states/%s", romName);
-		sprintf(memFilename, "%s/mem_%d.bin", filePath, num);
-		sprintf(regFilename, "%s/reg_%d.bin", filePath, num);
+		sprintf(filePath, "saves/states/%s/state_%d", Rom::romName, num);
+		sprintf(memFilename, "%s/mem.bin", filePath);
+		sprintf(regFilename, "%s/reg.bin", filePath);
+		sprintf(screenFileName, "%s/screen.bin", filePath);
 	}
 
 	FILE *fp = fopen(memFilename, "rb");
 	FILE *fp2 = fopen(regFilename, "r");
+	FILE *fp3 = fopen(screenFileName, "rb");
 
-	if (fp == NULL || fp2 == NULL) return false;
+	if (fp == NULL || fp2 == NULL || fp3 == NULL) return false;
 
-	fread(&Memory::mem, 1, 0x10000, fp);
+	fread(&Memory::mem[0x8000], 1, 0x8000, fp);
+	fread(&Lcd::screen, 1, sizeof(Lcd::screen), fp3);
 
 	while(fscanf(fp2, "%s\n", val) != EOF)
 	{
@@ -568,8 +568,21 @@ bool Cpu::LoadState(bool fromDebugger, unsigned int num)
 			case 6: cycles = (int)strtol(val, NULL, 10); break;
 			case 7: pendingInterrupt = (int)strtol(val, NULL, 10); break;
 			case 8: halted = (int)strtol(val, NULL, 10); break;
-			case 9: stopped = (int)strtol(val, NULL, 10); break;
-			case 10: instructionsRan = (int)strtol(val, NULL, 10); break;
+			case 9: haltBug = (int)strtol(val, NULL, 10); break;
+			case 10: stopped = (int)strtol(val, NULL, 10); break;
+			case 11: instructionsRan = (int)strtol(val, NULL, 10); break;
+			case 12: Rom::currentMode = (u8)strtol(val, NULL, 16); break;
+			case 13: Rom::romBank = (u8)strtol(val, NULL, 16); break;
+			case 14: Rom::ramBank = (u8)strtol(val, NULL, 16); break;
+			case 15: Memory::useRamBank = (int)strtol(val, NULL, 10); break;
+			case 16: Memory::useRomBank = (int)strtol(val, NULL, 10); break;
+			case 17: Lcd::scanlineCounter = (int)strtol(val, NULL, 10); break;
+			case 18: Timer::timerCounter = (int)strtol(val, NULL, 10); break;
+			case 19: Timer::divCounter = (int)strtol(val, NULL, 10); break;
+			case 20: Interrupts::ime = (int)strtol(val, NULL, 10); break;
+			case 21: Interrupts::clearIF = (int)strtol(val, NULL, 10); break;
+			case 22: Interrupts::shouldExecute = (int)strtol(val, NULL, 10); break;
+			case 23: Interrupts::pendingCount = (u8)strtol(val, NULL, 16); break;
 		}
 
 		index++;
@@ -577,6 +590,9 @@ bool Cpu::LoadState(bool fromDebugger, unsigned int num)
 
 	fclose(fp);
 	fclose(fp2);
+	fclose(fp3);
+
+	Lcd::UpdateTexture();
 
 	return true;
 }
@@ -587,6 +603,7 @@ void Cpu::SaveState(bool fromDebugger, unsigned int num)
 	struct stat st = {0};
 	char memFilename[512];
 	char regFilename[512];
+	char screenFileName[512];
 
 	if (fromDebugger)
 	{
@@ -595,29 +612,27 @@ void Cpu::SaveState(bool fromDebugger, unsigned int num)
 	}
 	else
 	{
-		char romName[512];
 		char filePath[512];
-		const char *filename;
-		(filename = strrchr(Rom::filename, '/')) ? ++filename : (filename = Rom::filename);
 
-		// get the current file extension and rename it to jpg
-		sscanf(filename,"%[^.]", romName);
-		sprintf(romName,"%s", romName);
-		sprintf(filePath, "saves/states/%s", romName);
+		sprintf(filePath, "saves/states/%s/", Rom::romName);
 
-		if (stat(filePath, &st) == -1)
-		{
-			mkdir(filePath, 0700);
-		}
+		if (stat(filePath, &st) == -1) mkdir(filePath, 0700);
 
-		sprintf(memFilename, "%s/mem_%d.bin", filePath, num);
-		sprintf(regFilename, "%s/reg_%d.bin", filePath, num);
+		sprintf(filePath, "saves/states/%s/state_%d", Rom::romName, num);
+
+		if (stat(filePath, &st) == -1) mkdir(filePath, 0700);
+
+		sprintf(memFilename, "%s/mem.bin", filePath);
+		sprintf(regFilename, "%s/reg.bin", filePath);
+		sprintf(screenFileName, "%s/screen.bin", filePath);
 	}
 
 	FILE *fp = fopen(memFilename, "wb");
 	FILE *fp2 = fopen(regFilename, "w");
+	FILE *fp3 = fopen(screenFileName, "wb");
 
-	fwrite(Memory::mem, sizeof(Memory::mem), 1, fp);
+	fwrite(&Memory::mem[0x8000], 0x8000, 1, fp);
+	fwrite(&Lcd::screen, sizeof(Lcd::screen), 1, fp3);
 
 	// save registers
 	fprintf(fp2, "%04X\n", AF);
@@ -630,9 +645,23 @@ void Cpu::SaveState(bool fromDebugger, unsigned int num)
 	fprintf(fp2, "%d\n", cycles);
 	fprintf(fp2, "%d\n", pendingInterrupt);
 	fprintf(fp2, "%d\n", halted);
+	fprintf(fp2, "%d\n", haltBug);
 	fprintf(fp2, "%d\n", stopped);
 	fprintf(fp2, "%d\n", instructionsRan);
+	fprintf(fp2, "%02X\n", Rom::currentMode);
+	fprintf(fp2, "%02X\n", Rom::romBank);
+	fprintf(fp2, "%02X\n", Rom::ramBank);
+	fprintf(fp2, "%d\n", Memory::useRamBank);
+	fprintf(fp2, "%d\n", Memory::useRomBank);
+	fprintf(fp2, "%d\n", Lcd::scanlineCounter);
+	fprintf(fp2, "%d\n", Timer::timerCounter);
+	fprintf(fp2, "%d\n", Timer::divCounter);
+	fprintf(fp2, "%d\n", Interrupts::ime);
+	fprintf(fp2, "%d\n", Interrupts::clearIF);
+	fprintf(fp2, "%d\n", Interrupts::shouldExecute);
+	fprintf(fp2, "%02X\n", Interrupts::pendingCount);
 
 	fclose(fp);
 	fclose(fp2);
+	fclose(fp3);
 }

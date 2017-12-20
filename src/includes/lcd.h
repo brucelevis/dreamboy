@@ -21,6 +21,7 @@ class Lcd
 		static bool Enabled();
 		static void Update(int cycles);
 		static void Render();
+		static void UpdateTexture();
 
 	private:
 		struct Rgb
@@ -33,7 +34,6 @@ class Lcd
 		static bool IsBackgroundEnabled();
 		static bool IsWindowEnabled();
 		static bool IsSpritesEnabled();
-		static void UpdateTexture();
 		static Rgb GetColor(u8 palette, u8 bit);
 		static void DrawScanline();
 		static void DrawBackground();
@@ -44,8 +44,6 @@ class Lcd
 		static int width;
 		static int height;
 		static u8 screen[144][160][3];
-
-	private:
 		static int scanlineCounter;
 };
 

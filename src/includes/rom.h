@@ -28,10 +28,11 @@ class Rom
 		static u8 romSize;
 		static u8 ramSize;
 		static u8 romBank;
-		static u16 ramBank;
+		static u8 ramBank;
 		static u8 currentMode;
 		static bool hasBatteryBackup;
 		static const char *filename;
+		static char romName[256];
 };
 
 #endif

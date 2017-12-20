@@ -18,10 +18,11 @@ u8 Rom::mbcType = 0x00;
 u8 Rom::romSize = 0x00;
 u8 Rom::ramSize = 0x00;
 u8 Rom::romBank = 0x01;
-u16 Rom::ramBank = 0x0000;
+u8 Rom::ramBank = 0x00;
 u8 Rom::currentMode = 0x00;
 bool Rom::hasBatteryBackup = false;
 const char *Rom::filename = NULL;
+char Rom::romName[256];
 
 // responsible for loading a rom
 bool Rom::Load(const char *filePath)
@@ -34,6 +35,7 @@ bool Rom::Load(const char *filePath)
 
 	if (gbRom)
 	{
+		memset(&romName, 0, sizeof(romName));
 		memset(&rom, 0x00, sizeof(rom));
 		memset(&ram, 0x00, sizeof(ram));
 		fread(&rom, 1, sizeof(rom), gbRom);
@@ -60,7 +62,17 @@ bool Rom::Load(const char *filePath)
 		for (u16 i = Memory::Address::ROM_NAME_START; i < Memory::Address::ROM_NAME_END; i++)
 		{
 			printf("%c", Memory::ReadByte(i));
+			sprintf(romName, "%s%02X", romName, Memory::ReadByte(i));
 		}
+
+		// calculate the rom checksum (from the cartridge header)
+		u8 sum = 0;
+		for(u16 i = 0x0134; i <= 0x014C; i++)
+		{
+			sum = (sum - Memory::ReadByte(i));
+		}
+
+		sprintf(romName, "%s%02X", romName, sum);
 
 		printf("\n");
 		Log::Print("Rom Cartridge Type: %02X | Rom-Size: %02X | Ram-Size: %02X", mbcType, romSize, ramSize);
@@ -86,17 +98,11 @@ void Rom::Reload()
 // responsible for loading the games ram bank from a file
 bool Rom::LoadRam(int num)
 {
-	if (!hasBatteryBackup) return;
+	if (!hasBatteryBackup) return false;
 
 	char outputFilename[512];
-	char romName[512];
 	char filePath[512];
-	const char *cleanFilename;
-	(cleanFilename = strrchr(filename, '/')) ? ++filename : (cleanFilename = filename);
 
-	// get the current file extension and rename it to sav
-	sscanf(cleanFilename,"%[^.]", romName);
-	sprintf(romName,"%s", romName);
 	sprintf(filePath, "saves/%s", romName);
 	sprintf(outputFilename, "%s/%d.sav", filePath, num);
 
@@ -118,14 +124,8 @@ void Rom::SaveRam(int num)
 
 	struct stat st = {0};
 	char outputFilename[512];
-	char romName[512];
 	char filePath[512];
-	const char *cleanFilename;
-	(cleanFilename = strrchr(filename, '/')) ? ++filename : (cleanFilename = filename);
 
-	// get the current file extension and rename it to sav
-	sscanf(cleanFilename,"%[^.]", romName);
-	sprintf(romName,"%s", romName);
 	sprintf(filePath, "saves/%s", romName);
 
 	if (stat(filePath, &st) == -1) mkdir(filePath, 0700);

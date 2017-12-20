@@ -18,8 +18,10 @@ class Timer
 		static bool Enabled();
 		static void Update(int cycles);
 
-	private:
-		static void UpdateDiv(int cycles);
+	public:
 		static int timerCounter;
 		static int divCounter;
+
+	private:
+		static void UpdateDiv(int cycles);
 };
