@@ -18,6 +18,8 @@ u8 Rom::mbcType = 0x00;
 u8 Rom::romSize = 0x00;
 u8 Rom::ramSize = 0x00;
 u8 Rom::romBank = 0x01;
+u16 Rom::ramBank = 0x0000;
+u8 Rom::currentMode = 0x00;
 const char *Rom::filename = NULL;
 
 // responsible for loading a rom
@@ -27,10 +29,12 @@ bool Rom::Load(const char *filePath)
 	FILE *gbRom = fopen(filePath, "rb");
 	romBank = 0x01;
 	ramSize = 0x00;
+	currentMode = 0x00;
 
 	if (gbRom)
 	{
 		memset(&rom, 0x00, sizeof(rom));
+		memset(&ram, 0x00, sizeof(ram));
 		fread(&rom, 1, sizeof(rom), gbRom);
 		memcpy(&Memory::mem, &rom, 0x3FFF);
 
@@ -50,6 +54,8 @@ bool Rom::Load(const char *filePath)
 
 		printf("\n");
 		Log::Print("Rom Cartridge Type: %02X | Rom-Size: %02X | Ram-Size: %02X", mbcType, romSize, ramSize);
+
+		LoadRam();
 	}
 	else
 	{
@@ -65,4 +71,55 @@ bool Rom::Load(const char *filePath)
 void Rom::Reload()
 {
 	Load(filename);
+}
+
+// responsible for loading the games ram bank from a file
+bool Rom::LoadRam(int num)
+{
+	char outputFilename[512];
+	char romName[512];
+	char filePath[512];
+	const char *cleanFilename;
+	(cleanFilename = strrchr(filename, '/')) ? ++filename : (cleanFilename = filename);
+
+	// get the current file extension and rename it to sav
+	sscanf(cleanFilename,"%[^.]", romName);
+	sprintf(romName,"%s", romName);
+	sprintf(filePath, "saves/%s", romName);
+	sprintf(outputFilename, "%s/%d.sav", filePath, num);
+
+	FILE *fp = fopen(outputFilename, "rb");
+
+	if (fp == NULL) return false;
+
+	fread(&Rom::ram, 1, sizeof(Rom::ram), fp);
+	fclose(fp);
+
+	return true;
+}
+
+
+// responsible for saving the games ram bank to a file
+void Rom::SaveRam(int num)
+{
+	struct stat st = {0};
+	char outputFilename[512];
+	char romName[512];
+	char filePath[512];
+	const char *cleanFilename;
+	(cleanFilename = strrchr(filename, '/')) ? ++filename : (cleanFilename = filename);
+
+	// get the current file extension and rename it to sav
+	sscanf(cleanFilename,"%[^.]", romName);
+	sprintf(romName,"%s", romName);
+	sprintf(filePath, "saves/%s", romName);
+
+	if (stat(filePath, &st) == -1) mkdir(filePath, 0700);
+
+	sprintf(outputFilename, "%s/%d.sav", filePath, num);
+
+	FILE *fp = fopen(outputFilename, "wb");
+
+	fwrite(Rom::ram, sizeof(Rom::ram), 1, fp);
+	fclose(fp);
 }

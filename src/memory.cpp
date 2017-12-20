@@ -8,6 +8,7 @@
  */
 
 // includes
+#include "includes/bit.h"
 #include "includes/input.h"
 #include "includes/log.h"
 #include "includes/mbc.h"
@@ -16,6 +17,8 @@
 
 // init vars
 u8 Memory::mem[0x10000] = {0x00};
+bool Memory::useRomBank = true;
+bool Memory::useRamBank = false;
 
 // responsible for initializing the memory
 void Memory:: Init()
@@ -68,6 +71,9 @@ u8 Memory::ReadByte(u16 address)
 			int bankAddr = ((Rom::romBank * 0x4000) + (address - 0x4000));
 			return Rom::rom[bankAddr];
 		}
+		break;
+		case Address::EXTRAM_START ... Address::EXTRAM_END:
+			if (useRamBank) return Rom::ram[Rom::ramBank + (address - Address::EXTRAM_START)];
 		break;
 		case Address::P1: return Input::GetKey(mem[address]); break;
 		case Address::NR10: return 0xFF; break;
@@ -143,9 +149,55 @@ void Memory::WriteByte(u16 address, u8 data)
 			if (data == 0x1) Rom::Reload();
 		break;
 
+		// handle enabling ram banking
+		case 0x0000 ... 0x1FFF:
+			useRamBank = (data == 0x0A) ? true : false;
+		break;
+
 		// rom banking
 		case 0x2000 ... 0x3FFF:
 			Mbc::RomBanking(data);
+		break;
+
+		// handle selecting ram bank/upper two bits of rom bank
+		case 0x4000 ... 0x5FFF:
+			if (Rom::currentMode == 0)
+			{
+				Rom::romBank |= data;
+			}
+			else
+			{
+				Rom::romBank |= data;
+				Rom::ramBank = data;
+			}
+		break;
+
+		// handle rom/ram mode
+		case 0x6000 ... 0x7FFF:
+			Rom::currentMode = data;
+
+			if (data == 0x0)
+			{
+				useRomBank = true;
+				Rom::ramBank = 0x0000;
+			}
+			else
+			{
+				Bit::Clear(Rom::romBank, 7);
+				Bit::Clear(Rom::romBank, 6);
+			}
+		break;
+
+		case Address::EXTRAM_START ... Address::EXTRAM_END:
+			if (useRamBank)
+			{
+				Rom::ram[Rom::ramBank + (address - Address::EXTRAM_START)] = data;
+				Rom::SaveRam();
+			}
+			else
+			{
+				mem[address] = data;
+			}
 		break;
 
 		// everything should be ok to write to memory here...

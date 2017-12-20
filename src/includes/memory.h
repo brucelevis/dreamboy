@@ -27,6 +27,8 @@ class Memory
 
 	public:
 		static u8 mem[0x10000];
+		static bool useRomBank;
+		static bool useRamBank;
 
 	public:
 		class Address
