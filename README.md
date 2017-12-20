@@ -9,6 +9,7 @@ This project is a "next step" project for me, after writing several [Chip8](http
 ![Aladdin](./screenshots/Aladdin.png) ![Balloon Kid](./screenshots/Balloon_Kid.png) ![Castlevania II](./screenshots/Castlevania_II.png)
 ![Donkey Kong](./screenshots/Donkey_Kong.png) ![Dr Mario](./screenshots/Dr_Mario.png) ![Kirbys Dreamland](./screenshots/Kirbys_Dreamland.png) 
 ![Super Mario Land](./screenshots/Super_Mario_Land.png) ![Super Mario Land II](./screenshots/Super_Mario_Land_II.png) ![Tetris](./screenshots/Tetris.png) 
+![Battletoads](./screenshots/Battletoads.jpg) ![The Legend Of Zelda - Links Awakening](./screenshots/The_Legend_of_Zelda_Links_Awakening.jpg) ![Mario & Yoshi](./screenshots/Mario_And_Yoshi.jpg) 
 
 #### Status:
 
