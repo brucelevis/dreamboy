@@ -249,11 +249,11 @@ void Lcd::DrawBackground()
 		u8 yPos = (SCY + LY);
 		u8 xPos = (SCX + x);
 
-		if (IsWindowEnabled() && (LY >= WY))
+		if (IsWindowEnabled() && (LY >= WY) && (x >= (WX - 7)))
 		{
 			tileMemory = Bit::Get(LCDC, 6) ? 0x9C00 : 0x9800;
 			yPos = (WY + LY);
-			xPos = (WX + x);
+			xPos = ((WX - 7) + x);
 		}
 		else
 		{
@@ -302,11 +302,13 @@ void Lcd::DrawSprites()
 		u8 priority = Bit::Get(flags, 7);
 		u8 yFlip = Bit::Get(flags, 6);
 		u8 xFlip = Bit::Get(flags, 5);
-		u8 paletteNo = Bit::Get(flags, 4);
-		u8 palette = (paletteNo == 1) ? OP1 : OP0;
+		u8 palette = (Bit::Get(flags, 4)) ? OP1 : OP0;
 		u8 line = ((LY - yPos) * 2);
 		u8 pixelData1 = Memory::ReadByte(spriteData + (patternNo * 16) + line);
 		u8 pixelData2 = Memory::ReadByte(spriteData + (patternNo * 16) + line + 1);
+
+		// sprites at position 0 are not drawn
+		if (xPos == 0) continue;
 
 		if (LY >= yPos && LY < (yPos + spriteHeight))
 		{
@@ -316,8 +318,8 @@ void Lcd::DrawSprites()
 				u8 colorNum = ((Bit::Get(pixelData2, pixel) << 1) | (Bit::Get(pixelData1, pixel)));
 				Rgb pixelColor = GetColor(palette, colorNum);
 
-				if (pixelColor.r == 155) continue;
-
+				// skip drawing transparent pixels
+				if (colorNum == 0x0) continue;
 				if (xFlip) spriteXPos = (xPos + pixel);
 				bool isWhite = (screen[LY][spriteXPos][0] == 155);
 
