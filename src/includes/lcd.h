@@ -37,7 +37,6 @@ class Lcd
 		static Rgb GetColor(u8 palette, u8 bit);
 		static void DrawScanline();
 		static void DrawBackground();
-		static void DrawWindow();
 		static void DrawSprites();
 
 	public:

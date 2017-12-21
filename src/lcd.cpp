@@ -24,6 +24,8 @@
 #define BGP Memory::mem[Memory::Address::BGP]
 #define SCY Memory::ReadByte(Memory::Address::SCY)
 #define SCX Memory::ReadByte(Memory::Address::SCX)
+#define WY Memory::ReadByte(Memory::Address::WY)
+#define WX Memory::ReadByte(Memory::Address::WX)
 
 // init vars
 u8 Lcd::screen[144][160][3];
@@ -228,7 +230,6 @@ Lcd::Rgb Lcd::GetColor(u8 palette, u8 bit)
 void Lcd::DrawScanline()
 {
 	DrawBackground();
-	DrawWindow();
 	DrawSprites();
 }
 
@@ -245,6 +246,18 @@ void Lcd::DrawBackground()
 	{
 		u8 yPos = (SCY + LY);
 		u8 xPos = (SCX + x);
+
+		if (IsWindowEnabled() && (LY >= WY))
+		{
+			tileMemory = Bit::Get(LCDC, 6) ? 0x9C00 : 0x9800;
+			yPos = (WY + LY);
+			xPos = (WX + x);
+		}
+		else
+		{
+			tileMemory = Bit::Get(LCDC, 3) ? 0x9C00 : 0x9800;
+		}
+
 		u16 tileCol = (xPos / 8);
 		u16 tileRow = ((yPos / 8) * 32);
 		u8 tileYLine = ((yPos % 8) * 2);
@@ -261,12 +274,6 @@ void Lcd::DrawBackground()
 		screen[LY][x][1] = pixelColor.g;
 		screen[LY][x][2] = pixelColor.b;
 	}
-}
-
-// responsible for drawing the window
-void Lcd::DrawWindow()
-{
-	if (!IsWindowEnabled()) return;
 }
 
 // responsible for drawing sprites
