@@ -22,6 +22,8 @@
 #define LCDC Memory::mem[Memory::Address::LCDC]
 #define STAT Memory::mem[Memory::Address::STAT]
 #define BGP Memory::mem[Memory::Address::BGP]
+#define OP0 Memory::mem[Memory::Address::OP0]
+#define OP1 Memory::mem[Memory::Address::OP1]
 #define SCY Memory::ReadByte(Memory::Address::SCY)
 #define SCX Memory::ReadByte(Memory::Address::SCX)
 #define WY Memory::ReadByte(Memory::Address::WY)
@@ -217,10 +219,10 @@ Lcd::Rgb Lcd::GetColor(u8 palette, u8 bit)
 
 	switch(color)
 	{
-		case 0: rgb.r = 155; rgb.g = 188; rgb.b = 15; break; // 00 - white
-		case 1: rgb.r = 139; rgb.g = 172; rgb.b = 15; break; // 01 - light grey
-		case 2: rgb.r = 48; rgb.g = 98; rgb.b = 48; break; // 02 - dark grey
-		case 3: rgb.r = 15; rgb.g = 56; rgb.b = 15; break; // 03 - black
+		case 0: rgb = {155, 188, 15}; break; // 00 - white
+		case 1: rgb = {139, 172, 15}; break; // 01 - light grey
+		case 2: rgb = {48, 98, 48}; break; // 02 - dark grey
+		case 3: rgb = {15, 56, 15}; break; // 03 - black
 	}
 
 	return rgb;
@@ -280,4 +282,52 @@ void Lcd::DrawBackground()
 void Lcd::DrawSprites()
 {
 	if (!IsSpritesEnabled()) return;
+
+	u16 spriteData = 0x8000;
+	u16 spriteAttributeData = 0xFE00;
+	u8 spriteWidth = 8;
+	u8 spriteHeight = Bit::Get(LCDC, 2) ? 16 : 8;
+	u8 spriteLimit = 40;
+
+	for (u8 i = 0; i < spriteLimit; i++)
+	{
+		u8 index = (i * 4);
+		u8 yPos = Memory::ReadByte(spriteAttributeData + index) - 16;
+		u8 xPos = Memory::ReadByte(spriteAttributeData + index + 1) - 8;
+		u8 patternNo = Memory::ReadByte(spriteAttributeData + index + 2);
+		u8 flags = Memory::ReadByte(spriteAttributeData + index + 3);
+
+		if (spriteHeight == 16) Bit::Clear(patternNo, 0);
+
+		u8 priority = Bit::Get(flags, 7);
+		u8 yFlip = Bit::Get(flags, 6);
+		u8 xFlip = Bit::Get(flags, 5);
+		u8 paletteNo = Bit::Get(flags, 4);
+		u8 palette = (paletteNo == 1) ? OP1 : OP0;
+		u8 line = ((LY - yPos) * 2);
+		u8 pixelData1 = Memory::ReadByte(spriteData + (patternNo * 16) + line);
+		u8 pixelData2 = Memory::ReadByte(spriteData + (patternNo * 16) + line + 1);
+
+		if (LY >= yPos && LY < (yPos + spriteHeight))
+		{
+			for (int pixel = 7; pixel >= 0; pixel--)
+			{
+				int spriteXPos = (xPos + (pixel * -1) + 7);
+				u8 colorNum = ((Bit::Get(pixelData2, pixel) << 1) | (Bit::Get(pixelData1, pixel)));
+				Rgb pixelColor = GetColor(palette, colorNum);
+
+				if (pixelColor.r == 155) continue;
+
+				if (xFlip) spriteXPos = (xPos + pixel);
+				bool isWhite = (screen[LY][spriteXPos][0] == 155);
+
+				if ((priority == 0x00) || (priority == 0x01 && isWhite))
+				{
+					screen[LY][spriteXPos][0] = pixelColor.r;
+					screen[LY][spriteXPos][1] = pixelColor.g;
+					screen[LY][spriteXPos][2] = pixelColor.b;
+				}
+			}
+		}
+	}
 }

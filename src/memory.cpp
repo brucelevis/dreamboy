@@ -122,6 +122,18 @@ void Memory::WriteByte(u16 address, u8 data)
 		// disable writes to LY (should never happen...)
 		case Address::LY: break;
 
+		// handle DMA writes
+		case Address::DMA:
+		{
+			u16 addr = (data << 8);
+
+			for (u16 i = 0; i < 0xA0; i++)
+			{
+				mem[0xFE00 + i] = ReadByte(addr + i);
+			}
+		}
+		break;
+
 		// reset DIV if it is written to
 		case Address::DIV: mem[address] = 0x00; break;
 
