@@ -248,7 +248,7 @@ void Lcd::DrawBackground()
 		if (windowEnabled && (LY >= WY) && (x >= (WX - 7)))
 		{
 			tileMemory = windowMemoryAddress;
-			yPos = (WY + LY);
+			yPos = (LY - WY);
 			xPos = ((WX - 7) + x);
 		}
 		else
@@ -285,7 +285,7 @@ void Lcd::DrawSprites()
 	const u8 spriteHeight = Bit::Get(LCDC, 2) ? 16 : 8;
 	const u8 spriteLimit = 40;
 
-	for (u8 i = 0; i < spriteLimit; i++)
+	for (int i = (spriteLimit - 1); i >= 0; i--)
 	{
 		const u8 index = (i * 4);
 		const u8 yPos = Memory::ReadByte(spriteAttributeData + index) - 16;
@@ -304,7 +304,7 @@ void Lcd::DrawSprites()
 		const u8 pixelData2 = Memory::ReadByte(spriteData + (patternNo * 16) + line + 1);
 
 		// sprites at position 0 are not drawn
-		if (xPos == 0) continue;
+		if (xPos == 0 && yPos == 0) continue;
 
 		if (LY >= yPos && LY < (yPos + spriteHeight))
 		{
@@ -317,13 +317,11 @@ void Lcd::DrawSprites()
 
 				// skip drawing transparent pixels
 				if (colorNum == 0x0) continue;
+				if (priority == 0x1 && !isWhite) continue;
 
-				if ((priority == 0x00) || (priority == 0x01 && isWhite))
-				{
-					screen[LY][spriteXPos][0] = pixelColor.r;
-					screen[LY][spriteXPos][1] = pixelColor.g;
-					screen[LY][spriteXPos][2] = pixelColor.b;
-				}
+				screen[LY][spriteXPos][0] = pixelColor.r;
+				screen[LY][spriteXPos][1] = pixelColor.g;
+				screen[LY][spriteXPos][2] = pixelColor.b;
 			}
 		}
 	}
