@@ -433,7 +433,7 @@ void Debugger::ControlsWindow(const char *title, int width, int height, int x, i
 						case Reg::name::PC: Cpu::pc.reg = value; break;
 						case Reg::name::LCDC: Memory::WriteByte(Memory::Address::LCDC, value & 0xFF);  break;
 						case Reg::name::STAT: Memory::WriteByte(Memory::Address::STAT, value & 0xFF); break;
-						case Reg::name::LY: Memory::mem[Memory::Address::LY] =  (value & 0xFF); break;
+						case Reg::name::LY: Memory::mem[Memory::Address::LY] = (value & 0xFF); break;
 						case Reg::name::IME:  break;
 						case Reg::name::IF: Memory::WriteByte(Memory::Address::IF, value & 0xFF); break;
 						case Reg::name::IE: Memory::WriteByte(Memory::Address::IE, value & 0xFF); break;

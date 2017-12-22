@@ -23,12 +23,17 @@ class Lcd
 		static void Render();
 		static void UpdateTexture();
 
-	private:
+	public:
 		struct Rgb
 		{
 			u8 r, g, b;
 		};
+		static int height;
+		static int width;
+		static u8 screen[144][160][3];
+		static int scanlineCounter;
 
+	private:
 		static u8 SetMode(u8 mode);
 		static void SetStatus();
 		static bool IsBackgroundEnabled();
@@ -38,12 +43,6 @@ class Lcd
 		static void DrawScanline();
 		static void DrawBackground();
 		static void DrawSprites();
-
-	public:
-		static int width;
-		static int height;
-		static u8 screen[144][160][3];
-		static int scanlineCounter;
 };
 
 #endif

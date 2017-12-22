@@ -31,9 +31,13 @@
 
 // init vars
 u8 Lcd::screen[144][160][3];
-int Lcd::width = 160;
 int Lcd::height = 144;
+int Lcd::width = 160;
 int Lcd::scanlineCounter = 0;
+static const Lcd::Rgb colorPalette[4] =
+{
+	{155, 188, 15}, {139, 172, 15}, {48, 98, 48}, {15, 56, 15}
+};
 static GLuint texture;
 
 // responsible for initializing the Lcd
@@ -61,9 +65,9 @@ void Lcd::Reset()
 	{
 		for (int x = 0; x < 160; x++)
 		{
-			screen[y][x][0] = 155;
-			screen[y][x][1] = 188;
-			screen[y][x][2] = 15;
+			screen[y][x][0] = colorPalette[0].r;
+			screen[y][x][1] = colorPalette[0].g;
+			screen[y][x][2] = colorPalette[0].b;
 		}
 	}
 }
@@ -85,18 +89,16 @@ void Lcd::Update(int cycles)
 
 	if (scanlineCounter >= LCD_CLOCK_CYCLES)
 	{
-		if (LY < 144)
+		switch(LY)
 		{
-			DrawScanline();
-		}
-		else if (LY == 144)
-		{
-			UpdateTexture();
-			Interrupts::Request(Interrupts::VBLANK);
-		}
-		else if (LY > 153)
-		{
-			LY = 0x00;
+			case 0 ... 143: DrawScanline(); break;
+
+			case 144:
+				UpdateTexture();
+				Interrupts::Request(Interrupts::VBLANK);
+			break;
+
+			case 154: LY = 0xFF; break;
 		}
 
 		LY += 1;
@@ -123,11 +125,11 @@ u8 Lcd::SetMode(u8 mode)
 void Lcd::SetStatus()
 {
 	bool requestInterrupt = false;
-	u8 currentMode = (STAT & 0x3);
 	u8 nextMode = 0;
-	u16 vblankRange = 144;
-	u16 oamRange =  (LCD_CLOCK_CYCLES - 80);
-	u16 dataToLcd =  (oamRange - 172);
+	const u8 currentMode = (STAT & 0x3);
+	const u16 vblankRange = 144;
+	const u16 oamRange = (LCD_CLOCK_CYCLES - 80);
+	const u16 dataToLcd = (oamRange - 172);
 
 	if (!Enabled())
 	{
@@ -145,19 +147,21 @@ void Lcd::SetStatus()
 	}
 	else
 	{
-		if (scanlineCounter >= oamRange)
+		switch(scanlineCounter)
 		{
-			nextMode = SetMode(2);
-			requestInterrupt = Bit::Get(STAT, 5);
-		}
-		else if (scanlineCounter >= dataToLcd)
-		{
-			nextMode = SetMode(3);
-		}
-		else
-		{
-			nextMode = SetMode(0);
-			requestInterrupt = Bit::Get(STAT, 3);
+			case oamRange ... LCD_CLOCK_CYCLES:
+				nextMode = SetMode(2);
+				requestInterrupt = Bit::Get(STAT, 5);
+			break;
+
+			case dataToLcd ... (oamRange - 1):
+				nextMode = SetMode(3);
+			break;
+
+			default:
+				nextMode = SetMode(0);
+				requestInterrupt = Bit::Get(STAT, 3);
+			break;
 		}
 	}
 
@@ -166,9 +170,7 @@ void Lcd::SetStatus()
 		Interrupts::Request(Interrupts::LCD);
 	}
 
-	Bit::Clear(STAT, 2);
-
-	if (LY == LYC) Bit::Set(STAT, 2);
+	if (LY == LYC) Bit::Set(STAT, 2); else Bit::Clear(STAT, 2);
 	if (Bit::Get(STAT, 2) && Bit::Get(STAT, 6)) Interrupts::Request(Interrupts::LCD);
 
 	STAT |= 0x80;
@@ -212,20 +214,11 @@ bool Lcd::IsSpritesEnabled()
 // responsible for getting a color from a palette
 Lcd::Rgb Lcd::GetColor(u8 palette, u8 bit)
 {
-	struct Rgb rgb;
-	u8 hi = ((bit << 1) + 1);
-	u8 lo = (bit << 1);
-	u8 color = ((Bit::Get(palette, hi) << 1) | (Bit::Get(palette, lo)));
+	const u8 hi = ((bit << 1) + 1);
+	const u8 lo = (bit << 1);
+	const u8 color = ((Bit::Get(palette, hi) << 1) | (Bit::Get(palette, lo)));
 
-	switch(color)
-	{
-		case 0: rgb = {155, 188, 15}; break; // 00 - white
-		case 1: rgb = {139, 172, 15}; break; // 01 - light grey
-		case 2: rgb = {48, 98, 48}; break; // 02 - dark grey
-		case 3: rgb = {15, 56, 15}; break; // 03 - black
-	}
-
-	return rgb;
+	return colorPalette[color];
 }
 
 // responsible for drawing the current scanline
@@ -240,37 +233,40 @@ void Lcd::DrawBackground()
 {
 	if (!IsBackgroundEnabled()) return;
 
-	u16 tileData = Bit::Get(LCDC, 4) ? 0x8000 : 0x8800;
 	u16 tileMemory = Bit::Get(LCDC, 3) ? 0x9C00 : 0x9800;
-	bool unsignedTile = Bit::Get(LCDC, 4);
+	const u16 tileData = Bit::Get(LCDC, 4) ? 0x8000 : 0x8800;
+	const u16 tileMemoryAddress = tileMemory;
+	const u16 windowMemoryAddress = Bit::Get(LCDC, 6) ? 0x9C00 : 0x9800;
+	const bool unsignedTile = Bit::Get(LCDC, 4);
+	const bool windowEnabled = IsWindowEnabled();
 
 	for (u8 x = 0; x < 160; x++)
 	{
 		u8 yPos = (SCY + LY);
 		u8 xPos = (SCX + x);
 
-		if (IsWindowEnabled() && (LY >= WY) && (x >= (WX - 7)))
+		if (windowEnabled && (LY >= WY) && (x >= (WX - 7)))
 		{
-			tileMemory = Bit::Get(LCDC, 6) ? 0x9C00 : 0x9800;
+			tileMemory = windowMemoryAddress;
 			yPos = (WY + LY);
 			xPos = ((WX - 7) + x);
 		}
 		else
 		{
-			tileMemory = Bit::Get(LCDC, 3) ? 0x9C00 : 0x9800;
+			tileMemory = tileMemoryAddress;
 		}
 
-		u16 tileCol = (xPos / 8);
-		u16 tileRow = ((yPos / 8) * 32);
-		u8 tileYLine = ((yPos % 8) * 2);
-		u16 tileAddress = (tileMemory + tileCol + tileRow);
-		s16 tileNum = (unsignedTile) ? (u8)Memory::ReadByte(tileAddress) : (s8)Memory::ReadByte(tileAddress);
-		u16 tileLocation = (unsignedTile) ? (tileData +  (tileNum * 16)) : ((tileData) + ((tileNum  + 128) * 16));
-		u8 pixelData1 = Memory::ReadByte(tileLocation + tileYLine);
-		u8 pixelData2 = Memory::ReadByte(tileLocation + tileYLine + 1);
-		u8 colorBit = (((xPos % 8) - 7) * -1);
-		u8 colorNum = ((Bit::Get(pixelData2, colorBit) << 1) | (Bit::Get(pixelData1, colorBit)));
-		Rgb pixelColor = GetColor(BGP, colorNum);
+		const u16 tileCol = (xPos / 8);
+		const u16 tileRow = ((yPos / 8) * 32);
+		const u8 tileYLine = ((yPos % 8) * 2);
+		const u16 tileAddress = (tileMemory + tileCol + tileRow);
+		const s16 tileNum = (unsignedTile) ? (u8)Memory::ReadByte(tileAddress) : (s8)Memory::ReadByte(tileAddress);
+		const u16 tileLocation = (unsignedTile) ? (tileData +  (tileNum * 16)) : ((tileData) + ((tileNum  + 128) * 16));
+		const u8 pixelData1 = Memory::ReadByte(tileLocation + tileYLine);
+		const u8 pixelData2 = Memory::ReadByte(tileLocation + tileYLine + 1);
+		const u8 colorBit = (((xPos % 8) - 7) * -1);
+		const u8 colorNum = ((Bit::Get(pixelData2, colorBit) << 1) | (Bit::Get(pixelData1, colorBit)));
+		const Rgb pixelColor = GetColor(BGP, colorNum);
 
 		screen[LY][x][0] = pixelColor.r;
 		screen[LY][x][1] = pixelColor.g;
@@ -283,29 +279,29 @@ void Lcd::DrawSprites()
 {
 	if (!IsSpritesEnabled()) return;
 
-	u16 spriteData = 0x8000;
-	u16 spriteAttributeData = 0xFE00;
-	u8 spriteWidth = 8;
-	u8 spriteHeight = Bit::Get(LCDC, 2) ? 16 : 8;
-	u8 spriteLimit = 40;
+	const u16 spriteData = 0x8000;
+	const u16 spriteAttributeData = 0xFE00;
+	const u8 spriteWidth = 8;
+	const u8 spriteHeight = Bit::Get(LCDC, 2) ? 16 : 8;
+	const u8 spriteLimit = 40;
 
 	for (u8 i = 0; i < spriteLimit; i++)
 	{
-		u8 index = (i * 4);
-		u8 yPos = Memory::ReadByte(spriteAttributeData + index) - 16;
-		u8 xPos = Memory::ReadByte(spriteAttributeData + index + 1) - 8;
+		const u8 index = (i * 4);
+		const u8 yPos = Memory::ReadByte(spriteAttributeData + index) - 16;
+		const u8 xPos = Memory::ReadByte(spriteAttributeData + index + 1) - 8;
 		u8 patternNo = Memory::ReadByte(spriteAttributeData + index + 2);
-		u8 flags = Memory::ReadByte(spriteAttributeData + index + 3);
+		const u8 flags = Memory::ReadByte(spriteAttributeData + index + 3);
 
 		if (spriteHeight == 16) Bit::Clear(patternNo, 0);
 
-		u8 priority = Bit::Get(flags, 7);
-		u8 yFlip = Bit::Get(flags, 6);
-		u8 xFlip = Bit::Get(flags, 5);
-		u8 palette = (Bit::Get(flags, 4)) ? OP1 : OP0;
-		u8 line = ((LY - yPos) * 2);
-		u8 pixelData1 = Memory::ReadByte(spriteData + (patternNo * 16) + line);
-		u8 pixelData2 = Memory::ReadByte(spriteData + (patternNo * 16) + line + 1);
+		const u8 priority = Bit::Get(flags, 7);
+		const u8 yFlip = Bit::Get(flags, 6);
+		const u8 xFlip = Bit::Get(flags, 5);
+		const u8 palette = (Bit::Get(flags, 4)) ? OP1 : OP0;
+		const u8 line = (yFlip) ? ((((LY - yPos - spriteHeight) + 1) * -1) * 2) : ((LY - yPos) * 2);
+		const u8 pixelData1 = Memory::ReadByte(spriteData + (patternNo * 16) + line);
+		const u8 pixelData2 = Memory::ReadByte(spriteData + (patternNo * 16) + line + 1);
 
 		// sprites at position 0 are not drawn
 		if (xPos == 0) continue;
@@ -314,14 +310,13 @@ void Lcd::DrawSprites()
 		{
 			for (int pixel = 7; pixel >= 0; pixel--)
 			{
-				int spriteXPos = (xPos + (pixel * -1) + 7);
-				u8 colorNum = ((Bit::Get(pixelData2, pixel) << 1) | (Bit::Get(pixelData1, pixel)));
-				Rgb pixelColor = GetColor(palette, colorNum);
+				const int spriteXPos = (xFlip) ? (xPos + pixel) : (xPos + (pixel * -1) + 7);
+				const bool isWhite = (screen[LY][spriteXPos][0] == 155);
+				const u8 colorNum = ((Bit::Get(pixelData2, pixel) << 1) | (Bit::Get(pixelData1, pixel)));
+				const Rgb pixelColor = GetColor(palette, colorNum);
 
 				// skip drawing transparent pixels
 				if (colorNum == 0x0) continue;
-				if (xFlip) spriteXPos = (xPos + pixel);
-				bool isWhite = (screen[LY][spriteXPos][0] == 155);
 
 				if ((priority == 0x00) || (priority == 0x01 && isWhite))
 				{
