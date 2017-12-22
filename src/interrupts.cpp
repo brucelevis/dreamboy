@@ -27,12 +27,12 @@ union InterruptType
 		u16 address;
 	};
 };
-static InterruptType vblank  = {{.bit = 0, .address = 0x40}};
-static InterruptType lcd = {{.bit = 1, .address = 0x48}};
-static InterruptType timer = {{.bit = 2, .address = 0x50}};
-static InterruptType serial = {{.bit = 3, .address = 0x58}};
-static InterruptType joypad = {{.bit = 4, .address = 0x60}};
-static InterruptType interruptList[5] = {vblank, lcd, timer, serial, joypad};
+static const InterruptType vblank  = {{.bit = 0, .address = 0x40}};
+static const InterruptType lcd = {{.bit = 1, .address = 0x48}};
+static const InterruptType timer = {{.bit = 2, .address = 0x50}};
+static const InterruptType serial = {{.bit = 3, .address = 0x58}};
+static const InterruptType joypad = {{.bit = 4, .address = 0x60}};
+static const InterruptType interruptList[5] = {vblank, lcd, timer, serial, joypad};
 bool Interrupts::ime = false;
 bool Interrupts::clearIF = true;
 bool Interrupts::shouldExecute = true;
@@ -95,7 +95,7 @@ int Interrupts::RequestedId()
 // responsible for servicing an interrupt
 void Interrupts::Service()
 {
-	int id = RequestedId();
+	const int id = RequestedId();
 
 	if (id >= 0 && ime)
 	{

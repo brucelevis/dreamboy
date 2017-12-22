@@ -13,21 +13,21 @@
 // responsible for setting a bit
 void Bit::Set(u8 &in, u8 bit)
 {
-	u8 mask = (1 << bit);
+	const u8 mask = (1 << bit);
 	in |= mask;
 }
 
 // responsible for clearing a bit
 void Bit::Clear(u8 &in, u8 bit)
 {
-	u8 mask = (1 << bit);
+	const u8 mask = (1 << bit);
 	in &= ~mask;
 }
 
 // responsible for getting a bits value
 u8 Bit::Get(u8 in, u8 bit)
 {
-	u8 mask = (1 << bit);
+	const u8 mask = (1 << bit);
 	return (in & mask) ? 1 : 0;
 }
 

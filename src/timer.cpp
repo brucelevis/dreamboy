@@ -13,6 +13,7 @@
 #include "includes/memory.h"
 #include "includes/timer.h"
 
+// definitions
 #define TIMA Memory::mem[Memory::Address::TIMA]
 #define TAC Memory::ReadByte(Memory::Address::TAC)
 #define TMA Memory::ReadByte(Memory::Address::TMA)
@@ -66,10 +67,10 @@ void Timer::Update(int cycles)
 
 	if (timerCounter >= currentFrequency)
 	{
-		if ((u16)(TIMA + 1) > 255)
+		if (((u16)TIMA + 1) > 255)
 		{
-			Interrupts::Request(Interrupts::TIMER);
 			TIMA = TMA;
+			Interrupts::Request(Interrupts::TIMER);
 		}
 
 		TIMA += 1;

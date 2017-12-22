@@ -39,7 +39,7 @@ void Input::Init()
 // responsible for pressing a key
 void Input::PressKey(u8 bit, u8 keyType)
 {
-	bool wasSet = Bit::Get(buttons, bit);
+	const bool wasSet = Bit::Get(buttons, bit);
 
 	Cpu::stopped = false;
 	Bit::Clear(buttons, bit);

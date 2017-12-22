@@ -68,7 +68,7 @@ u8 Memory::ReadByte(u16 address)
 	{
 		case Address::ROM_BK1_START ... Address::ROM_BK1_END:
 		{
-			int bankAddr = ((Rom::romBank * 0x4000) + (address - 0x4000));
+			const int bankAddr = ((Rom::romBank * 0x4000) + (address - 0x4000));
 			return Rom::rom[bankAddr];
 		}
 		break;
@@ -104,7 +104,7 @@ u16 Memory::ReadWord(u16 address)
 {
 	if (address >= Address::ROM_BK1_START && address <= Address::ROM_BK1_END)
 	{
-		int bankAddr = ((Rom::romBank * 0x4000) + (address - 0x4000));
+		const int bankAddr = ((Rom::romBank * 0x4000) + (address - 0x4000));
 		return ((Rom::rom[bankAddr + 1] << 8) | (Rom::rom[bankAddr]));
 	}
 
@@ -125,7 +125,7 @@ void Memory::WriteByte(u16 address, u8 data)
 		// handle DMA writes
 		case Address::DMA:
 		{
-			u16 addr = (data << 8);
+			const u16 addr = (data << 8);
 
 			for (u16 i = 0; i < 0xA0; i++)
 			{
@@ -227,7 +227,7 @@ void Memory::WriteWord(u16 address, Cpu::Register reg)
 // responsible for popping a u16 from the stack
 u16 Memory::Pop()
 {
-	u16 data = ReadWord(Cpu::sp.reg);
+	const u16 data = ReadWord(Cpu::sp.reg);
 	Cpu::sp.reg += 2;
 
 	return data;

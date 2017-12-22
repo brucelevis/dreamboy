@@ -17,6 +17,7 @@
 void Mbc1::RomBanking(u8 data)
 {
 	u8 bankNo = (data & 0x3F);
+
 	if (bankNo == 0x00 || bankNo == 0x20 || bankNo == 0x40 || bankNo == 0x60)
 	{
 		bankNo += 0x1;

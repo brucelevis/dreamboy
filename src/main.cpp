@@ -95,7 +95,7 @@ static bool InitGL()
 // responsible for initializing SDL
 static bool InitSDL()
 {
-	if (SDL_Init(SDL_INIT_VIDEO) >= 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) >= 0)
 	{
 		window  = SDL_CreateWindow(EMULATOR_NAME,  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
@@ -118,25 +118,10 @@ static void CreateDirectories()
 {
 	struct stat st = {0};
 
-	if (stat("screenshots", &st) == -1)
-	{
-		mkdir("screenshots", 0700);
-	}
-
-	if (stat("saves", &st) == -1)
-	{
-		mkdir("saves", 0700);
-	}
-
-	if (stat("saves/states", &st) == -1)
-	{
-		mkdir("saves/states", 0700);
-	}
-
-	if (stat("saves/states/debugger", &st) == -1)
-	{
-		mkdir("saves/states/debugger", 0700);
-	}
+	if (stat("screenshots", &st) == -1) mkdir("screenshots", 0700);
+	if (stat("saves", &st) == -1) mkdir("saves", 0700);
+	if (stat("saves/states", &st) == -1) mkdir("saves/states", 0700);
+	if (stat("saves/states/debugger", &st) == -1) mkdir("saves/states/debugger", 0700);
 }
 
 // responsible for shutting down SDL + misc stuff
