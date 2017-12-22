@@ -43,9 +43,9 @@ Cpu::Register Cpu::pc = {};
 int Cpu::cycles = 0;
 int Cpu::instructionsRan = 0;
 bool Cpu::halted = false;
+bool Cpu::haltBug = false;
 bool Cpu::stopped = false;
 bool Cpu::pendingInterrupt = false;
-bool Cpu::haltBug = false;
 bool Cpu::didLoadBios = false;
 
 // responsible for initializing the Cpu
@@ -73,6 +73,7 @@ void Cpu::Init()
 	cycles = 0;
 	instructionsRan = 0;
 	halted = false;
+	haltBug = false;
 	stopped = false;
 	pendingInterrupt = false;
 }
