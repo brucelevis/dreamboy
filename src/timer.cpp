@@ -13,10 +13,15 @@
 #include "includes/memory.h"
 #include "includes/timer.h"
 
+#define TIMA Memory::mem[Memory::Address::TIMA]
+#define TAC Memory::ReadByte(Memory::Address::TAC)
+#define TMA Memory::ReadByte(Memory::Address::TMA)
+#define DIV Memory::mem[Memory::Address::DIV]
+
 // init vars
 int Timer::timerCounter = 0;
 int Timer::divCounter = 0;
-static u16 frequencies[4] = {1024,16, 64, 256};
+static const u16 frequencies[4] = {1024, 16, 64, 256};
 
 // responsible for initializing the timer
 void Timer::Init()
@@ -28,15 +33,13 @@ void Timer::Init()
 // responsible for getting the current frequency
 u16 Timer::GetFrequency()
 {
-	u8 data = Memory::ReadByte(Memory::Address::TAC);
-	return frequencies[data & 0x3];
+	return frequencies[TAC & 0x3];
 }
 
 // responsible for determining if the timer is enabled
 bool Timer::Enabled()
 {
-	u8 data = Memory::ReadByte(Memory::Address::TAC);
-	return Bit::Get(data, 2);
+	return Bit::Get(TAC, 2);
 }
 
 // responsible for updating div
@@ -46,7 +49,7 @@ void Timer::UpdateDiv(int cycles)
 
 	if (divCounter > 255)
 	{
-		Memory::mem[Memory::Address::DIV] += 1;
+		DIV += 1;
 		divCounter -= 256;
 	}
 }
@@ -58,19 +61,18 @@ void Timer::Update(int cycles)
 
 	if (!Enabled()) return;
 
-	u16 currentFrequency = GetFrequency();
+	const u16 currentFrequency = GetFrequency();
 	timerCounter += cycles;
 
-	if (timerCounter > currentFrequency)
+	if (timerCounter >= currentFrequency)
 	{
-		u16 tima = Memory::ReadByte(Memory::Address::TIMA);
-		Memory::mem[Memory::Address::TIMA] = (tima += 1);
-
-		if (tima > 255)
+		if ((u16)(TIMA + 1) > 255)
 		{
 			Interrupts::Request(Interrupts::TIMER);
-			Memory::mem[Memory::Address::TIMA] = Memory::ReadByte(Memory::Address::TMA);
+			TIMA = TMA;
 		}
+
+		TIMA += 1;
 
 		timerCounter -= currentFrequency;
 	}
