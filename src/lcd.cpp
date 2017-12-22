@@ -310,18 +310,19 @@ void Lcd::DrawSprites()
 		{
 			for (int pixel = 7; pixel >= 0; pixel--)
 			{
-				const int spriteXPos = (xFlip) ? (xPos + pixel) : (xPos + (pixel * -1) + 7);
-				const bool isWhite = (screen[LY][spriteXPos][0] == 155);
-				const u8 colorNum = ((Bit::Get(pixelData2, pixel) << 1) | (Bit::Get(pixelData1, pixel)));
+				const u8 x = (xPos + pixel);
+				const int spritePixel = (xFlip) ? pixel : ((pixel - 7) * -1);
+				const bool isWhite = (screen[LY][x][0] == 155);
+				const u8 colorNum = ((Bit::Get(pixelData2, spritePixel) << 1) | (Bit::Get(pixelData1, spritePixel)));
 				const Rgb pixelColor = GetColor(palette, colorNum);
 
 				// skip drawing transparent pixels
 				if (colorNum == 0x0) continue;
 				if (priority == 0x1 && !isWhite) continue;
 
-				screen[LY][spriteXPos][0] = pixelColor.r;
-				screen[LY][spriteXPos][1] = pixelColor.g;
-				screen[LY][spriteXPos][2] = pixelColor.b;
+				screen[LY][x][0] = pixelColor.r;
+				screen[LY][x][1] = pixelColor.g;
+				screen[LY][x][2] = pixelColor.b;
 			}
 		}
 	}
