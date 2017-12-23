@@ -134,6 +134,14 @@ static void Shutdown()
 	SDL_Quit();
 }
 
+// responsible for executing operations before the app quits
+static void OnAppQuit()
+{
+	Rom::SaveRam();
+	Debugger::RemoveStates();
+	quit = true;
+}
+
 // responsible for displaying the various debugger windows
 static void ShowDebugger()
 {
@@ -191,16 +199,14 @@ static void StartMainLoop()
 			switch(event.type)
 			{
 				case SDL_QUIT:
-					Debugger::RemoveStates();
-					quit = true;
+					OnAppQuit();
 				break;
 
 				case SDL_KEYDOWN:
 					switch(event.key.keysym.sym)
 					{
 						case SDLK_ESCAPE:
-							Debugger::RemoveStates();
-							quit = true;
+							OnAppQuit();
 						break;
 
 						//  save a screenshot

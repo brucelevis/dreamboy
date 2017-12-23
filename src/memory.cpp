@@ -204,7 +204,6 @@ void Memory::WriteByte(u16 address, u8 data)
 			if (useRamBank)
 			{
 				Rom::ram[(Rom::ramBank * 0x2000) + (address - Address::EXTRAM_START)] = data;
-				Rom::SaveRam();
 			}
 			else
 			{
