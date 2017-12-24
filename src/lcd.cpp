@@ -317,8 +317,11 @@ void Lcd::DrawSprites()
 				const u8 colorNum = ((Bit::Get(pixelData2, spritePixel) << 1) | (Bit::Get(pixelData1, spritePixel)));
 				const Rgb pixelColor = GetColor(palette, colorNum);
 
+				// skip drawing off-screen sprites
+				if (x >= 160) continue;
 				// skip drawing transparent pixels
 				if (colorNum == 0x0) continue;
+				// with priority 0x1, if the background pixel isn't white, the sprite isn't drawn
 				if (priority == 0x1 && !isWhite) continue;
 
 				screen[LY][x][0] = pixelColor.r;
