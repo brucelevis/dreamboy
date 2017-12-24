@@ -103,6 +103,10 @@ void Lcd::Update(int cycles)
 
 		LY += 1;
 
+		if (LY == LYC) Bit::Set(STAT, 2); else Bit::Clear(STAT, 2);
+		if (Bit::Get(STAT, 2) && Bit::Get(STAT, 6)) Interrupts::Request(Interrupts::LCD);
+
+		STAT |= 0x80;
 		scanlineCounter -= LCD_CLOCK_CYCLES;
 	}
 }
@@ -117,6 +121,8 @@ u8 Lcd::SetMode(u8 mode)
 		case 2: Bit::Clear(STAT, 0); Bit::Set(STAT, 1); break;
 		case 3: Bit::Set(STAT, 0); Bit::Set(STAT, 1); break;
 	}
+
+	STAT |= 0x80;
 
 	return mode;
 }
@@ -169,11 +175,6 @@ void Lcd::SetStatus()
 	{
 		Interrupts::Request(Interrupts::LCD);
 	}
-
-	if (LY == LYC) Bit::Set(STAT, 2); else Bit::Clear(STAT, 2);
-	if (Bit::Get(STAT, 2) && Bit::Get(STAT, 6)) Interrupts::Request(Interrupts::LCD);
-
-	STAT |= 0x80;
 }
 
 // responsible for updating the screen texture
