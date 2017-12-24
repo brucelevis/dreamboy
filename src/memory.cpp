@@ -68,12 +68,21 @@ u8 Memory::ReadByte(u16 address)
 	{
 		case Address::ROM_BK1_START ... Address::ROM_BK1_END:
 		{
-			const int bankAddr = ((Rom::romBank * 0x4000) + (address - 0x4000));
+			int bankAddr = ((Rom::romBank * 0x4000) + (address - 0x4000));
+			if (!useRomBank) bankAddr = (((Rom::romBank & Mbc::GetMaxBankSize()) * 0x4000) + (address - 0x4000));
 			return Rom::rom[bankAddr];
 		}
 		break;
 		case Address::EXTRAM_START ... Address::EXTRAM_END:
-			if (useRamBank) return Rom::ram[(Rom::ramBank * 0x2000) + (address - Address::EXTRAM_START)];
+			if (useRamBank)
+			{
+				const u8 ramBank = (Rom::currentMode == 0x0) ? 0x0 : Rom::ramBank;
+				return Rom::ram[(ramBank * 0x2000) + (address - Address::EXTRAM_START)];
+			}
+			else
+			{
+				return 0xFF;
+			}
 		break;
 		case Address::P1: return Input::GetKey(mem[address]); break;
 		case Address::NR10: return 0xFF; break;
@@ -104,7 +113,8 @@ u16 Memory::ReadWord(u16 address)
 {
 	if (address >= Address::ROM_BK1_START && address <= Address::ROM_BK1_END)
 	{
-		const int bankAddr = ((Rom::romBank * 0x4000) + (address - 0x4000));
+		int bankAddr = ((Rom::romBank * 0x4000) + (address - 0x4000));
+		if (!useRomBank) bankAddr = (((Rom::romBank & Mbc::GetMaxBankSize()) * 0x4000) + (address - 0x4000));
 		return ((Rom::rom[bankAddr + 1] << 8) | (Rom::rom[bankAddr]));
 	}
 
@@ -163,51 +173,20 @@ void Memory::WriteByte(u16 address, u8 data)
 
 		// handle enabling ram banking
 		case 0x0000 ... 0x1FFF:
-			useRamBank = (data == 0x0A) ? true : false;
+			useRamBank = ((data & 0xF) == 0xA) ? true : false;
 		break;
 
 		// rom banking
-		case 0x2000 ... 0x3FFF:
-			Mbc::RomBanking(data);
-		break;
+		case 0x2000 ... 0x3FFF: Mbc::RomBanking(address, data); break;
 
-		// handle selecting ram bank/upper two bits of rom bank
-		case 0x4000 ... 0x5FFF:
-			if (Rom::currentMode == 0)
-			{
-				Rom::romBank |= data;
-			}
-			else
-			{
-				Rom::romBank |= data;
-				Rom::ramBank = data;
-			}
-		break;
+		// manage rom banking
+		case 0x4000 ... 0x7FFF: Mbc::ManageBanking(address, data); break;
 
-		// handle rom/ram mode
-		case 0x6000 ... 0x7FFF:
-			Rom::currentMode = data;
-
-			if (data == 0x0)
-			{
-				useRomBank = true;
-				Rom::ramBank = 0x00;
-			}
-			else
-			{
-				Bit::Clear(Rom::romBank, 7);
-				Bit::Clear(Rom::romBank, 6);
-			}
-		break;
-
+		// handle external ram
 		case Address::EXTRAM_START ... Address::EXTRAM_END:
 			if (useRamBank)
 			{
 				Rom::ram[(Rom::ramBank * 0x2000) + (address - Address::EXTRAM_START)] = data;
-			}
-			else
-			{
-				mem[address] = data;
 			}
 		break;
 

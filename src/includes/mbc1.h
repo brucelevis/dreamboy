@@ -16,8 +16,9 @@
 class Mbc1
 {
 	public:
-		static void RomBanking(u8 data);
-		static void RamBanking(u16 address, u8 data);
+		static void RomBanking(u16 address, u8 data);
+		static void ManageSelection(u8 data);
+		static void ManageMode(u8 data);
 };
 
 #endif

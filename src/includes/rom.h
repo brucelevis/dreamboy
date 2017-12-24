@@ -27,7 +27,7 @@ class Rom
 		static u8 mbcType;
 		static u8 romSize;
 		static u8 ramSize;
-		static u8 romBank;
+		static u16 romBank;
 		static u8 ramBank;
 		static u8 currentMode;
 		static bool hasBatteryBackup;

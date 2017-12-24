@@ -8,15 +8,17 @@
  */
 
 // includes
-#include "includes/mbc1.h"
+#include "includes/bit.h"
 #include "includes/log.h"
+#include "includes/mbc.h"
+#include "includes/mbc1.h"
 #include "includes/memory.h"
 #include "includes/rom.h"
 
 // responsible for managing MBC1 rom banking
-void Mbc1::RomBanking(u8 data)
+void Mbc1::RomBanking(u16 address, u8 data)
 {
-	u8 bankNo = (data & 0x3F);
+	u8 bankNo = (data & Mbc::GetMaxBankSize());
 
 	if (bankNo == 0x00 || bankNo == 0x20 || bankNo == 0x40 || bankNo == 0x60)
 	{
@@ -26,8 +28,25 @@ void Mbc1::RomBanking(u8 data)
 	Rom::romBank = bankNo;
 }
 
-// responsible for managing MBC1 ram banking
-void Mbc1::RamBanking(u16 address, u8 data)
+// responsible for managing the bank selection(s)
+void Mbc1::ManageSelection(u8 data)
 {
+	// 0 = 16/8 mode || 1 = 4/32 mode
+	if (Rom::currentMode == 0x0)
+	{
+		const u8 romBankMask = Mbc::GetMaxBankSize();
+		Rom::romBank &= romBankMask;
+		Rom::romBank |= (((data & 0x3) << 5) & romBankMask);
+	}
+	else
+	{
+		Rom::ramBank = (data & 0x3);
+	}
+}
 
+// responsible for managing the bank mode(s)
+void Mbc1::ManageMode(u8 data)
+{
+	Rom::currentMode = (data & 0x1);
+	Memory::useRomBank = (Rom::currentMode == 0x0);
 }
