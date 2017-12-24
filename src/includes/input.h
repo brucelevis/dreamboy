@@ -22,7 +22,8 @@ class Input
 		static u8 GetKey(u8 data);
 
 	private:
-		static void PressKey(u8 bit, u8 keyType);
+		static void PressDirection(u8 bit, u8 keyType);
+		static void PressButton(u8 bit, u8 keyType);
 		static void ReleaseKey(u8 bit);
 
 	private:
