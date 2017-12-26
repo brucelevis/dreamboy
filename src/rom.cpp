@@ -29,12 +29,13 @@ bool Rom::Load(const char *filePath)
 {
 	bool result = false;
 	FILE *gbRom = fopen(filePath, "rb");
-	romBank = 0x01;
-	ramSize = 0x00;
-	currentMode = 0x00;
 
 	if (gbRom)
 	{
+		romBank = 0x01;
+		ramSize = 0x00;
+		currentMode = 0x00;
+
 		memset(&romName, 0, sizeof(romName));
 		memset(&rom, 0x00, sizeof(rom));
 		memset(&ram, 0x00, sizeof(ram));

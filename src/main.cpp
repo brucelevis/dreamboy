@@ -25,6 +25,7 @@
 #include "includes/timer.h"
 #include "tinydir/tinydir.h"
 #include "includes/typedefs.h"
+#include "includes/ui.h"
 
 // defines
 #define SCREEN_WIDTH 640
@@ -35,6 +36,8 @@
 static SDL_Window *window;
 static SDL_GLContext glContext;
 static bool quit = false;
+static bool ctrlPressed = false;
+static int keyPressed = -1;
 const char *cpuTests[12] =
 {
 	NULL,
@@ -95,7 +98,7 @@ static bool InitGL()
 // responsible for initializing SDL
 static bool InitSDL()
 {
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) >= 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) >= 0)
 	{
 		window  = SDL_CreateWindow(EMULATOR_NAME,  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
@@ -145,24 +148,11 @@ static void OnAppQuit()
 // responsible for displaying the various debugger windows
 static void ShowDebugger()
 {
+	if (!Debugger::active) return;
+
 	// show the debugger windows
-	Debugger::ControlsWindow("Controls", 156, 250, SCREEN_WIDTH - 456, 5);
-	Debugger::MemoryViewerWindow("Memory", 100, 250, SCREEN_WIDTH - 289, 5, 0xC000, 0xFFFF);
-	Debugger::RegisterViewer("Reg View", 180, 250, SCREEN_WIDTH - 180, 5);
-	Debugger::FileWindow("File", 156, 250, 0, SCREEN_HEIGHT - 215);
-	Debugger::RomInfoWindow("Rom Info", 240, 250, SCREEN_WIDTH - 480, SCREEN_HEIGHT - 215);
-	Debugger::MemoryEditorWindow("Program Flow", 240, 230, SCREEN_WIDTH - 234, SCREEN_HEIGHT - 215);
-}
-
-// responsible for stepping the cpu
-static void CpuStep()
-{
-	int cycleCount = Cpu::cycles;
-
-	Interrupts::Service();
-	Cpu::ExecuteOpcode();
-	Timer::Update(Cpu::cycles - cycleCount);
-	Lcd::Update(Cpu::cycles - cycleCount);
+	Debugger::RegisterViewerWindow("Reg View", 180, 250, SCREEN_WIDTH - 180, 22);
+	Debugger::MemoryViewerWindow("Program Flow", 180, 230, SCREEN_WIDTH - 180, SCREEN_HEIGHT - 210);
 }
 
 // responsible for the emulation loop
@@ -180,7 +170,7 @@ static void EmulationLoop()
 			break;
 		}
 
-		CpuStep();
+		Cpu::Step();
 	}
 }
 
@@ -202,57 +192,88 @@ static void StartMainLoop()
 					OnAppQuit();
 				break;
 
+				case SDL_MOUSEMOTION:
+				{
+					int mouseX;
+					int mouseY;
+					SDL_GetMouseState(&mouseX, &mouseY);
+
+					if (mouseY <= 24) Ui::ShowMainMenuBar();
+					else if (mouseY >= 280) Ui::HideMainMenuBar();
+				}
+				break;
+
 				case SDL_KEYDOWN:
 					switch(event.key.keysym.sym)
 					{
-						case SDLK_ESCAPE:
-							OnAppQuit();
-						break;
+						case SDLK_LCTRL: ctrlPressed = true; break;
+						default: keyPressed = event.key.keysym.sym; break;
+					}
+				break;
 
-						//  save a screenshot
-						case SDLK_s: Debugger::SaveScreenshot(); break;
+				case SDL_KEYUP:
+					switch(event.key.keysym.sym)
+					{
+						case SDLK_LCTRL: ctrlPressed = false; break;
+						default: keyPressed = -1;
+					}
+				break;
+			}
+		}
 
-						// enable/disable the debugger
-						case SDLK_d:
-							if (Debugger::active) Debugger::HideDebugger();
-							else Debugger::ShowDebugger();
-						break;
+		// handle key combos for ctrl
+		if (ctrlPressed)
+		{
+			switch(keyPressed)
+			{
+				// quit
+				case SDLK_q: ctrlPressed = false; OnAppQuit(); break;
+				// hide the menu bar
+				case SDLK_m: Ui::HideMainMenuBar(); break;
+				// save a state
+				case SDLK_s: ctrlPressed = false; Cpu::SaveState(false); break;
+				// load a state
+				case SDLK_l: ctrlPressed = false; Cpu::LoadState(false); break;
+				//  save a screenshot
+				case SDLK_p: ctrlPressed = false; Debugger::SaveScreenshot(); break;
+				// enable/disable the debugger
+				case SDLK_d: ctrlPressed = false; Debugger::active = !Debugger::active; break;
+				// run/stop
+				case SDLK_r:
+					ctrlPressed = false;
+					Debugger::stepThrough = false;
+					Debugger::stopAtBreakpoint = false;
+					Ui::HideMainMenuBar();
+				break;
+				// open the select rom popup
+				case SDLK_o: ctrlPressed = false; Debugger::SelectRom(); break;
+				// close the rom
+				case SDLK_c: ctrlPressed = false; Debugger::ResetSystem(); break;
+				// step forward
+				case SDLK_f:
+					ctrlPressed = false;
 
-						// run/stop
-						case SDLK_r:
-							Debugger::stepThrough = !Debugger::stepThrough;
-							Debugger::stopAtBreakpoint = false;
-						break;
+					if (Debugger::stepThrough)
+					{
+						Cpu::Step();
+						Cpu::SaveState(true, Cpu::instructionsRan);
+					}
+				break;
+				// step backward
+				case SDLK_b:
+					ctrlPressed = false;
 
-						// open the select rom popup
-						case SDLK_o: Debugger::SelectRom(); break;
-
-						// step backward
-						case SDLK_LCTRL:
-							if (Debugger::stepThrough)
-							{
-								if (Cpu::instructionsRan > 0)
-								{
-									Cpu::LoadState(true, Cpu::instructionsRan);
-									Cpu::instructionsRan -= 1;
-								}
-								else
-								{
-									Debugger::ResetSystem();
-								}
-							}
-						break;
-
-						// step forward
-						case SDLK_SPACE:
-							if (Debugger::stepThrough)
-							{
-								CpuStep();
-								Cpu::SaveState(true, Cpu::instructionsRan);
-							}
-						break;
-
-						default: break;
+					if (Debugger::stepThrough)
+					{
+						if (Cpu::instructionsRan > 0)
+						{
+							Cpu::LoadState(true, Cpu::instructionsRan);
+							Cpu::instructionsRan -= 1;
+						}
+						else
+						{
+							Debugger::ResetSystem();
+						}
 					}
 				break;
 			}
@@ -263,9 +284,10 @@ static void StartMainLoop()
 
 		if (!Debugger::stepThrough) EmulationLoop();
 
-		ShowDebugger();
-		ImGui::Render();
 		Lcd::Render();
+		ShowDebugger();
+		Ui::Render();
+		ImGui::Render();
 
 		SDL_GL_SwapWindow(window);
 	}
@@ -278,14 +300,14 @@ int main(int argc, char *argv[])
 		CreateDirectories();
 		Log::Init();
 		Memory::Init();
-		Input::Init();
 		//Rom::Load(cpuTests[2]);
-		Rom::Load("roms/The Legend of Zelda - Link's Awakening.gb");
+
 		//Cpu::didLoadBios = Bios::Load("bios.bin");
+		Interrupts::Init();
 		Cpu::Init();
 		Timer::Init();
 		Lcd::Init();
-		Interrupts::Init();
+		Input::Init();
 		StartMainLoop();
 	}
 

@@ -25,18 +25,28 @@ class Debugger
 		static void HideDebugger();
 		static void SelectRom();
 		static void RemoveStates();
-		static void ControlsWindow(const char *title, int width, int height, int x, int y);
-		static void RomInfoWindow(const char *title, int width, int height, int x, int y);
-		static void FileWindow(const char *title, int width, int height, int x, int y);
-		static void MemoryViewerWindow(const char *title, int width, int height, int x, int y, u16 startAddr, u16 endAddr);
-		static void MemoryEditorWindow(const char *title, int width, int height, int x, int y);
-		static void RegisterViewer(const char *title, int width, int height, int x, int y);
+		static void ViewMemoryPopup();
+		static void GetMemoryValuePopup();
+		static void SetMemoryValuePopup();
+		static void DumpMemory();
+		static void ImportMemory();
+		static void RomInfoPopup();
+		static void ModifyRegistersPopup();
+		static void SetBreakpointPopup();
+		static void MemoryViewerWindow(const char *title, int width, int height, int x, int y);
+		static void RegisterViewerWindow(const char *title, int width, int height, int x, int y);
 
 	public:
 		static bool stepThrough;
 		static bool stopAtBreakpoint;
 		static bool active;
 		static u16 breakpoint;
+		static const char *modifyRegistersPopupTitle;
+		static const char *memViewPopupTitle;
+		static const char *memGetValuePopupTitle;
+		static const char *memSetValuePopupTitle;
+		static const char *setBreakpointPopupTitle;
+		static const char *romInfoPopupTitle;
 };
 
 #endif

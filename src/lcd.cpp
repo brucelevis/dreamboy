@@ -31,8 +31,8 @@
 
 // init vars
 u8 Lcd::screen[144][160][3];
-int Lcd::height = 144;
-int Lcd::width = 160;
+int Lcd::height = 480;
+int Lcd::width = 640;
 int Lcd::scanlineCounter = 0;
 static const Lcd::Rgb colorPalette[4] =
 {
@@ -65,9 +65,9 @@ void Lcd::Reset()
 	{
 		for (int x = 0; x < 160; x++)
 		{
-			screen[y][x][0] = colorPalette[0].r;
-			screen[y][x][1] = colorPalette[0].g;
-			screen[y][x][2] = colorPalette[0].b;
+			screen[y][x][0] = 0;
+			screen[y][x][1] = 0;
+			screen[y][x][2] = 0;
 		}
 	}
 }

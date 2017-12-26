@@ -10,6 +10,7 @@
 // includes
 #include "includes/bit.h"
 #include "includes/cpu.h"
+#include "includes/debugger.h"
 #include "includes/input.h"
 #include "includes/interrupts.h"
 #include "includes/log.h"
@@ -166,6 +167,9 @@ void Input::HandleKeys(SDL_Event event)
 				case SDL_CONTROLLER_BUTTON_B: PressButton(BTN_A, P15); break;
 				case SDL_CONTROLLER_BUTTON_BACK: PressButton(BTN_SELECT, P15); break;
 				case SDL_CONTROLLER_BUTTON_START: PressButton(BTN_START, P15); break;
+				case SDL_CONTROLLER_BUTTON_LEFTSHOULDER: Cpu::SaveState(false); break;
+				case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER: Cpu::LoadState(false); break;
+				case SDL_CONTROLLER_BUTTON_GUIDE: Debugger::stepThrough = !Debugger::stepThrough; break;
 			}
 		break;
 

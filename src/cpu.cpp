@@ -16,6 +16,7 @@
 #include "includes/memory.h"
 #include "includes/rom.h"
 #include "includes/timer.h"
+#include "includes/ui.h"
 
 // definitions
 #define A Cpu::af.hi
@@ -523,9 +524,21 @@ void Cpu::ExecuteExtendedOpcode()
 	}
 }
 
+// responsible for executing a cpu step
+void Cpu::Step()
+{
+	int cycleCount = Cpu::cycles;
+
+	Interrupts::Service();
+	Cpu::ExecuteOpcode();
+	Timer::Update(Cpu::cycles - cycleCount);
+	Lcd::Update(Cpu::cycles - cycleCount);
+}
+
 // responsible for loading save states
 bool Cpu::LoadState(bool fromDebugger, unsigned int num)
 {
+	char filePath[512];
 	char val[512];
 	char memFilename[512];
 	char regFilename[512];
@@ -539,8 +552,6 @@ bool Cpu::LoadState(bool fromDebugger, unsigned int num)
 	}
 	else
 	{
-		char filePath[512];
-
 		sprintf(filePath, "saves/states/%s/state_%d", Rom::romName, num);
 		sprintf(memFilename, "%s/mem.bin", filePath);
 		sprintf(regFilename, "%s/reg.bin", filePath);
@@ -594,6 +605,7 @@ bool Cpu::LoadState(bool fromDebugger, unsigned int num)
 	fclose(fp3);
 
 	Lcd::UpdateTexture();
+	if (!fromDebugger) Ui::SetStatusMessage("Loaded State at path: ", filePath);
 
 	return true;
 }
@@ -602,6 +614,7 @@ bool Cpu::LoadState(bool fromDebugger, unsigned int num)
 void Cpu::SaveState(bool fromDebugger, unsigned int num)
 {
 	struct stat st = {0};
+	char filePath[512];
 	char memFilename[512];
 	char regFilename[512];
 	char screenFileName[512];
@@ -613,8 +626,6 @@ void Cpu::SaveState(bool fromDebugger, unsigned int num)
 	}
 	else
 	{
-		char filePath[512];
-
 		sprintf(filePath, "saves/states/%s/", Rom::romName);
 
 		if (stat(filePath, &st) == -1) mkdir(filePath, 0700);
@@ -665,4 +676,6 @@ void Cpu::SaveState(bool fromDebugger, unsigned int num)
 	fclose(fp);
 	fclose(fp2);
 	fclose(fp3);
+
+	if (!fromDebugger) Ui::SetStatusMessage("Saved State at path: ", filePath);
 }
