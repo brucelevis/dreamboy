@@ -142,7 +142,8 @@ void Ui::Render()
 			{
 				if (ImGui::MenuItem("Open", "ctrl+o"))
 				{
-					if (Rom::Select()) Debugger::ResetSystem();
+					Debugger::ResetSystem();
+					Rom::Select();
 				}
 
 				if (ImGui::MenuItem("Close", "ctrl+c")) Debugger::ResetSystem();
@@ -204,6 +205,13 @@ void Ui::Render()
 			if (ImGui::MenuItem("Reset"))
 			{
 				if (Rom::HasLoaded()) Debugger::ResetSystem(true);
+			}
+
+			if (ImGui::MenuItem("Close"))
+			{
+				Rom::filename = NULL;
+				Debugger::stepThrough = true;
+				Debugger::ResetSystem();
 			}
 
 			if (ImGui::BeginMenu("Speed"))
