@@ -30,7 +30,7 @@
 #include "includes/ui.h"
 
 // init vars
-bool Debugger::stepThrough = true;
+bool Debugger::stepThrough = false;
 bool Debugger::stopAtBreakpoint = false;
 bool Debugger::active = false;
 bool Debugger::stopMachine = false;
@@ -55,13 +55,14 @@ struct Reg
 		AF, BC, DE, HL, SP, PC, LCDC, STAT, LY, IME, IF, IE, TIMA, TAC, TMA, DIV, Z, N, H, C
 	};
 };
-int modRegister = Reg::name::AF;
+static int modRegister = Reg::name::AF;
 
 // responsible for resetting the system
-void Debugger::ResetSystem(const char *newRomFilename)
+void Debugger::ResetSystem(bool reloadRom)
 {
+	stopMachine = false;
 	Memory::Init();
-	if (newRomFilename != NULL) Rom::Load(newRomFilename); else Rom::Reload();
+	if (reloadRom) Rom::Reload();
 	if (Cpu::didLoadBios) Bios::Reload();
 	Cpu::Init();
 	Input::Init();
@@ -101,21 +102,6 @@ void Debugger::HideDebugger()
 	// make the GameBoy Lcd occupy the entire screen
 	Lcd::width = 640;
 	Lcd::height = 480;
-}
-
-// responsible for selecting a rom
-void Debugger::SelectRom()
-{
-	char const *validExtensions[4] = {"*.gb", "*.GB", "*.bin", "*.BIN"};
-	const char *filename = tinyfd_openFileDialog("Select Rom", "", 4, validExtensions, NULL, 0);
-
-	if (filename != NULL)
-	{
-		stepThrough = true;
-		stopAtBreakpoint = false;
-
-		ResetSystem(filename);
-	}
 }
 
 // responsible for displaying the view memory popup

@@ -17,7 +17,9 @@ class Rom
 {
 	public:
 		static bool Load(const char *filePath);
+		static bool Select();
 		static void Reload();
+		static bool HasLoaded();
 		static bool LoadRam(int num = 0);
 		static void SaveRam(int num = 0);
 

@@ -33,6 +33,7 @@ void Memory:: Init()
 	mem[Address::STAT] = 0x85;
 	mem[Address::SCY] = 0x00;
 	mem[Address::SCX] = 0x00;
+	mem[Address::LY] = 0x90;
 	mem[Address::LYC] = 0x00;
 	mem[Address::BGP] = 0xBF;
 	mem[Address::OP0] = 0xFF;

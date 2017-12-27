@@ -10,6 +10,7 @@
 #include "includes/memory.h"
 #include "includes/log.h"
 #include "includes/rom.h"
+#include "tinyfiledialogs/tinyfiledialogs.h"
 
 // init vars
 u8 Rom::rom[0x4000 * 128] = {0x00};
@@ -90,10 +91,32 @@ bool Rom::Load(const char *filePath)
 	return result;
 }
 
+// responsible for selecting a rom from the file system
+bool Rom::Select()
+{
+	char const *validExtensions[4] = {"*.gb", "*.GB", "*.bin", "*.BIN"};
+	const char *filePath = tinyfd_openFileDialog("Select Rom", "", 4, validExtensions, NULL, 0);
+	filename = filePath;
+
+	if (filePath != NULL)
+	{
+		Load(filePath);
+		return true;
+	}
+
+	return false;
+}
+
 // responsible for reloading a previously loaded rom
 void Rom::Reload()
 {
 	Load(filename);
+}
+
+// responsible for determining if a rom has loaded
+bool Rom::HasLoaded()
+{
+	return (filename != NULL);
 }
 
 // responsible for loading the games ram bank from a file
@@ -116,7 +139,6 @@ bool Rom::LoadRam(int num)
 
 	return true;
 }
-
 
 // responsible for saving the games ram bank to a file
 void Rom::SaveRam(int num)

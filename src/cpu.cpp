@@ -557,6 +557,7 @@ bool Cpu::LoadState(bool fromDebugger, unsigned int num)
 	{
 		sprintf(memFilename, "saves/states/debugger/state_mem_%d.bin", num);
 		sprintf(regFilename, "saves/states/debugger/state_reg_%d.bin", num);
+		sprintf(screenFileName, "saves/states/debugger/state_screen_%d.bin", num);
 	}
 	else
 	{
@@ -631,6 +632,7 @@ void Cpu::SaveState(bool fromDebugger, unsigned int num)
 	{
 		sprintf(memFilename, "saves/states/debugger/state_mem_%d.bin", num);
 		sprintf(regFilename, "saves/states/debugger/state_reg_%d.bin", num);
+		sprintf(screenFileName, "saves/states/debugger/state_screen_%d.bin", num);
 	}
 	else
 	{

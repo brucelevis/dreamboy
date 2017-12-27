@@ -237,13 +237,15 @@ static void StartMainLoop()
 				case SDLK_d: ctrlPressed = false; Debugger::active = !Debugger::active; break;
 				// run/stop
 				case SDLK_r:
+					if (!Rom::HasLoaded()) break;
+
 					ctrlPressed = false;
 					Debugger::stepThrough = false;
 					Debugger::stopAtBreakpoint = false;
 					Ui::HideMainMenuBar();
 				break;
 				// open the select rom popup
-				case SDLK_o: ctrlPressed = false; Debugger::SelectRom(); break;
+				case SDLK_o: ctrlPressed = false; Rom::Select(); break;
 				// close the rom
 				case SDLK_c: ctrlPressed = false; Debugger::ResetSystem(); break;
 				// step forward

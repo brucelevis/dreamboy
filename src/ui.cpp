@@ -83,6 +83,7 @@ void Ui::SetStatusMessage(const char *title, const char *msg)
 	memset(statusText, 0, sizeof(statusText));
 	sprintf(statusTextTitle, "%s", title);
 	sprintf(statusText, "%s", msg);
+	hideMainMenu = true;
 	ShowStatusWindow();
 }
 
@@ -139,13 +140,19 @@ void Ui::Render()
 		{
 			if (ImGui::BeginMenu("Rom"))
 			{
-				if (ImGui::MenuItem("Open", "ctrl+o")) Debugger::SelectRom();
+				if (ImGui::MenuItem("Open", "ctrl+o"))
+				{
+					if (Rom::Select()) Debugger::ResetSystem();
+				}
+
 				if (ImGui::MenuItem("Close", "ctrl+c")) Debugger::ResetSystem();
+
 				if (ImGui::MenuItem("Info"))
 				{
 					currentPopup = RomInfoPopup;
 					showPopup = true;
 				}
+
 				ImGui::EndMenu();
 			}
 
@@ -157,10 +164,13 @@ void Ui::Render()
 					{
 						const char *title = "Failed To Load State";
 						const char *desc = "The state could not be found";
+						Debugger::stopMachine = false;
 						SetStatusMessage(title, desc);
 					}
 				}
+
 				if (ImGui::MenuItem("Save", "ctrl+s")) Cpu::SaveState(false);
+
 				ImGui::EndMenu();
 			}
 
@@ -181,10 +191,20 @@ void Ui::Render()
 		{
 			if (ImGui::MenuItem("Run"))
 			{
-				Debugger::stepThrough = false;
-				hideMainMenu = true;
+				if (Rom::HasLoaded())
+				{
+					Debugger::stepThrough = false;
+					Debugger::stopAtBreakpoint = false;
+					hideMainMenu = true;
+				}
 			}
+
 			if (ImGui::MenuItem("Stop")) Debugger::stepThrough = true;
+
+			if (ImGui::MenuItem("Reset"))
+			{
+				if (Rom::HasLoaded()) Debugger::ResetSystem(true);
+			}
 
 			if (ImGui::BeginMenu("Speed"))
 			{
@@ -199,6 +219,21 @@ void Ui::Render()
 				if (ImGui::MenuItem("8x")) Cpu::framerate = (framerate / 8);
 				if (ImGui::MenuItem("9x")) Cpu::framerate = (framerate / 9);
 				if (ImGui::MenuItem("10x")) Cpu::framerate = (framerate / 10);
+				ImGui::EndMenu();
+			}
+
+			ImGui::EndMenu();
+		}
+
+		// view menu
+		if (ImGui::BeginMenu("View"))
+		{
+			// debugger menu
+			if (ImGui::BeginMenu("Debugger"))
+			{
+				if (ImGui::MenuItem("Show")) Debugger::active = true;
+				if (ImGui::MenuItem("Hide")) Debugger::active = false;
+
 				ImGui::EndMenu();
 			}
 
@@ -287,7 +322,7 @@ void Ui::Render()
 			{
 				Debugger::stepThrough = true;
 				Debugger::stopAtBreakpoint = false;
-				Debugger::ResetSystem();
+				Debugger::ResetSystem(true);
 			}
 
 			if (ImGui::MenuItem("Stop"))

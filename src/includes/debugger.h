@@ -19,11 +19,10 @@
 class Debugger
 {
 	public:
-		static void ResetSystem(const char *newRomFilename = NULL);
+		static void ResetSystem(bool reloadRom = false);
 		static void SaveScreenshot();
 		static void ShowDebugger();
 		static void HideDebugger();
-		static void SelectRom();
 		static void RemoveStates();
 		static void ViewMemoryPopup();
 		static void GetMemoryValuePopup();
