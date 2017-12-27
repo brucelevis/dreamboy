@@ -185,6 +185,23 @@ void Ui::Render()
 				hideMainMenu = true;
 			}
 			if (ImGui::MenuItem("Stop")) Debugger::stepThrough = true;
+
+			if (ImGui::BeginMenu("Speed"))
+			{
+				int framerate = 60;
+				if (ImGui::MenuItem("1x (normal)")) Cpu::framerate = framerate;
+				if (ImGui::MenuItem("2x")) Cpu::framerate = (framerate / 2);
+				if (ImGui::MenuItem("3x")) Cpu::framerate = (framerate / 4);
+				if (ImGui::MenuItem("4x")) Cpu::framerate = (framerate / 4);
+				if (ImGui::MenuItem("5x")) Cpu::framerate = (framerate / 5);
+				if (ImGui::MenuItem("6x")) Cpu::framerate = (framerate / 6);
+				if (ImGui::MenuItem("7x")) Cpu::framerate = (framerate / 7);
+				if (ImGui::MenuItem("8x")) Cpu::framerate = (framerate / 8);
+				if (ImGui::MenuItem("9x")) Cpu::framerate = (framerate / 9);
+				if (ImGui::MenuItem("10x")) Cpu::framerate = (framerate / 10);
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenu();
 		}
 

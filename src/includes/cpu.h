@@ -46,6 +46,7 @@ class Cpu
 		static Register pc;
 		static int cycles;
 		static int instructionsRan;
+		static int framerate;
 		static bool halted;
 		static bool stopped;
 		static bool pendingInterrupt;

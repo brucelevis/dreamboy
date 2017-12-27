@@ -30,7 +30,6 @@
 // defines
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
-#define FRAMERATE 60
 #define EMULATOR_NAME "DreamBoy - GameBoy Emulator"
 // vars
 static SDL_Window *window;
@@ -160,10 +159,8 @@ static void EmulationLoop()
 {
 	Cpu::cycles = 0;
 
-	while (Cpu::cycles < (MAX_CYCLES / FRAMERATE))
+	while (Cpu::cycles < (MAX_CYCLES / Cpu::framerate))
 	{
-		//if (Cpu::stopped) break;
-
 		if (Debugger::stopAtBreakpoint && (Cpu::pc.reg == Debugger::breakpoint))
 		{
 			Debugger::stepThrough = true;
@@ -199,7 +196,6 @@ static void StartMainLoop()
 					SDL_GetMouseState(&mouseX, &mouseY);
 
 					if (mouseY <= 24) Ui::ShowMainMenuBar();
-					else if (mouseY >= 280) Ui::HideMainMenuBar();
 				}
 				break;
 

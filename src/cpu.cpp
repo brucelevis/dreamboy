@@ -43,6 +43,7 @@ Cpu::Register Cpu::sp = {};
 Cpu::Register Cpu::pc = {};
 int Cpu::cycles = 0;
 int Cpu::instructionsRan = 0;
+int Cpu::framerate = 60;
 bool Cpu::halted = false;
 bool Cpu::haltBug = false;
 bool Cpu::stopped = false;
