@@ -40,6 +40,7 @@ class Debugger
 		static bool stepThrough;
 		static bool stopAtBreakpoint;
 		static bool active;
+		static bool stopMachine;
 		static u16 breakpoint;
 		static const char *modifyRegistersPopupTitle;
 		static const char *memViewPopupTitle;

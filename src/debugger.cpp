@@ -33,6 +33,7 @@
 bool Debugger::stepThrough = true;
 bool Debugger::stopAtBreakpoint = false;
 bool Debugger::active = false;
+bool Debugger::stopMachine = false;
 u16 Debugger::breakpoint = 0x00;
 const char *Debugger::modifyRegistersPopupTitle = "Modify Registers/Flags";
 const char *Debugger::memViewPopupTitle = "Memory View";

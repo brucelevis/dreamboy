@@ -161,6 +161,7 @@ static void EmulationLoop()
 
 	while (Cpu::cycles < (MAX_CYCLES / Cpu::framerate))
 	{
+		if (Debugger::stopMachine) break;
 		if (Debugger::stopAtBreakpoint && (Cpu::pc.reg == Debugger::breakpoint))
 		{
 			Debugger::stepThrough = true;
