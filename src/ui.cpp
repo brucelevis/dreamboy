@@ -138,23 +138,10 @@ void Ui::Render()
 		// file menu
 		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::BeginMenu("Rom"))
+			if (ImGui::MenuItem("Open Rom", "ctrl+o"))
 			{
-				if (ImGui::MenuItem("Open", "ctrl+o"))
-				{
-					Debugger::ResetSystem();
-					Rom::Select();
-				}
-
-				if (ImGui::MenuItem("Close", "ctrl+c")) Debugger::ResetSystem();
-
-				if (ImGui::MenuItem("Info"))
-				{
-					currentPopup = RomInfoPopup;
-					showPopup = true;
-				}
-
-				ImGui::EndMenu();
+				Debugger::ResetSystem();
+				Rom::Select();
 			}
 
 			if (ImGui::BeginMenu("State"))
@@ -227,7 +214,14 @@ void Ui::Render()
 				if (ImGui::MenuItem("8x")) Cpu::framerate = (framerate / 8);
 				if (ImGui::MenuItem("9x")) Cpu::framerate = (framerate / 9);
 				if (ImGui::MenuItem("10x")) Cpu::framerate = (framerate / 10);
+
 				ImGui::EndMenu();
+			}
+
+			if (ImGui::MenuItem("Info"))
+			{
+				currentPopup = RomInfoPopup;
+				showPopup = true;
 			}
 
 			ImGui::EndMenu();

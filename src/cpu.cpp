@@ -327,9 +327,9 @@ void Cpu::ExecuteOpcode()
 		case 0xDC: CpuOps::Call(Flags::Get(Flags::c), 12); break; // CALL C,a16
 		case 0xDE: CpuOps::Sbc8(A, Memory::ReadByte(PC), 8); PC += 1; break; // SBC A,d8
 		case 0xDF: CpuOps::Rst(0x18, 16); break; // RST 18H
-		case 0xE0: CpuOps::Write8(0xFF00 + Memory::ReadByte(PC), A, 12); PC += 1; break; // LDH (a8),A
+		case 0xE0: CpuOps::Write8(0xFF00 | Memory::ReadByte(PC), A, 12); PC += 1; break; // LDH (a8),A
 		case 0xE1: HL = Memory::Pop(); cycles += 12; break; // POP HL
-		case 0xE2: CpuOps::Write8(0xFF00 + C, A, 8); break; // LD (C),A
+		case 0xE2: CpuOps::Write8(0xFF00 | C, A, 8); break; // LD (C),A
 		case 0xE5: Memory::Push(hl); cycles += 16; break; // PUSH HL
 		case 0xE6: CpuOps::And8(A, Memory::ReadByte(PC), 8); PC += 1; break; // AND A, d8
 		case 0xE7: CpuOps::Rst(0x20, 16); break; // RST 20H
@@ -338,9 +338,9 @@ void Cpu::ExecuteOpcode()
 		case 0xEA: CpuOps::Write8(Memory::ReadWord(PC), A, 16); PC += 2; break; // LD (a16),A
 		case 0xEE: CpuOps::Xor8(A, Memory::ReadByte(PC), 8); PC += 1; break; // XOR A, d8
 		case 0xEF: CpuOps::Rst(0x28, 16); break; // RST 28H
-		case 0xF0: CpuOps::Load8(A, Memory::ReadByte(0xFF00 + Memory::ReadByte(PC)), 12); PC += 1; break; // LDH A,(a8)
+		case 0xF0: CpuOps::Load8(A, Memory::ReadByte(0xFF00 | Memory::ReadByte(PC)), 12); PC += 1; break; // LDH A,(a8)
 		case 0xF1: AF = (Memory::Pop() & ~0xF); cycles += 12; break; // POP AF
-		case 0xF2: CpuOps::Load8(A, Memory::ReadByte(0xFF00 + C), 8); break; // LD A,(C)
+		case 0xF2: CpuOps::Load8(A, Memory::ReadByte(0xFF00 | C), 8); break; // LD A,(C)
 		case 0xF3: CpuOps::DI(4); break; // DI
 		case 0xF5: Memory::Push(af); cycles += 16; break; // PUSH AF
 		case 0xF6: CpuOps::Or8(A, Memory::ReadByte(PC), 8); PC += 1; break; // OR A, d8
