@@ -13,8 +13,8 @@
 #include "tinyfiledialogs/tinyfiledialogs.h"
 
 // init vars
-u8 Rom::rom[0x4000 * 128] = {0x00};
-u8 Rom::ram[0x2000 * 4] = {0x00};
+u8 Rom::rom[0x4000 * 512] = {0x00};
+u8 Rom::ram[0x2000 * 16] = {0x00};
 u8 Rom::mbcType = 0x00;
 u8 Rom::romSize = 0x00;
 u8 Rom::ramSize = 0x00;

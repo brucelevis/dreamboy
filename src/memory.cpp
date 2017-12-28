@@ -23,6 +23,8 @@ bool Memory::useRamBank = false;
 // responsible for initializing the memory
 void Memory:: Init()
 {
+	useRomBank = true;
+	useRamBank = false;
 	memset(mem, 0x00, sizeof(mem));
 
 	mem[Address::DIV] = 0xAB;
@@ -80,12 +82,10 @@ u8 Memory::ReadByte(u16 address)
 				const u8 ramBank = (Rom::currentMode == 0x0) ? 0x0 : Rom::ramBank;
 				return Rom::ram[(ramBank * 0x2000) + (address - Address::EXTRAM_START)];
 			}
-			else
-			{
-				return 0xFF;
-			}
+			else return 0xFF;
 		break;
 		case Address::P1: return Input::GetKey(mem[address]); break;
+		case Address::PROT_MEM_START ... Address::PROT_MEM_END: return 0xFF; break;
 		case Address::NR10: return 0xFF; break;
 		case Address::NR11: return 0xFF; break;
 		case Address::NR12: return 0xFF; break;
@@ -173,9 +173,7 @@ void Memory::WriteByte(u16 address, u8 data)
 		break;
 
 		// handle enabling ram banking
-		case 0x0000 ... 0x1FFF:
-			useRamBank = ((data & 0xF) == 0xA) ? true : false;
-		break;
+		case 0x0000 ... 0x1FFF: useRamBank = ((data & 0xF) == 0xA) ? true : false; break;
 
 		// rom banking
 		case 0x2000 ... 0x3FFF: Mbc::RomBanking(address, data); break;
@@ -187,7 +185,8 @@ void Memory::WriteByte(u16 address, u8 data)
 		case Address::EXTRAM_START ... Address::EXTRAM_END:
 			if (useRamBank)
 			{
-				Rom::ram[(Rom::ramBank * 0x2000) + (address - Address::EXTRAM_START)] = data;
+				const u8 ramBank = (Rom::currentMode == 0x0) ? 0x0 : Rom::ramBank;
+				Rom::ram[(ramBank * 0x2000) + (address - Address::EXTRAM_START)] = data;
 			}
 		break;
 

@@ -18,7 +18,7 @@
 // responsible for managing MBC1 rom banking
 void Mbc1::RomBanking(u16 address, u8 data)
 {
-	u8 bankNo = (data & Mbc::GetMaxBankSize());
+	u8 bankNo = (data & 0x1F);
 
 	if (bankNo == 0x00 || bankNo == 0x20 || bankNo == 0x40 || bankNo == 0x60)
 	{
@@ -40,7 +40,8 @@ void Mbc1::ManageSelection(u8 data)
 	}
 	else
 	{
-		Rom::ramBank = (data & 0x3);
+		// only ram sizes 0x3 and 0x4 have more than one ram bank
+		if (Rom::ramSize > 0x2) Rom::ramBank = (data & 0x3);
 	}
 }
 

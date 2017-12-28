@@ -16,12 +16,12 @@
 class Mbc
 {
 	public:
-		static u8 GetMaxBankSize();
+		static u16 GetMaxBankSize();
 		static void RomBanking(u16 address, u8 data);
 		static void ManageBanking(u16 address, u8 data);
 
 	private:
-		static const u8 maxSize[0x55];
+		static const u16 maxSize[0x9];
 };
 
 #endif
