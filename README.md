@@ -13,7 +13,7 @@ This project is a "next step" project for me, after writing several [Chip8](http
 
 #### Status:
 
-Blarggs Cpu Instruction tests:
+Blarggs Cpu Instruction Tests:
 
 |#|name|state|
 |-|-|-|
@@ -29,18 +29,86 @@ Blarggs Cpu Instruction tests:
 |10|bit ops|:white_check_mark:|
 |11|op a,(hl)|:white_check_mark:|
 
-Blarggs Misc Instruction tests:
+Blarggs Misc Instruction Tests:
 
 |#|name|state|
 |-|-|-|
-|01|CB Sound|:x:|
-|02|DMG Sound|:x:|
-|03|Halt Bug|:white_check_mark:|
-|04|Instruction Timing|:x:|
-|05|Interrupt Timing|:x:|
-|06|Mem Timing|:x:|
-|07|Mem Timing 2|:x:|
-|08|OAM Bug|:x:|
+|01|cb Sound|:x:|
+|02|dmg Sound|:x:|
+|03|halt bug|:white_check_mark:|
+|04|instruction timing|:x:|
+|05|interrupt timing|:x:|
+|06|mem timing|:x:|
+|07|mem timing 2|:x:|
+|08|oam bug|:x:|
+
+Mooneye's General tests:
+
+|#|name|state|
+|-|-|-|
+|01|opus 5|:white_check_mark:|
+
+Mooneye's Emulator-Only MBC1 Tests:
+
+|#|name|state|
+|-|-|-|
+|01|bits ram|:white_check_mark:|
+|02|multicart rom 8Mb|:x:|
+|03|ram 64Kb|:white_check_mark:|
+|04|ram 256Kb|:white_check_mark:|
+|05|rom 512Kb|:white_check_mark:|
+|06|rom 1Mb|:white_check_mark:|
+|07|rom 2Mb|:white_check_mark:|
+|08|rom 4Mb|:white_check_mark:|
+|09|rom 8Mb|:x:|
+|10|rom 16Mb|:x:|
+
+Mooneye's Acceptance Tests:
+
+|#|name|state|
+|-|-|-|
+|01|boot hwio dmg0|:x:|
+|02|boot hwio dmg ABCXmgb|:x:|
+|03|boot hwio S|:x:|
+|04|boot regs dmg0|:x:|
+|05|boot regs dmgABCX|:x:|
+|06|add sp_e timing|:x:|
+|07|call cc timing|:x:|
+|08|call cc timing 2|:x:|
+|09|call timing|:x:|
+|10|call timing 2|:x:|
+|11|di timing GS|:x:|
+|12|div timing|:x:|
+|13|ei sequence|:x:|
+|14|ei timing|:x:|
+|15|halt ime0 ei|:white_check_mark:|
+|16|halt ime0 nointr timing|:x:|
+|17|halt ime1 timing|:x:|
+|18|halt ime1 timing2 GS|:x:|
+|19|if ie registers|:x:|
+|20|intr timing|:x:|
+|21|jp cc timing|:x:|
+|22|jp timing|:x:|
+|23|ld hl_sp_e timing|:x:|
+|24|oam dma restart|:x:|
+|25|oam dma start|:x:|
+|26|oam dma timing|:x:|
+|27|pop timing|:x:|
+|28|push timing|:x:|
+|29|rapid di ei|:x:|
+|30|ret cc timing|:x:|
+|31|ret timing|:x:|
+|32|reti intr timing|:x:|
+|33|reti timing|:x:|
+|34|rst timing|:x:|
+
+Mooneye's Acceptance Bit Tests:
+
+|#|name|state|
+|-|-|-|
+|01|mem_oam|:white_check_mark:|
+|02|reg f|:x:|
+|03|unused_hwio-GS|:x:|
 
 #### Technology Used:
 
